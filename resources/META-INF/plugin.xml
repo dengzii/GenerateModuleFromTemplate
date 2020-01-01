@@ -28,7 +28,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="com.dengzii.plugin.auc.gen" class="com.dengzii.plugin.auc.AucFrameGen" text="AucFrameGenerator"
+    <action id="com.dengzii.plugin.auc.gen" class="com.dengzii.plugin.auc.AucFrameGenAction" text="AucFrameGenerator"
             description="AucFrameGenerator">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
     </action>
