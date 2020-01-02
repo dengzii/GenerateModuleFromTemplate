@@ -1,6 +1,6 @@
-package com.dengzii.plugin.auc
+package com.dengzii.plugin.auc.model
 
-import com.dengzii.plugin.auc.template.AucTemplate
+import com.dengzii.plugin.auc.utils.Logger
 import com.dengzii.plugin.auc.template.Placeholder
 import com.dengzii.plugin.auc.template.replacePlaceholder
 import java.io.File
@@ -105,7 +105,10 @@ open class FileTreeNode private constructor() {
      */
     fun include(other: FileTreeNode) {
         if (!isDir) return
-        children.addAll(other.children)
+        other.children.forEach {
+            it.parent = this
+            children.add(it)
+        }
     }
 
     fun dir(name: String, block: FileTreeNode.() -> Unit = {}) {

@@ -2,7 +2,7 @@
 
 package com.dengzii.plugin.auc.template
 
-import com.dengzii.plugin.auc.FileTreeNode
+import com.dengzii.plugin.auc.model.FileTreeNode
 
 /**
  * <pre>
@@ -27,7 +27,10 @@ val Node.java: Node get() = dirNode("java")
 val Node.src: Node get() = dirNode("src")
 val Node.res: Node get() = dirNode("res")
 val Node.app: Node get() = dirNode("app")
+val Node.pkg: Node get() = dirNode("pkg")
+val Node.export: Node get() = dirNode("export")
 val Node.pkg_name: Node get() = dirNode(Placeholder.PACKAGE_NAME.getPlaceholder())
+val Node.module_name: Node get() = dirNode(Placeholder.MODULE_NAME.getPlaceholder())
 val Node.layout: Node get() = dirNode("layout")
 val Node.values: Node get() = dirNode("values")
 val Node.drawable: Node get() = dirNode("drawable")
@@ -37,7 +40,7 @@ val Node.AndroidManifest: FileNode get() = fileNode("MainActivity")
 val Node.proguard_rules: FileNode get() = fileNode("proguard-rules")
 val Node.gitignore: FileNode get() = fileNode(".gitignore")
 val Node.build: FileNode get() = fileNode("build")
-val Node.App: FileNode get() = fileNode("App")
+val Node.app_name: FileNode get() = fileNode(Placeholder.APPLICATION_NAME.getPlaceholder())
 
 val FileNode.gradle: Unit get() = nodeSuffix(".gradle")
 val FileNode.java: Unit get() = nodeSuffix(".java")

@@ -1,5 +1,7 @@
 package com.dengzii.plugin.auc.template
 
+import com.dengzii.plugin.auc.utils.Logger
+
 /**
  * <pre>
  * author : dengzi
@@ -12,10 +14,20 @@ package com.dengzii.plugin.auc.template
 
 enum class Placeholder {
 
-    PACKAGE_NAME, CLASS_NAME, FILE_NAME, PROJECT_NAME, BASE_APPLICATION;
+    MODULE_NAME,
+    PACKAGE_NAME,
+    CLASS_NAME,
+    FILE_NAME,
+    APPLICATION_NAME,
+    PROJECT_NAME,
+    BASE_APPLICATION;
 
     fun getPlaceholder(): String {
         return "\${$name}"
+    }
+
+    override fun toString(): String {
+        return name
     }
 }
 
@@ -30,11 +42,15 @@ fun String.findPlaceholder(): List<Placeholder> {
 }
 
 fun String.replacePlaceholder(placeholders: Map<Placeholder, String>?): String {
+    var after = this
     if (placeholders.isNullOrEmpty()) {
         return this
     }
     placeholders.forEach { (k, v) ->
-        replace(k.getPlaceholder(), v, true)
+        after = after.replace(k.getPlaceholder(), v)
     }
-    return this
+    if (this != after) {
+        Logger.d("String.replacePlaceholder", "before: $this => after: $after")
+    }
+    return after
 }

@@ -1,5 +1,8 @@
 package com.dengzii.plugin.auc
 
+import com.dengzii.plugin.auc.ui.CreateModuleDialog
+import com.dengzii.plugin.auc.utils.Logger
+import com.dengzii.plugin.auc.utils.PluginKit
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 
@@ -19,7 +22,9 @@ class AucFrameGenAction : AnAction() {
             Logger.d(AucFrameGenAction::class.java.simpleName, "Project is not valid.")
             return
         }
-        FileWriteCommand.startAction(kit)
+        CreateModuleDialog.createAndShow {
+            FileWriteCommand.startAction(kit, it)
+        }
     }
 
 }

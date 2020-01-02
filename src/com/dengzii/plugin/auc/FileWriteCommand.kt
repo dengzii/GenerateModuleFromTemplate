@@ -1,6 +1,11 @@
 package com.dengzii.plugin.auc
 
+import com.dengzii.plugin.auc.model.FileTreeNode
+import com.dengzii.plugin.auc.model.ModuleConfig
 import com.dengzii.plugin.auc.template.AucTemplate
+import com.dengzii.plugin.auc.template.Placeholder
+import com.dengzii.plugin.auc.utils.Logger
+import com.dengzii.plugin.auc.utils.PluginKit
 import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.vfs.VirtualFile
@@ -15,15 +20,15 @@ import com.intellij.util.ThrowableRunnable
  * desc   :
  * </pre>
  */
-class FileWriteCommand(private var kit: PluginKit) : ThrowableRunnable<Exception> {
+class FileWriteCommand(private var kit: PluginKit, private var moduleConfig: ModuleConfig) : ThrowableRunnable<Exception> {
 
     companion object {
         private val TAG = FileWriteCommand::class.java.simpleName
-        fun startAction(kit: PluginKit) {
+        fun startAction(kit: PluginKit, moduleConfig: ModuleConfig) {
             WriteCommandAction.writeCommandAction(kit.project)
                     .withGlobalUndo()
                     .withUndoConfirmationPolicy(UndoConfirmationPolicy.REQUEST_CONFIRMATION)
-                    .run(FileWriteCommand(kit))
+                    .run(FileWriteCommand(kit, moduleConfig))
         }
     }
 
@@ -34,7 +39,15 @@ class FileWriteCommand(private var kit: PluginKit) : ThrowableRunnable<Exception
             Logger.i(TAG, "Current target is not directory.")
             return
         }
-        AucTemplate.APP.children.forEach {
+        val app = moduleConfig.template
+        if (app.placeHolderMap == null) {
+            app.placeHolderMap = AucTemplate.DEFAULT_PLACEHOLDER.toMutableMap()
+        }
+        app.placeHolderMap?.set(Placeholder.PACKAGE_NAME, moduleConfig.packageName)
+        app.placeHolderMap?.set(Placeholder.MODULE_NAME, moduleConfig.name)
+
+        Logger.d(TAG, app.placeHolderMap.toString())
+        app.children.forEach {
             createFileTree(it, current)
         }
     }

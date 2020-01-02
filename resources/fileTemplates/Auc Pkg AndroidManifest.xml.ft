@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="${PACKAGE_NAME}.${MODULE_NAME}.pkg">
+
+    <application>
+<!--        <activity
+<!--            android:name=".main.MainActivity"
+<!--            android:configChanges="orientation|keyboardHidden|screenSize"
+<!--            android:screenOrientation="user"
+<!--            android:windowSoftInputMode="stateHidden" />
+    </application>
+
+
+</manifest>

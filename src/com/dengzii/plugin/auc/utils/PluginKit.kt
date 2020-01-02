@@ -1,6 +1,5 @@
-package com.dengzii.plugin.auc
+package com.dengzii.plugin.auc.utils
 
-import com.intellij.debugger.requests.Requestor
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.module.Module
