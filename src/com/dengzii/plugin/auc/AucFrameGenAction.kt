@@ -16,6 +16,7 @@ class AucFrameGenAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val kit = PluginKit.get(e)
         if (!kit.isProjectValid()) {
+            Logger.d(AucFrameGenAction::class.java.simpleName, "Project is not valid.")
             return
         }
         FileWriteCommand.startAction(kit)

@@ -1,5 +1,6 @@
 package com.dengzii.plugin.auc
 
+import com.intellij.debugger.requests.Requestor
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.module.Module
@@ -45,14 +46,14 @@ class PluginKit private constructor(e: AnActionEvent) {
     }
 
     fun createDir(name: String, vf: VirtualFile? = getVirtualFile()) {
-        if (checkCreateFile(name, vf)) {
+        if (!checkCreateFile(name, vf)) {
             return
         }
         vf!!.createChildDirectory(null, name)
     }
 
     fun createFile(name: String, vf: VirtualFile? = getVirtualFile()) {
-        if (checkCreateFile(name, vf)) {
+        if (!checkCreateFile(name, vf)) {
             return
         }
         vf!!.createChildData(null, name)

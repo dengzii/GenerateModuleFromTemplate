@@ -13,17 +13,13 @@
   ]]>
   </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="173.0"/>
+  <idea-version since-build="182.711"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+  <depends>com.intellij.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <fileTemplateGroup implementation="com.dengzii.plugin.auc.template.FileTemplateFactory" order="first"/>
+    <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.auc.ft.manifest"/>
   </extensions>
 
   <actions>
