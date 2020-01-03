@@ -1,8 +1,8 @@
-${PACKAGE_NAME}
+package ${PACKAGE_NAME};
 
-import ${BASE_APPLICATION}
+import ${BASE_APPLICATION};
 
-public class App extends BaseApplication{
+public class ${APPLICATION_NAME} extends BaseApplication{
 
     public void onCreate(){
 

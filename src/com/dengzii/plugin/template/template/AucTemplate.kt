@@ -9,12 +9,6 @@ package com.dengzii.plugin.template.template
  * desc   :
 </pre> */
 
-fun main() {
-    AucTemplate.MODULE.traversal({ i, d ->
-        println(i.getPath())
-    })
-}
-
 object AucTemplate {
 
     private val res = AucFrame {
@@ -25,14 +19,9 @@ object AucTemplate {
         }
     }
 
-    val DEFAULT_PLACEHOLDER = mapOf(
-            Pair(Placeholder.APPLICATION_NAME, "App"),
-            Pair(Placeholder.MODULE_NAME, "module"),
-            Pair(Placeholder.PACKAGE_NAME, "com.example.app"),
-            Pair(Placeholder.PROJECT_NAME, "Example")
-    )
-
     val APP = AucFrame {
+        placeholder(Placeholder.MODULE_NAME, "app")
+        placeholder(Placeholder.PACKAGE_NAME, "com.example")
         app {
             src {
                 main {
@@ -57,6 +46,8 @@ object AucTemplate {
     }
 
     val PKG = AucFrame {
+        placeholder(Placeholder.MODULE_NAME, "pkg")
+        placeholder(Placeholder.PACKAGE_NAME, "com.example")
         pkg {
             src {
                 main {
@@ -82,6 +73,8 @@ object AucTemplate {
     }
 
     val EXPORT = AucFrame {
+        placeholder(Placeholder.MODULE_NAME, "export")
+        placeholder(Placeholder.PACKAGE_NAME, "com.example")
         export {
             src { main {
                     java { pkg_name { module_name { export {
@@ -100,6 +93,8 @@ object AucTemplate {
 
     val MODULE = AucFrame {
         module_name {
+            placeholder(Placeholder.MODULE_NAME, "feature")
+            placeholder(Placeholder.PACKAGE_NAME, "com.example")
             include(APP)
             include(PKG)
             include(EXPORT)

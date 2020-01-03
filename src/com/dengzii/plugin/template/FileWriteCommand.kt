@@ -2,8 +2,6 @@ package com.dengzii.plugin.template
 
 import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.ModuleConfig
-import com.dengzii.plugin.template.template.AucTemplate
-import com.dengzii.plugin.template.template.Placeholder
 import com.dengzii.plugin.template.utils.Logger
 import com.dengzii.plugin.template.utils.PluginKit
 import com.intellij.openapi.command.UndoConfirmationPolicy
@@ -39,15 +37,9 @@ class FileWriteCommand(private var kit: PluginKit, private var moduleConfig: Mod
             Logger.i(TAG, "Current target is not directory.")
             return
         }
-        val app = moduleConfig.template
-        if (app.placeHolderMap == null) {
-            app.placeHolderMap = AucTemplate.DEFAULT_PLACEHOLDER.toMutableMap()
-        }
-        app.placeHolderMap?.set(Placeholder.PACKAGE_NAME, moduleConfig.packageName)
-        app.placeHolderMap?.set(Placeholder.MODULE_NAME, moduleConfig.name)
-
-        Logger.d(TAG, app.placeHolderMap.toString())
-        app.children.forEach {
+        val fileTreeNode = moduleConfig.template
+        Logger.d(TAG, fileTreeNode.placeHolderMap.toString())
+        fileTreeNode.children.forEach {
             createFileTree(it, current)
         }
     }

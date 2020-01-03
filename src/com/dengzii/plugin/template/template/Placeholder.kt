@@ -49,8 +49,5 @@ fun String.replacePlaceholder(placeholders: Map<Placeholder, String>?): String {
     placeholders.forEach { (k, v) ->
         after = after.replace(k.getPlaceholder(), v)
     }
-    if (this != after) {
-        Logger.d("String.replacePlaceholder", "before: $this => after: $after")
-    }
     return after
 }

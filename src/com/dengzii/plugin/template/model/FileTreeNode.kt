@@ -1,8 +1,8 @@
 package com.dengzii.plugin.template.model
 
-import com.dengzii.plugin.template.utils.Logger
 import com.dengzii.plugin.template.template.Placeholder
 import com.dengzii.plugin.template.template.replacePlaceholder
+import com.dengzii.plugin.template.utils.Logger
 import java.io.File
 
 /**
@@ -29,7 +29,6 @@ open class FileTreeNode private constructor() {
     // the origin name with original placeholder
     private var realName: String = ""
     private var parent: FileTreeNode? = null
-
 
     companion object {
         private val TAG = FileTreeNode::class.java.simpleName
@@ -59,6 +58,13 @@ open class FileTreeNode private constructor() {
     operator fun invoke(block: FileTreeNode.() -> Unit): FileTreeNode {
         this.block()
         return this
+    }
+
+    fun placeholder(placeholder: Placeholder, value: String) {
+        if (this.placeHolderMap == null) {
+            this.placeHolderMap = kotlin.collections.mutableMapOf()
+        }
+        placeHolderMap!![placeholder] = value
     }
 
     /**

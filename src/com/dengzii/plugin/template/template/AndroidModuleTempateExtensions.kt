@@ -36,7 +36,7 @@ val Node.values: Node get() = dirNode("values")
 val Node.drawable: Node get() = dirNode("drawable")
 val Node.mipmap: Node get() = dirNode("mipmap")
 
-val Node.AndroidManifest: FileNode get() = fileNode("MainActivity")
+val Node.AndroidManifest: FileNode get() = fileNode("AndroidManifest")
 val Node.proguard_rules: FileNode get() = fileNode("proguard-rules")
 val Node.gitignore: FileNode get() = fileNode(".gitignore")
 val Node.build: FileNode get() = fileNode("build")

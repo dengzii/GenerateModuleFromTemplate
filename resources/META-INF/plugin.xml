@@ -30,8 +30,8 @@
     <actions>
         <!-- Add your actions here -->
         <action id="com.dengzii.plugin.template.gen" class="com.dengzii.plugin.template.CreateModuleAction"
-                text="AucFrameGenerator"
-                description="AucFrameGenerator">
+                text="Template Module Generator"
+                description="Create module from template">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>
     </actions>
