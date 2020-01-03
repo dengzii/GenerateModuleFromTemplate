@@ -1,4 +1,4 @@
-package com.dengzii.plugin.auc.template
+package com.dengzii.plugin.template.template
 
 /**
  * <pre>

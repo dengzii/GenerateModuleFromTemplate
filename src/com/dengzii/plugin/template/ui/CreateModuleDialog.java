@@ -1,8 +1,8 @@
-package com.dengzii.plugin.auc.ui;
+package com.dengzii.plugin.template.ui;
 
-import com.dengzii.plugin.auc.model.FileTreeNode;
-import com.dengzii.plugin.auc.model.ModuleConfig;
-import com.dengzii.plugin.auc.template.AucTemplate;
+import com.dengzii.plugin.template.model.FileTreeNode;
+import com.dengzii.plugin.template.model.ModuleConfig;
+import com.dengzii.plugin.template.template.AucTemplate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,7 +73,7 @@ public class CreateModuleDialog extends JDialog {
     private void initDialog() {
 
         Dimension screen = getToolkit().getScreenSize();
-        int w = screen.width / 3;
+        int w = screen.width / 3 + 160;
         int h = 600;
         int x = screen.width / 2 - w / 2;
         int y = screen.height / 2 - h / 2;

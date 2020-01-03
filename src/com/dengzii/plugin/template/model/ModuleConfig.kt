@@ -1,6 +1,6 @@
-package com.dengzii.plugin.auc.model
+package com.dengzii.plugin.template.model
 
-import com.dengzii.plugin.auc.template.AucFrame
+import com.dengzii.plugin.template.template.AucFrame
 
 data class ModuleConfig(
         var template: AucFrame,

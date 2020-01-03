@@ -1,4 +1,4 @@
-package com.dengzii.plugin.auc.utils
+package com.dengzii.plugin.template.utils
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys

@@ -1,8 +1,8 @@
-package com.dengzii.plugin.auc.model
+package com.dengzii.plugin.template.model
 
-import com.dengzii.plugin.auc.utils.Logger
-import com.dengzii.plugin.auc.template.Placeholder
-import com.dengzii.plugin.auc.template.replacePlaceholder
+import com.dengzii.plugin.template.utils.Logger
+import com.dengzii.plugin.template.template.Placeholder
+import com.dengzii.plugin.template.template.replacePlaceholder
 import java.io.File
 
 /**

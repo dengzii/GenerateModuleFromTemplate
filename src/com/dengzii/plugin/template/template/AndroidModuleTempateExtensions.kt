@@ -1,8 +1,8 @@
 @file:Suppress("unused", "SpellCheckingInspection")
 
-package com.dengzii.plugin.auc.template
+package com.dengzii.plugin.template.template
 
-import com.dengzii.plugin.auc.model.FileTreeNode
+import com.dengzii.plugin.template.model.FileTreeNode
 
 /**
  * <pre>

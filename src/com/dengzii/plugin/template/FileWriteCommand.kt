@@ -1,11 +1,11 @@
-package com.dengzii.plugin.auc
+package com.dengzii.plugin.template
 
-import com.dengzii.plugin.auc.model.FileTreeNode
-import com.dengzii.plugin.auc.model.ModuleConfig
-import com.dengzii.plugin.auc.template.AucTemplate
-import com.dengzii.plugin.auc.template.Placeholder
-import com.dengzii.plugin.auc.utils.Logger
-import com.dengzii.plugin.auc.utils.PluginKit
+import com.dengzii.plugin.template.model.FileTreeNode
+import com.dengzii.plugin.template.model.ModuleConfig
+import com.dengzii.plugin.template.template.AucTemplate
+import com.dengzii.plugin.template.template.Placeholder
+import com.dengzii.plugin.template.utils.Logger
+import com.dengzii.plugin.template.utils.PluginKit
 import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.vfs.VirtualFile

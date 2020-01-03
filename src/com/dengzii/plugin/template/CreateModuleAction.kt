@@ -1,8 +1,8 @@
-package com.dengzii.plugin.auc
+package com.dengzii.plugin.template
 
-import com.dengzii.plugin.auc.ui.CreateModuleDialog
-import com.dengzii.plugin.auc.utils.Logger
-import com.dengzii.plugin.auc.utils.PluginKit
+import com.dengzii.plugin.template.ui.CreateModuleDialog
+import com.dengzii.plugin.template.utils.Logger
+import com.dengzii.plugin.template.utils.PluginKit
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 
@@ -15,11 +15,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent
  * desc   :
 </pre> *
  */
-class AucFrameGenAction : AnAction() {
+class CreateModuleAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val kit = PluginKit.get(e)
         if (!kit.isProjectValid()) {
-            Logger.d(AucFrameGenAction::class.java.simpleName, "Project is not valid.")
+            Logger.d(CreateModuleAction::class.java.simpleName, "Project is not valid.")
             return
         }
         CreateModuleDialog.createAndShow {

@@ -1,34 +1,39 @@
 <idea-plugin>
-  <id>com.dengzii.plugin.auc_gen</id>
-  <name>AucFrameGenerator</name>
-  <version>1.0</version>
-  <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">denzi</vendor>
+    <id>com.dengzii.plugin.template</id>
+    <name>Template Module Generator</name>
+    <version>1.0</version>
+    <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">denzi</vendor>
 
-  <description><![CDATA[
-       Make easy to create auc frame directory structure
+    <description><![CDATA[
+       <b>Create a diverse directory structure from a highly customizable template</b><br>
+       <br>
+       The AndroidStudio only a limited number of module categories can be created<br>
+       Using this plugin, help you create directories and files from customizable template<br>
+       <br>
     ]]></description>
 
-  <change-notes><![CDATA[
-  1.0: release basically feature, generate feature module
+    <change-notes><![CDATA[
+  1.0: basically feature, generate module directories from template
   ]]>
-  </change-notes>
+    </change-notes>
 
-  <idea-version since-build="182.711"/>
+    <idea-version since-build="182.711"/>
 
-  <depends>com.intellij.modules.java</depends>
-  <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <fileTemplateGroup implementation="com.dengzii.plugin.auc.template.FileTemplateFactory" order="first"/>
-    <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.auc.ft.manifest"/>
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
+        <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.template.ft.manifest"/>
+    </extensions>
 
-  <actions>
-    <!-- Add your actions here -->
-    <action id="com.dengzii.plugin.auc.gen" class="com.dengzii.plugin.auc.AucFrameGenAction" text="AucFrameGenerator"
-            description="AucFrameGenerator">
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
-    </action>
-  </actions>
+    <actions>
+        <!-- Add your actions here -->
+        <action id="com.dengzii.plugin.template.gen" class="com.dengzii.plugin.template.CreateModuleAction"
+                text="AucFrameGenerator"
+                description="AucFrameGenerator">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
+    </actions>
 
 </idea-plugin>

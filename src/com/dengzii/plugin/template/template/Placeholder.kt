@@ -1,6 +1,6 @@
-package com.dengzii.plugin.auc.template
+package com.dengzii.plugin.template.template
 
-import com.dengzii.plugin.auc.utils.Logger
+import com.dengzii.plugin.template.utils.Logger
 
 /**
  * <pre>

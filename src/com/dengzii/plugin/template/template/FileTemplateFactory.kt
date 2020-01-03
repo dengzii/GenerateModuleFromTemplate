@@ -1,4 +1,4 @@
-package com.dengzii.plugin.auc.template
+package com.dengzii.plugin.template.template
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor
@@ -19,7 +19,7 @@ import com.intellij.openapi.fileTypes.StdFileTypes
 class FileTemplateFactory : FileTemplateGroupDescriptorFactory {
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
 
-        val descriptor = FileTemplateGroupDescriptor("AucFrameGen Plugin Descriptor", AllIcons.Nodes.Plugin)
+        val descriptor = FileTemplateGroupDescriptor("Module Template Plugin Descriptor", AllIcons.Nodes.Plugin)
         val manifestDesc = FileTemplateDescriptor("AndroidManifest.xml", StdFileTypes.XML.icon)
         val applicationDesc = FileTemplateDescriptor("Application.java", StdFileTypes.JAVA.icon)
         descriptor.addTemplate(applicationDesc)

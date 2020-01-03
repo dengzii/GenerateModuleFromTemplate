@@ -1,4 +1,4 @@
-package com.dengzii.plugin.auc.utils
+package com.dengzii.plugin.template.utils
 
 import com.jetbrains.rd.util.printlnError
 
