@@ -85,6 +85,7 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onConfClick(ActionEvent e) {
+        ConfigDialog.createAndShow();
         setPanel();
         setButton();
     }
