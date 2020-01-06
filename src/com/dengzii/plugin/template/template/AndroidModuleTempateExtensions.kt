@@ -42,11 +42,11 @@ val Node.gitignore: FileNode get() = fileNode(".gitignore")
 val Node.build: FileNode get() = fileNode("build")
 val Node.app_name: FileNode get() = fileNode(Placeholder.APPLICATION_NAME.getPlaceholder())
 
-val FileNode.gradle: Unit get() = nodeSuffix(".gradle")
-val FileNode.java: Unit get() = nodeSuffix(".java")
-val FileNode.pro: Unit get() = nodeSuffix(".pro")
-val FileNode.xml: Unit get() = nodeSuffix(".xml")
-val FileNode.kt: Unit get() = nodeSuffix(".kt")
+val FileNode.gradle: FileNode get() = nodeSuffix(".gradle")
+val FileNode.java: FileNode get() = nodeSuffix(".java")
+val FileNode.pro: FileNode get() = nodeSuffix(".pro")
+val FileNode.xml: FileNode get() = nodeSuffix(".xml")
+val FileNode.kt: FileNode get() = nodeSuffix(".kt")
 
 private fun Node.dirNode(name: String): Node {
     val dirNode = Node(this, name, true)
@@ -60,6 +60,7 @@ private fun Node.fileNode(name: String): FileNode {
     return node
 }
 
-private fun FileNode.nodeSuffix(suffix: String) {
+private fun FileNode.nodeSuffix(suffix: String): FileNode {
     this.name = this.name + suffix
+    return this
 }

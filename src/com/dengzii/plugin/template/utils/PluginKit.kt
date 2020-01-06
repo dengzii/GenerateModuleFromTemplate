@@ -1,12 +1,19 @@
 package com.dengzii.plugin.template.utils
 
+import com.intellij.ide.fileTemplates.FileTemplateManager
+import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
+import java.util.*
 
 /**
  * <pre>
@@ -36,19 +43,39 @@ class PluginKit private constructor(e: AnActionEvent) {
         return ModuleManager.getInstance(project).modules
     }
 
-    fun getPsiFile(): PsiFile? {
+    fun getCurrentPsiFile(): PsiFile? {
         return event.getData(PlatformDataKeys.PSI_FILE)
+    }
+
+    fun getCurrentPsiDirectory(): PsiDirectory? {
+        if (getCurrentPsiFile() is PsiDirectory) {
+            return getCurrentPsiFile() as PsiDirectory
+        }
+        return null
+    }
+
+    fun getPsiDirectoryByPath(path: String): PsiDirectory? {
+        val vf = VirtualFileManager.getInstance().findFileByUrl("") ?: return null
+        return PsiManager.getInstance(project).findDirectory(vf)
+    }
+
+    fun getPsiDirectoryByVirtualFile(vf: VirtualFile): PsiDirectory? {
+        if (!vf.isDirectory) {
+            Logger.e(TAG, "${vf.path} is not a directory.")
+            return null
+        }
+        return PsiManager.getInstance(project).findDirectory(vf)
     }
 
     fun getVirtualFile(): VirtualFile? {
         return event.getData(PlatformDataKeys.VIRTUAL_FILE)
     }
 
-    fun createDir(name: String, vf: VirtualFile? = getVirtualFile()) {
+    fun createDir(name: String, vf: VirtualFile? = getVirtualFile()): VirtualFile? {
         if (!checkCreateFile(name, vf)) {
-            return
+            return null
         }
-        vf!!.createChildDirectory(null, name)
+        return vf!!.createChildDirectory(null, name)
     }
 
     fun createFile(name: String, vf: VirtualFile? = getVirtualFile()) {
@@ -56,6 +83,25 @@ class PluginKit private constructor(e: AnActionEvent) {
             return
         }
         vf!!.createChildData(null, name)
+    }
+
+    fun createFileFromTemplate(fileName: String,
+                               templateName: String,
+                               propertiesMap: Map<String, String>,
+                               directory: VirtualFile): PsiElement? {
+
+        val fileTemplateManager = FileTemplateManager.getInstance(project)
+        val properties = Properties(fileTemplateManager.defaultProperties)
+        propertiesMap.forEach { (t, u) ->
+            properties.setProperty(t, u)
+        }
+        val template = fileTemplateManager.getTemplate(templateName) ?: return null
+        val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: return null
+        return FileTemplateUtil.createFromTemplate(template, fileName, properties, psiDirectory)
+    }
+
+    fun addTemplate(name: String, template: String) {
+        FileTemplateManager.getInstance(project).addTemplate(name, template)
     }
 
     private fun checkCreateFile(name: String, vf: VirtualFile?): Boolean {

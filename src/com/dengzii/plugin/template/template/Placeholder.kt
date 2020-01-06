@@ -1,7 +1,5 @@
 package com.dengzii.plugin.template.template
 
-import com.dengzii.plugin.template.utils.Logger
-
 /**
  * <pre>
  * author : dengzi
@@ -41,13 +39,13 @@ fun String.findPlaceholder(): List<Placeholder> {
     return result
 }
 
-fun String.replacePlaceholder(placeholders: Map<Placeholder, String>?): String {
+fun String.replacePlaceholder(placeholders: Map<String, String>?): String {
     var after = this
     if (placeholders.isNullOrEmpty()) {
         return this
     }
     placeholders.forEach { (k, v) ->
-        after = after.replace(k.getPlaceholder(), v)
+        after = after.replace(k, v)
     }
     return after
 }

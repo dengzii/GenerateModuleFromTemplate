@@ -18,7 +18,7 @@ object Config {
 
     private const val KEY_TEMPLATES = "KEY_TEMPLATES"
 
-    val DEFAULT_TEMPLATE = listOf(
+    val DEFAULT_MODULE_TEMPLATE = listOf(
             ModuleConfig.create(AucTemplate.MODULE, "feature", "com.example.feature", "Java", "Auc Feature Module"),
             ModuleConfig.create(AucTemplate.APP, "app", "com.example.feature", "Java", "Auc App Module"),
             ModuleConfig.create(AucTemplate.PKG, "pkg", "com.example.feature", "Java", "Auc Pkg Module"),
@@ -30,7 +30,7 @@ object Config {
     }
 
     fun loadTemplates(): List<ModuleConfig> {
-        return DEFAULT_TEMPLATE
+        return DEFAULT_MODULE_TEMPLATE
     }
 
     fun saveTemplates() {

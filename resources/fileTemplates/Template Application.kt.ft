@@ -2,9 +2,9 @@ package ${PACKAGE_NAME}
 
 import ${BASE_APPLICATION}
 
-public class App extends BaseApplication{
+class ${CLASS_NAME}:BaseApplication(){
 
-    public void onCreate(){
+    fun onCreate(){
 
     }
 }
