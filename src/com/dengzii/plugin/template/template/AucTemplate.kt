@@ -10,27 +10,6 @@ import com.dengzii.plugin.template.model.FileTreeNode
  * time   : 2019/1/1
  * desc   :
 </pre> */
-fun main() {
-    val temp = AucFrame {
-        dir("src/main/") {
-            dir("java") {
-                dir("com/example"){
-                    dir("foo"){
-                        file("bar.txt")
-                    }
-                    dir("app/c")
-                }
-            }
-            dir("res") {
-                dir("img/png"){
-
-                }
-            }
-        }
-        build.gradle
-    }
-    println(temp.getTreeGraph())
-}
 
 object AucTemplate {
 

@@ -25,6 +25,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
         <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.template.ft.manifest"/>
+        <projectConfigurable groupId="tools" displayName="Template Module Generator" id="preferences.ModuleTemplateConfig" instance="com.dengzii.plugin.template.ModuleConfig"/>
     </extensions>
 
     <actions>

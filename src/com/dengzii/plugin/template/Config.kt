@@ -29,11 +29,11 @@ object Config {
         PropertiesComponent.getInstance().unsetValue(KEY_TEMPLATES)
     }
 
-    fun loadTemplates(): List<ModuleConfig> {
-        return DEFAULT_MODULE_TEMPLATE
+    fun loadModuleTemplates(): MutableList<ModuleConfig> {
+        return DEFAULT_MODULE_TEMPLATE.toMutableList()
     }
 
-    fun saveTemplates() {
+    fun saveModuleTemplates(templates: List<ModuleConfig>) {
 
     }
 }

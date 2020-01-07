@@ -4,6 +4,7 @@ import com.dengzii.plugin.template.template.Placeholder
 import com.dengzii.plugin.template.template.replacePlaceholder
 import com.dengzii.plugin.template.utils.Logger
 import java.io.File
+import java.util.*
 
 /**
  * <pre>
@@ -22,7 +23,7 @@ open class FileTreeNode private constructor() {
         }
 
     var isDir = true
-    val children by lazy { mutableSetOf<FileTreeNode>() }
+    val children by lazy { mutableListOf<FileTreeNode>() }
     var placeHolderMap: MutableMap<String, String>? = null
         get() = field ?: parent?.placeHolderMap
 
@@ -179,19 +180,12 @@ open class FileTreeNode private constructor() {
         return parent!!.getPath() + "/" + name
     }
 
-
     fun isRoot(): Boolean {
         return this == parent
     }
 
     fun getTreeGraph(): String {
-        val strBuilder = StringBuilder()
-        var line = 0x1
-        traversal({ i, dep ->
-            val head = if (i.isRoot()) "┌" else if (children.last() == i) "└" else "├"
-            strBuilder.append("│   ".repeat(dep) + "$head─" + i.name).append("\n")
-        })
-        return strBuilder.toString()
+        return getNodeGraph().toString()
     }
 
     fun clone(): FileTreeNode {
@@ -206,23 +200,30 @@ open class FileTreeNode private constructor() {
         return cl
     }
 
+    private fun getNodeGraph(head: Stack<String> = Stack(), str: StringBuilder = StringBuilder()): StringBuilder {
 
-    private fun getNodeGraph(head: StringBuilder = StringBuilder()): StringBuilder {
-        val graph = StringBuilder(head)
-
-        graph.append(when (this) {
+        head.forEach {
+            str.append(it)
+        }
+        str.append(when (this) {
             parent?.children?.last() -> "└─"
             parent?.children?.first() -> "├─"
-            else -> "┌─"
+            else -> if (parent?.parent != null) "├─" else "┌─"
         })
+        str.append(name).append("\n")
 
-        graph.append(name).append("\n")
-        if (isDir && !children.isNullOrEmpty()) {
-            for (i in 0 until children.size) {
-
+        if (!children.isNullOrEmpty()) {
+            head.push(when {
+                parent == null -> ""
+                parent?.children?.last() != this -> "│\t"
+                else -> "\t"
+            })
+            children.forEach {
+                str.append(it.getNodeGraph(head))
             }
+            head.pop()
         }
-        return graph
+        return str
     }
 
     private fun createChild() {
