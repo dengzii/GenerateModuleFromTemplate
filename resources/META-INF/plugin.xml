@@ -23,9 +23,12 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.dengzii.plugin.template.ModuleTemplateConfigProvider"/>
         <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
         <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.template.ft.manifest"/>
-        <projectConfigurable groupId="tools" displayName="Template Module Generator" id="preferences.ModuleTemplateConfig" instance="com.dengzii.plugin.template.ModuleConfig"/>
+        <projectConfigurable groupId="tools" displayName="Template Module Generator"
+                             id="preferences.ModuleTemplateConfig"
+                             instance="com.dengzii.plugin.template.ui.ConfigurePanel"/>
     </extensions>
 
     <actions>

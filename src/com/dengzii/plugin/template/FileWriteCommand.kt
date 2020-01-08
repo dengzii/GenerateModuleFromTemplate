@@ -1,7 +1,7 @@
 package com.dengzii.plugin.template
 
 import com.dengzii.plugin.template.model.FileTreeNode
-import com.dengzii.plugin.template.model.ModuleConfig
+import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.utils.Logger
 import com.dengzii.plugin.template.utils.PluginKit
 import com.intellij.openapi.command.UndoConfirmationPolicy
@@ -18,15 +18,15 @@ import com.intellij.util.ThrowableRunnable
  * desc   :
  * </pre>
  */
-class FileWriteCommand(private var kit: PluginKit, private var moduleConfig: ModuleConfig) : ThrowableRunnable<Exception> {
+class FileWriteCommand(private var kit: PluginKit, private var module: Module) : ThrowableRunnable<Exception> {
 
     companion object {
         private val TAG = FileWriteCommand::class.java.simpleName
-        fun startAction(kit: PluginKit, moduleConfig: ModuleConfig) {
+        fun startAction(kit: PluginKit, module: Module) {
             WriteCommandAction.writeCommandAction(kit.project)
                     .withGlobalUndo()
                     .withUndoConfirmationPolicy(UndoConfirmationPolicy.REQUEST_CONFIRMATION)
-                    .run(FileWriteCommand(kit, moduleConfig))
+                    .run(FileWriteCommand(kit, module))
         }
     }
 
@@ -37,7 +37,7 @@ class FileWriteCommand(private var kit: PluginKit, private var moduleConfig: Mod
             Logger.i(TAG, "Current target is not directory.")
             return
         }
-        val fileTreeNode = moduleConfig.template
+        val fileTreeNode = module.template
         Logger.d(TAG, fileTreeNode.placeHolderMap.toString())
         fileTreeNode.children.forEach {
             createFileTree(it, current)

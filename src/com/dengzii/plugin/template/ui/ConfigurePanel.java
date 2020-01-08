@@ -1,16 +1,29 @@
 package com.dengzii.plugin.template.ui;
 
-import com.dengzii.plugin.template.Config;
-import com.dengzii.plugin.template.model.ModuleConfig;
+import com.dengzii.plugin.template.ModuleTemplateConfigProvider;
+import com.dengzii.plugin.template.model.Module;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class ConfigurePanel extends JPanel {
+/**
+ * <pre>
+ * author : dengzi
+ * e-mail : dengzii@foxmail.com
+ * github : https://github.com/dengzii
+ * time   : 2020/1/8
+ * desc   :
+ * </pre>
+ */
+public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     private JPanel contentPane;
 
@@ -24,20 +37,42 @@ public class ConfigurePanel extends JPanel {
     private JBTable JB;
     private JBList listTemplate;
 
-    private ApplyListener applyListener;
-    private List<ModuleConfig> configs;
+    private List<Module> configs;
     private DefaultListModel<String> model;
-    private ModuleConfig currentConfig;
+    private Module currentConfig;
 
-    public ConfigurePanel() {
+    private ConfigurePanel() {
         setLayout(new BorderLayout());
         add(contentPane);
         initPanel();
     }
 
-    private void onApply() {
-        Config.INSTANCE.saveModuleTemplates(configs);
-        applyListener.apply(configs);
+    @Override
+    public void apply() {
+//        Config.INSTANCE.saveModuleTemplates(configs);
+    }
+
+    @NotNull
+    @Override
+    public String getId() {
+        return "preferences.ModuleTemplateConfig";
+    }
+
+    @Nullable
+    @Override
+    public JComponent createComponent() {
+        return new ConfigurePanel();
+    }
+
+    @Override
+    public boolean isModified() {
+        return false;
+    }
+
+    @Nls(capitalization = Nls.Capitalization.Title)
+    @Override
+    public String getDisplayName() {
+        return "Module Template Generator";
     }
 
     private void onAdd() {
@@ -45,6 +80,9 @@ public class ConfigurePanel extends JPanel {
     }
 
     private void onRemove() {
+        if (listTemplate.getSelectedIndex() == -1) {
+            return;
+        }
         configs.remove(listTemplate.getSelectedIndex());
         model.remove(listTemplate.getSelectedIndex());
         listTemplate.doLayout();
@@ -55,10 +93,10 @@ public class ConfigurePanel extends JPanel {
     }
 
     private void loadConfig() {
-        configs = Config.INSTANCE.loadModuleTemplates();
+        configs = ModuleTemplateConfigProvider.Companion.getService().getModuleConfig();
         model = new DefaultListModel<>();
-        configs.forEach(moduleConfig -> {
-            model.addElement(moduleConfig.getTemplateName());
+        configs.forEach(module -> {
+            model.addElement(module.getTemplateName());
         });
         listTemplate.setModel(model);
     }
@@ -84,9 +122,5 @@ public class ConfigurePanel extends JPanel {
         button.setIcon(icon);
         button.setText("");
         button.setPreferredSize(new Dimension(25, 25));
-    }
-
-    public interface ApplyListener {
-        void apply(List<ModuleConfig> moduleConfig);
     }
 }
