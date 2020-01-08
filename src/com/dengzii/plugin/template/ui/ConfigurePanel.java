@@ -1,5 +1,6 @@
 package com.dengzii.plugin.template.ui;
 
+import com.dengzii.plugin.template.Config;
 import com.dengzii.plugin.template.ModuleTemplateConfigProvider;
 import com.dengzii.plugin.template.model.Module;
 import com.intellij.icons.AllIcons;
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.InputMethodListener;
 import java.util.List;
 
 /**
@@ -49,7 +52,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     @Override
     public void apply() {
-//        Config.INSTANCE.saveModuleTemplates(configs);
+        System.out.println("ConfigurePanel.apply");
+        ModuleTemplateConfigProvider.Companion.getService().setModuleConfig(configs);
     }
 
     @NotNull
@@ -66,7 +70,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return false;
+        return true;//currentConfig != null && !tfName.getText().equals(currentConfig.getTemplateName());
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)
@@ -94,6 +98,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     private void loadConfig() {
         configs = ModuleTemplateConfigProvider.Companion.getService().getModuleConfig();
+        configs = Config.INSTANCE.loadModuleTemplates();
+        configs.get(0).setTemplateName("Tempalate 1" + "A");
         model = new DefaultListModel<>();
         configs.forEach(module -> {
             model.addElement(module.getTemplateName());
@@ -113,6 +119,18 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         listTemplate.addListSelectionListener(e -> {
             currentConfig = configs.get(listTemplate.getSelectedIndex());
             tfName.setText(currentConfig.getTemplateName());
+        });
+        tfName.addInputMethodListener(new InputMethodListener() {
+            @Override
+            public void inputMethodTextChanged(InputMethodEvent event) {
+                if (currentConfig != null)
+                    currentConfig.setTemplateName(tfName.getText());
+            }
+
+            @Override
+            public void caretPositionChanged(InputMethodEvent event) {
+
+            }
         });
         loadConfig();
     }

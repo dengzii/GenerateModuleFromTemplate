@@ -6,6 +6,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.util.xmlb.XmlSerializerUtil
 
 /**
  * <pre>
@@ -18,11 +19,11 @@ import com.intellij.openapi.components.Storage
  */
 @State(
         name = "ModuleTemplateConfig",
-        storages = [Storage("ModuleTemplateConfig.xml")]
+        storages = [Storage("ModuleTemplateConfig3.xml")]
 )
-class ModuleTemplateConfigProvider : PersistentStateComponent<MutableList<Module>> {
+class ModuleTemplateConfigProvider : PersistentStateComponent<ModuleTemplateConfigProvider> {
 
-    var moduleConfig = mutableListOf<Module>()
+    var moduleConfig = Config.loadModuleTemplates()
 
     companion object {
         fun getService(): ModuleTemplateConfigProvider {
@@ -30,13 +31,13 @@ class ModuleTemplateConfigProvider : PersistentStateComponent<MutableList<Module
         }
     }
 
-    override fun getState(): MutableList<Module>? {
+    override fun getState(): ModuleTemplateConfigProvider? {
         Logger.i(ModuleTemplateConfigProvider::class.java.simpleName, "getState")
-        return moduleConfig.toMutableList()
+        return this
     }
 
-    override fun loadState(p0: MutableList<Module>) {
+    override fun loadState(p0: ModuleTemplateConfigProvider) {
         Logger.i(ModuleTemplateConfigProvider::class.java.simpleName, "loadState")
-        moduleConfig = p0
+        XmlSerializerUtil.copyBean(p0, this)
     }
 }
