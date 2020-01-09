@@ -36,7 +36,7 @@ open class FileTreeNode private constructor() {
 
     // the origin name with original placeholder
     private var realName: String = ""
-    private var parent: FileTreeNode? = null
+    var parent: FileTreeNode? = null
 
     companion object {
 
@@ -69,8 +69,8 @@ open class FileTreeNode private constructor() {
         return this
     }
 
-    fun getParent(): FileTreeNode? {
-        return parent
+    fun getRealName(): String {
+        return realName
     }
 
     fun fileTemplate(fileName: String, template: String) {

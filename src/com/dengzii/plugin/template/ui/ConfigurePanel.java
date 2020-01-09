@@ -1,10 +1,12 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
+import com.dengzii.plugin.template.ConfigProvider;
 import com.dengzii.plugin.template.ModuleTemplateConfigProvider;
 import com.dengzii.plugin.template.model.Module;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.Nls;
@@ -12,7 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputMethodEvent;
 import java.awt.event.InputMethodListener;
 import java.util.List;
@@ -52,8 +58,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     @Override
     public void apply() {
-        System.out.println("ConfigurePanel.apply");
-        ModuleTemplateConfigProvider.Companion.getService().setModuleConfig(configs);
+        ConfigProvider.Companion.getService().setModuleTemplate(Config.INSTANCE.loadModuleTemplates());
     }
 
     @NotNull
@@ -97,9 +102,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void loadConfig() {
-        configs = ModuleTemplateConfigProvider.Companion.getService().getModuleConfig();
-        configs = Config.INSTANCE.loadModuleTemplates();
-        configs.get(0).setTemplateName("Tempalate 1" + "A");
+        configs = ConfigProvider.Companion.getService().getModuleTemplate();
+        ConfigProvider.Companion.getService().getModuleTemplate();
         model = new DefaultListModel<>();
         configs.forEach(module -> {
             model.addElement(module.getTemplateName());
@@ -120,16 +124,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
             currentConfig = configs.get(listTemplate.getSelectedIndex());
             tfName.setText(currentConfig.getTemplateName());
         });
-        tfName.addInputMethodListener(new InputMethodListener() {
+        tfName.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            public void inputMethodTextChanged(InputMethodEvent event) {
+            protected void textChanged(@NotNull DocumentEvent documentEvent) {
                 if (currentConfig != null)
                     currentConfig.setTemplateName(tfName.getText());
-            }
-
-            @Override
-            public void caretPositionChanged(InputMethodEvent event) {
-
             }
         });
         loadConfig();
