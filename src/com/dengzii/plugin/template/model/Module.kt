@@ -1,5 +1,7 @@
 package com.dengzii.plugin.template.model
 
+import com.dengzii.plugin.template.utils.Logger
+
 class Module(
         var template: FileTreeNode,
         var name: String,
@@ -15,6 +17,7 @@ class Module(
     companion object {
         fun create(template: FileTreeNode, moduleName: String,
                    packageName: String, language: String, templateName: String): Module {
+            Logger.i(Module::class.java.simpleName, "create module.  $template moduleName=$moduleName, templateName=$templateName")
             return Module(template, moduleName, packageName, language, templateName)
         }
 

@@ -1,9 +1,8 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
-import com.dengzii.plugin.template.ConfigProvider;
-import com.dengzii.plugin.template.ModuleTemplateConfigProvider;
 import com.dengzii.plugin.template.model.Module;
+import com.dengzii.plugin.template.template.AucTemplate;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.ui.DocumentAdapter;
@@ -15,12 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.InputMethodListener;
 import java.util.List;
 
 /**
@@ -50,6 +44,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private DefaultListModel<String> model;
     private Module currentConfig;
 
+    private ConfigurePanel panel;
+
     private ConfigurePanel() {
         setLayout(new BorderLayout());
         add(contentPane);
@@ -58,7 +54,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     @Override
     public void apply() {
-        ConfigProvider.Companion.getService().setModuleTemplate(Config.INSTANCE.loadModuleTemplates());
+        if (panel != null){
+            panel.apply();
+            return;
+        }
+        Config.INSTANCE.saveModuleTemplates(configs);
     }
 
     @NotNull
@@ -70,7 +70,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        return new ConfigurePanel();
+        panel = new ConfigurePanel();
+        return panel;
     }
 
     @Override
@@ -85,7 +86,12 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void onAdd() {
-
+        currentConfig = Module.Companion.create(AucTemplate.INSTANCE.getAPP(), "ModuleName", "com.example", "Java", "TemplateName");
+        configs.add(currentConfig);
+        model.addElement(currentConfig.getTemplateName());
+        listTemplate.doLayout();
+        listTemplate.updateUI();
+        listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
     }
 
     private void onRemove() {
@@ -95,6 +101,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         configs.remove(listTemplate.getSelectedIndex());
         model.remove(listTemplate.getSelectedIndex());
         listTemplate.doLayout();
+        listTemplate.updateUI();
     }
 
     private void onCopy() {
@@ -102,8 +109,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void loadConfig() {
-        configs = ConfigProvider.Companion.getService().getModuleTemplate();
-        ConfigProvider.Companion.getService().getModuleTemplate();
+        System.out.println("ConfigurePanel.loadConfig");
+        configs = Config.INSTANCE.loadModuleTemplates();
         model = new DefaultListModel<>();
         configs.forEach(module -> {
             model.addElement(module.getTemplateName());
