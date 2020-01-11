@@ -158,7 +158,7 @@ public class CreateModuleDialog extends JDialog {
 
     private void initData() {
 
-        moduleTemplates = Config.INSTANCE.getDEFAULT_MODULE_TEMPLATE();
+        moduleTemplates = Config.INSTANCE.loadModuleTemplates();
         List<String> temp = new ArrayList<>();
         moduleTemplates.forEach(i -> temp.add(i.getTemplateName()));
         cbModuleType.setModel(new DefaultComboBoxModel<>(temp.toArray()));

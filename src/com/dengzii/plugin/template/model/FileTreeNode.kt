@@ -23,7 +23,7 @@ open class FileTreeNode private constructor() {
         }
 
     var isDir = true
-    val children by lazy { mutableListOf<FileTreeNode>() }
+    var children = mutableListOf<FileTreeNode>()
     var placeHolderMap: MutableMap<String, String>? = null
         get() = field ?: parent?.placeHolderMap
 
@@ -36,6 +36,7 @@ open class FileTreeNode private constructor() {
 
     // the origin name with original placeholder
     private var realName: String = ""
+    @Transient
     var parent: FileTreeNode? = null
 
     companion object {

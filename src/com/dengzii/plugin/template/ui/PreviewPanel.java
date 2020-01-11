@@ -61,7 +61,10 @@ public class PreviewPanel extends JPanel {
                         if (node.isDir()) {
                             setIcon(AllIcons.Nodes.Package);
                         } else {
-                            String suffix = node.getName().substring(node.getName().lastIndexOf("."));
+                            String suffix = "";
+                            if (node.getName().contains(".")){
+                                suffix = node.getName().substring(node.getName().lastIndexOf("."));
+                            }
                             setIcon(fileIconMap.getOrDefault(suffix, AllIcons.FileTypes.Text));
                         }
                     }

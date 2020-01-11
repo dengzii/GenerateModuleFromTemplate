@@ -43,7 +43,6 @@ object AucTemplate {
     }
 
     val APP = (BASE.clone()) {
-        fileTemplates = aucFileTemplates()
         placeholder(Placeholder.PACKAGE_NAME, "com.example")
         placeholder(Placeholder.MODULE_NAME, "app")
 

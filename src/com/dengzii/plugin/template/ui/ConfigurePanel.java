@@ -42,6 +42,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     private List<Module> configs;
     private DefaultListModel<String> model;
+
     private Module currentConfig;
 
     private ConfigurePanel panel;
@@ -54,7 +55,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     @Override
     public void apply() {
-        if (panel != null){
+        if (panel != null) {
             panel.apply();
             return;
         }
@@ -86,26 +87,32 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void onAdd() {
-        currentConfig = Module.Companion.create(AucTemplate.INSTANCE.getAPP(), "ModuleName", "com.example", "Java", "TemplateName");
+        currentConfig = Module.Companion.create(AucTemplate.INSTANCE.getPKG(), "ModuleName", "com.example", "Java", "TemplateName");
         configs.add(currentConfig);
         model.addElement(currentConfig.getTemplateName());
         listTemplate.doLayout();
-        listTemplate.updateUI();
         listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
     }
 
     private void onRemove() {
-        if (listTemplate.getSelectedIndex() == -1) {
+        if (getSelectedIndex() == -1) {
             return;
         }
-        configs.remove(listTemplate.getSelectedIndex());
-        model.remove(listTemplate.getSelectedIndex());
+        int selectedIndex = getSelectedIndex();
+        configs.remove(selectedIndex);
+        model.remove(selectedIndex);
         listTemplate.doLayout();
-        listTemplate.updateUI();
     }
 
     private void onCopy() {
+        if (getSelectedIndex() == -1) {
+            return;
+        }
+        listTemplate.doLayout();
+    }
 
+    private int getSelectedIndex() {
+        return listTemplate.getSelectedIndex();
     }
 
     private void loadConfig() {
@@ -127,8 +134,10 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         btAdd.addActionListener(e -> onAdd());
         btRemove.addActionListener(e -> onRemove());
 
+        listTemplate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listTemplate.addListSelectionListener(e -> {
-            currentConfig = configs.get(listTemplate.getSelectedIndex());
+            if (getSelectedIndex() == -1) return;
+            currentConfig = configs.get(getSelectedIndex());
             tfName.setText(currentConfig.getTemplateName());
         });
         tfName.getDocument().addDocumentListener(new DocumentAdapter() {
