@@ -1,7 +1,7 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
-import com.dengzii.plugin.template.model.ModuleConfig;
+import com.dengzii.plugin.template.model.Module;
 import com.intellij.icons.AllIcons;
 
 import javax.swing.*;
@@ -31,8 +31,8 @@ public class CreateModuleDialog extends JDialog {
 
     private OnFinishListener onFinishListener;
 
-    private java.util.List<ModuleConfig> moduleTemplates = Collections.emptyList();
-    private ModuleConfig selectedModuleConfig;
+    private java.util.List<Module> moduleTemplates = Collections.emptyList();
+    private Module selectedModule;
 
     private HashMap<String, JPanel> panels = new HashMap<>();
     private List<String> titles = new ArrayList<>();
@@ -85,7 +85,6 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onConfClick(ActionEvent e) {
-        ConfigDialog.createAndShow();
         setPanel();
         setButton();
     }
@@ -110,11 +109,11 @@ public class CreateModuleDialog extends JDialog {
         contentPanel.updateUI();
     }
 
-    private void onModuleConfigChange(ModuleConfig moduleConfig) {
-        selectedModuleConfig = moduleConfig;
-        fieldModuleName.setText(selectedModuleConfig.getName());
-        fieldPkgName.setText(selectedModuleConfig.getPackageName() + "." + selectedModuleConfig.getName());
-        previewPanel.setModuleConfig(selectedModuleConfig);
+    private void onModuleConfigChange(Module module) {
+        selectedModule = module;
+        fieldModuleName.setText(selectedModule.getName());
+        fieldPkgName.setText(selectedModule.getPackageName() + "." + selectedModule.getName());
+        previewPanel.setModuleConfig(selectedModule);
     }
 
     private void initDialog() {
@@ -132,7 +131,7 @@ public class CreateModuleDialog extends JDialog {
         rootPanel.registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        cbLanguage.setModel(new DefaultComboBoxModel<>(ModuleConfig.Companion.getLangList()));
+        cbLanguage.setModel(new DefaultComboBoxModel<>(Module.Companion.getLangList()));
 
         btConfigure.setIcon(AllIcons.General.GearPlain);
         previewPanel = new PreviewPanel();
@@ -149,7 +148,7 @@ public class CreateModuleDialog extends JDialog {
 
         cbLanguage.addItemListener(e -> {
             if (cbLanguage.getSelectedItem() != null) {
-                selectedModuleConfig.setLanguage(cbLanguage.getSelectedItem().toString().toUpperCase());
+                selectedModule.setLanguage(cbLanguage.getSelectedItem().toString().toUpperCase());
             }
         });
         cbModuleType.addItemListener(e -> {
@@ -159,7 +158,7 @@ public class CreateModuleDialog extends JDialog {
 
     private void initData() {
 
-        moduleTemplates = Config.INSTANCE.getDEFAULT_TEMPLATE();
+        moduleTemplates = Config.INSTANCE.loadModuleTemplates();
         List<String> temp = new ArrayList<>();
         moduleTemplates.forEach(i -> temp.add(i.getTemplateName()));
         cbModuleType.setModel(new DefaultComboBoxModel<>(temp.toArray()));
@@ -167,6 +166,6 @@ public class CreateModuleDialog extends JDialog {
     }
 
     public interface OnFinishListener {
-        void onFinish(ModuleConfig config);
+        void onFinish(Module config);
     }
 }

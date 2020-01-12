@@ -4,6 +4,7 @@ import com.dengzii.plugin.template.template.Placeholder
 import com.dengzii.plugin.template.template.replacePlaceholder
 import com.dengzii.plugin.template.utils.Logger
 import java.io.File
+import java.util.*
 
 /**
  * <pre>
@@ -22,15 +23,24 @@ open class FileTreeNode private constructor() {
         }
 
     var isDir = true
-    val children by lazy { mutableListOf<FileTreeNode>() }
-    var placeHolderMap: MutableMap<Placeholder, String>? = null
+    var children = mutableListOf<FileTreeNode>()
+    var placeHolderMap: MutableMap<String, String>? = null
         get() = field ?: parent?.placeHolderMap
+
+    // template for node, higher priority than fileTemplates
+    var template: String? = null
+
+    // template of filename
+    var fileTemplates: MutableMap<String, String>? = null
+        get() = field ?: parent?.fileTemplates
 
     // the origin name with original placeholder
     private var realName: String = ""
-    private var parent: FileTreeNode? = null
+    @Transient
+    var parent: FileTreeNode? = null
 
     companion object {
+
         private val TAG = FileTreeNode::class.java.simpleName
 
         fun root(path: String): FileTreeNode {
@@ -60,11 +70,30 @@ open class FileTreeNode private constructor() {
         return this
     }
 
+    fun getRealName(): String {
+        return realName
+    }
+
+    fun fileTemplate(fileName: String, template: String) {
+        if (this.fileTemplates == null) {
+            this.fileTemplates = mutableMapOf()
+        }
+        fileTemplates!![fileName] = template
+    }
+
+    fun hasTemplate(): Boolean {
+        return template != null || fileTemplates?.containsKey(realName) == true
+    }
+
+    fun getTemplateName(): String? {
+        return template ?: fileTemplates?.get(realName)
+    }
+
     fun placeholder(placeholder: Placeholder, value: String) {
         if (this.placeHolderMap == null) {
             this.placeHolderMap = kotlin.collections.mutableMapOf()
         }
-        placeHolderMap!![placeholder] = value
+        placeHolderMap!![placeholder.getPlaceholder()] = value
     }
 
     /**
@@ -112,16 +141,27 @@ open class FileTreeNode private constructor() {
     fun include(other: FileTreeNode) {
         if (!isDir) return
         other.children.forEach {
-            it.parent = this
-            children.add(it)
+            val child = it.clone()
+            child.parent = this
+            children.add(child)
         }
     }
 
-    fun dir(name: String, block: FileTreeNode.() -> Unit = {}) {
+    fun dir(path: String, block: FileTreeNode.() -> Unit = {}) {
         if (!isDir) return
-        val dir = FileTreeNode(this, name, true)
-        children.add(dir)
-        dir(block)
+        val dirs = path.split("/").filter { it.isNotBlank() }.toMutableList()
+        createDirs(dirs, this)(block)
+    }
+
+    private fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
+        if (dirs.isEmpty()) {
+            return parent
+        }
+        val current = dirs[0]
+        dirs.removeAt(0)
+        val dirNode = FileTreeNode(parent, current, true)
+        parent.children.add(dirNode)
+        return createDirs(dirs, dirNode)
     }
 
     fun file(name: String) {
@@ -141,18 +181,50 @@ open class FileTreeNode private constructor() {
         return parent!!.getPath() + "/" + name
     }
 
-
     fun isRoot(): Boolean {
         return this == parent
     }
 
     fun getTreeGraph(): String {
-        val strBuilder = StringBuilder()
-        traversal({ i, dep ->
-            val head = if (i.isRoot()) "┌" else if (children.last() == i) "└" else "├"
-            strBuilder.append("│   ".repeat(dep) + "$head─" + i.name)
+        return getNodeGraph().toString()
+    }
+
+    fun clone(): FileTreeNode {
+        val cl = FileTreeNode(null, name, isDir)
+        cl.fileTemplates = fileTemplates?.toMutableMap()
+        cl.placeHolderMap = placeHolderMap?.toMutableMap()
+        children.forEach {
+            val child = it.clone()
+            child.parent = cl
+            cl.children.add(child)
+        }
+        return cl
+    }
+
+    private fun getNodeGraph(head: Stack<String> = Stack(), str: StringBuilder = StringBuilder()): StringBuilder {
+
+        head.forEach {
+            str.append(it)
+        }
+        str.append(when (this) {
+            parent?.children?.last() -> "└─"
+            parent?.children?.first() -> "├─"
+            else -> if (parent?.parent != null) "├─" else "┌─"
         })
-        return strBuilder.toString()
+        str.append(name).append("\n")
+
+        if (!children.isNullOrEmpty()) {
+            head.push(when {
+                parent == null -> ""
+                parent?.children?.last() != this -> "│\t"
+                else -> "\t"
+            })
+            children.forEach {
+                str.append(it.getNodeGraph(head))
+            }
+            head.pop()
+        }
+        return str
     }
 
     private fun createChild() {

@@ -1,7 +1,7 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.model.FileTreeNode;
-import com.dengzii.plugin.template.model.ModuleConfig;
+import com.dengzii.plugin.template.model.Module;
 import com.intellij.icons.AllIcons;
 import com.intellij.packageDependencies.ui.TreeModel;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -61,7 +61,10 @@ public class PreviewPanel extends JPanel {
                         if (node.isDir()) {
                             setIcon(AllIcons.Nodes.Package);
                         } else {
-                            String suffix = node.getName().substring(node.getName().lastIndexOf("."));
+                            String suffix = "";
+                            if (node.getName().contains(".")){
+                                suffix = node.getName().substring(node.getName().lastIndexOf("."));
+                            }
                             setIcon(fileIconMap.getOrDefault(suffix, AllIcons.FileTypes.Text));
                         }
                     }
@@ -70,8 +73,8 @@ public class PreviewPanel extends JPanel {
         });
     }
 
-    public void setModuleConfig(ModuleConfig moduleConfig) {
-        TreeModel treeModel = new TreeModel(getTree(moduleConfig.getTemplate()));
+    public void setModuleConfig(Module module) {
+        TreeModel treeModel = new TreeModel(getTree(module.getTemplate()));
         fileTree.setModel(treeModel);
         fileTree.doLayout();
         expandAll(fileTree, new TreePath(treeModel.getRoot()), true);

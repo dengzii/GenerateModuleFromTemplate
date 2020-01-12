@@ -17,7 +17,7 @@
   ]]>
     </change-notes>
 
-    <idea-version since-build="182.711"/>
+    <idea-version since-build="183.2153.8"/>
 
     <depends>com.intellij.modules.java</depends>
     <depends>org.jetbrains.kotlin</depends>
@@ -25,12 +25,15 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
         <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.template.ft.manifest"/>
+        <applicationConfigurable groupId="tools" displayName="Template Module Generator"
+                                 id="preferences.ModuleTemplateConfig"
+                                 instance="com.dengzii.plugin.template.ui.ConfigurePanel"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
         <action id="com.dengzii.plugin.template.gen" class="com.dengzii.plugin.template.CreateModuleAction"
-                text="Template Module Generator"
+                text="Create Module From Template"
                 description="Create module from template">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>

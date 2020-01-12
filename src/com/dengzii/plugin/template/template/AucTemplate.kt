@@ -1,5 +1,7 @@
 package com.dengzii.plugin.template.template
 
+import com.dengzii.plugin.template.model.FileTreeNode
+
 /**
  * <pre>
  * author : dengzi
@@ -19,9 +21,31 @@ object AucTemplate {
         }
     }
 
-    val APP = AucFrame {
-        placeholder(Placeholder.MODULE_NAME, "app")
+    private val aucFileTemplates: () -> MutableMap<String, String> = {
+        mutableMapOf(
+                Pair("AndroidManifest.xml", "Template AndroidManifest.xml"),
+                Pair("Application.java", "Template App.java"),
+                Pair("build.gradle", "Template build.gradle"),
+                Pair("${Placeholder.APPLICATION_NAME.getPlaceholder()}.java", "Template App.java")
+        )
+    }
+
+    private val BASE = AucFrame {
+
+        fileTemplates = aucFileTemplates()
         placeholder(Placeholder.PACKAGE_NAME, "com.example")
+        placeholder(Placeholder.MODULE_NAME, "app")
+        placeholder(Placeholder.APPLICATION_NAME, "App")
+
+        gitignore
+        build.gradle
+        proguard_rules.pro
+    }
+
+    val APP = (BASE.clone()) {
+        placeholder(Placeholder.PACKAGE_NAME, "com.example")
+        placeholder(Placeholder.MODULE_NAME, "app")
+
         app {
             src {
                 main {
@@ -39,15 +63,11 @@ object AucTemplate {
                 }
                 test {}
             }
-            gitignore
-            build.gradle
-            proguard_rules.pro
         }
     }
 
-    val PKG = AucFrame {
+    val PKG = (BASE.clone()) {
         placeholder(Placeholder.MODULE_NAME, "pkg")
-        placeholder(Placeholder.PACKAGE_NAME, "com.example")
         pkg {
             src {
                 main {
@@ -66,28 +86,29 @@ object AucTemplate {
                     AndroidManifest.xml
                 }
             }
-            gitignore
-            build.gradle
-            proguard_rules.pro
         }
     }
 
     val EXPORT = AucFrame {
         placeholder(Placeholder.MODULE_NAME, "export")
-        placeholder(Placeholder.PACKAGE_NAME, "com.example")
         export {
-            src { main {
-                    java { pkg_name { module_name { export {
+            src {
+                main {
+                    java {
+                        pkg_name {
+                            module_name {
+                                export {
                                     dir("api") {
                                         file("\${MODULE_NAME}Api.java")
                                     }
                                     dir("bean")
-                    } } } }
+                                }
+                            }
+                        }
+                    }
                     AndroidManifest.xml
-            } }
-            gitignore
-            build.gradle
-            proguard_rules.pro
+                }
+            }
         }
     }
 

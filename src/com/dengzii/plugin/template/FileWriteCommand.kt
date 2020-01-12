@@ -1,7 +1,7 @@
 package com.dengzii.plugin.template
 
 import com.dengzii.plugin.template.model.FileTreeNode
-import com.dengzii.plugin.template.model.ModuleConfig
+import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.utils.Logger
 import com.dengzii.plugin.template.utils.PluginKit
 import com.intellij.openapi.command.UndoConfirmationPolicy
@@ -18,15 +18,15 @@ import com.intellij.util.ThrowableRunnable
  * desc   :
  * </pre>
  */
-class FileWriteCommand(private var kit: PluginKit, private var moduleConfig: ModuleConfig) : ThrowableRunnable<Exception> {
+class FileWriteCommand(private var kit: PluginKit, private var module: Module) : ThrowableRunnable<Exception> {
 
     companion object {
         private val TAG = FileWriteCommand::class.java.simpleName
-        fun startAction(kit: PluginKit, moduleConfig: ModuleConfig) {
+        fun startAction(kit: PluginKit, module: Module) {
             WriteCommandAction.writeCommandAction(kit.project)
                     .withGlobalUndo()
                     .withUndoConfirmationPolicy(UndoConfirmationPolicy.REQUEST_CONFIRMATION)
-                    .run(FileWriteCommand(kit, moduleConfig))
+                    .run(FileWriteCommand(kit, module))
         }
     }
 
@@ -37,26 +37,37 @@ class FileWriteCommand(private var kit: PluginKit, private var moduleConfig: Mod
             Logger.i(TAG, "Current target is not directory.")
             return
         }
-        val fileTreeNode = moduleConfig.template
+        val fileTreeNode = module.template
         Logger.d(TAG, fileTreeNode.placeHolderMap.toString())
         fileTreeNode.children.forEach {
             createFileTree(it, current)
         }
     }
 
-    private fun createFileTree(treeNode: FileTreeNode, current: VirtualFile?) {
-        if (current == null) {
-            Logger.e(TAG, "The parent of ${treeNode.getPath()} is null")
-            return
-        }
+    private fun createFileTree(treeNode: FileTreeNode, currentDirectory: VirtualFile) {
         Logger.i(TAG, "Create ${treeNode.getPath()}")
         if (treeNode.isDir) {
-            kit.createDir(treeNode.name, current)
+            val dir = kit.createDir(treeNode.name, currentDirectory)
+            if (dir == null) {
+                Logger.e(TAG, "create directory failure: ${treeNode.name}")
+                return
+            }
             treeNode.children.forEach {
-                createFileTree(it, current.findChild(treeNode.name))
+                createFileTree(it, dir)
             }
         } else {
-            kit.createFile(treeNode.name, current)
+            if (treeNode.hasTemplate()) {
+                val result = kit.createFileFromTemplate(
+                        treeNode.name,
+                        treeNode.getTemplateName()!!,
+                        treeNode.placeHolderMap.orEmpty(),
+                        currentDirectory)
+                if (result == null) {
+                    Logger.e(TAG, "create file from template failed, file: ${treeNode.name} template:${treeNode.getTemplateName()}")
+                }
+            } else {
+                kit.createFile(treeNode.name, currentDirectory)
+            }
         }
     }
 }
