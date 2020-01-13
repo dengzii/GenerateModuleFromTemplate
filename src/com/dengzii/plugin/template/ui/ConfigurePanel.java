@@ -5,6 +5,7 @@ import com.dengzii.plugin.template.model.Module;
 import com.dengzii.plugin.template.template.AucTemplate;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.roots.ui.componentsList.components.ScrollablePanel;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
@@ -34,11 +35,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private JButton btRemove;
     private JButton btCopy;
 
-    private JTextArea taTemplate;
     private JTextArea taPlaceholder;
     private JTextField tfName;
     private JBTable JB;
     private JBList listTemplate;
+    private JPanel panelStructure;
 
     private List<Module> configs;
     private DefaultListModel<String> model;
@@ -46,6 +47,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private Module currentConfig;
 
     private ConfigurePanel panel;
+    private PreviewPanel previewPanel;
 
     private ConfigurePanel() {
         setLayout(new BorderLayout());
@@ -116,13 +118,21 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void loadConfig() {
-        System.out.println("ConfigurePanel.loadConfig");
         configs = Config.INSTANCE.loadModuleTemplates();
         model = new DefaultListModel<>();
         configs.forEach(module -> {
             model.addElement(module.getTemplateName());
         });
         listTemplate.setModel(model);
+    }
+
+    private void onTemplateSelect(int index) {
+        if (currentConfig == configs.get(index)) {
+            return;
+        }
+        currentConfig = configs.get(index);
+        tfName.setText(currentConfig.getTemplateName());
+        previewPanel.setModuleConfig(currentConfig);
     }
 
     private void initPanel() {
@@ -137,8 +147,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         listTemplate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listTemplate.addListSelectionListener(e -> {
             if (getSelectedIndex() == -1) return;
-            currentConfig = configs.get(getSelectedIndex());
-            tfName.setText(currentConfig.getTemplateName());
+            onTemplateSelect(getSelectedIndex());
+
         });
         tfName.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
@@ -148,6 +158,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
             }
         });
         loadConfig();
+        previewPanel = new PreviewPanel();
+        panelStructure.add(previewPanel);
+        if (model.size() > 1) {
+            listTemplate.setSelectedIndex(0);
+        }
     }
 
     private void setIconButton(JButton button, Icon icon) {

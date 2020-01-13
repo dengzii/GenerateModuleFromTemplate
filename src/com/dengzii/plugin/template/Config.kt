@@ -29,7 +29,6 @@ object Config {
             Module.create(AucTemplate.EXPORT, "export", "com.example.feature", "Java", "Auc Export Module")
     )
 
-
     fun clear() {
         PropertiesComponent.getInstance().unsetValue(KEY_TEMPLATES)
     }
@@ -46,15 +45,13 @@ object Config {
             try {
                 val module = GSON.fromJson(it, Module::class.java)
                 setParent(module.template)
-                println(module.template.getTreeGraph())
                 result.add(module)
             } catch (e: Exception) {
                 clear()
-                e.printStackTrace()
+                Logger.e(Config::class.java.simpleName, e)
                 return result
             }
         }
-        result.addAll(DEFAULT_MODULE_TEMPLATE)
         return result
     }
 

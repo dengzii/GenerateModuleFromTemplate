@@ -18,7 +18,7 @@
             <constraints border-constraint="Center"/>
             <properties>
               <enabled value="true"/>
-              <font name="Droid Sans Mono" size="36" style="1"/>
+              <font name="DejaVu Sans Mono" size="36" style="1"/>
               <horizontalTextPosition value="2"/>
               <text value="Create Module From Template"/>
             </properties>

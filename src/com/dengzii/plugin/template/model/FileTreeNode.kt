@@ -70,6 +70,23 @@ open class FileTreeNode private constructor() {
         return this
     }
 
+    fun removeFromParent(): Boolean {
+        if (parent != null) {
+            parent!!.children.remove(this)
+            return true
+        }
+        return false
+    }
+
+    fun hasChild(name: String, isDir: Boolean): Boolean {
+        children.forEach {
+            if (it.isDir == isDir && it.realName == name) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun getRealName(): String {
         return realName
     }
