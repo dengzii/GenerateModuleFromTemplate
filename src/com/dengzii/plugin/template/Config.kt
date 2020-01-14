@@ -22,12 +22,16 @@ object Config {
     private const val KEY_TEMPLATES = "KEY_TEMPLATES"
 
     private val GSON = Gson()
-    val DEFAULT_MODULE_TEMPLATE = listOf(
-            Module.create(AucTemplate.MODULE, "feature", "com.example.feature", "Java", "Auc Feature Module"),
-            Module.create(AucTemplate.APP, "app", "com.example.feature", "Java", "Auc App Module"),
-            Module.create(AucTemplate.PKG, "pkg", "com.example.feature", "Java", "Auc Pkg Module"),
-            Module.create(AucTemplate.EXPORT, "export", "com.example.feature", "Java", "Auc Export Module")
+
+    val DEFAULT_MODULE_TEMPLATES = listOf(
+            Module.create(AucTemplate.MODULE, "feature", "com.example", "Java", "Auc Feature Module"),
+            Module.create(AucTemplate.APP, "app", "com.example", "Java", "Auc App Module"),
+            Module.create(AucTemplate.PKG, "pkg", "com.example", "Java", "Auc Pkg Module"),
+            Module.create(AucTemplate.EXPORT, "export", "com.example", "Java", "Auc Export Module")
     )
+
+    val MODULE_BLUEPRINT =
+            Module.create(AucTemplate.MODULE, "feature", "com.example", "Java", "Auc Feature Module")
 
     fun clear() {
         PropertiesComponent.getInstance().unsetValue(KEY_TEMPLATES)

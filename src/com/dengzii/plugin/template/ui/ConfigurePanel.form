@@ -14,7 +14,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="7bf3e" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+          <grid id="7bf3e" layout-manager="FlowLayout" hgap="5" vgap="0" flow-align="0">
             <constraints/>
             <properties/>
             <border type="none"/>
@@ -70,7 +70,9 @@
       </grid>
       <grid id="e3588" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="Center"/>
-        <properties/>
+        <properties>
+          <background color="-13355980"/>
+        </properties>
         <border type="none"/>
         <children>
           <grid id="6e9e7" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -132,41 +134,23 @@
                         <border type="empty"/>
                         <children/>
                       </grid>
-                      <grid id="9bfd" layout-manager="BorderLayout" hgap="0" vgap="0">
+                      <grid id="9bfd" binding="panelFileTemp" layout-manager="BorderLayout" hgap="0" vgap="0">
                         <constraints>
                           <tabbedpane title="File Template"/>
                         </constraints>
                         <properties/>
                         <border type="none"/>
-                        <children>
-                          <component id="843ce" class="com.intellij.ui.table.JBTable" binding="JB">
-                            <constraints border-constraint="Center"/>
-                            <properties/>
-                          </component>
-                        </children>
+                        <children/>
                       </grid>
-                      <grid id="14430" layout-manager="BorderLayout" hgap="0" vgap="0">
+                      <grid id="14430" binding="panelPlaceholder" layout-manager="BorderLayout" hgap="0" vgap="0">
                         <constraints>
                           <tabbedpane title="Placeholder"/>
                         </constraints>
-                        <properties/>
+                        <properties>
+                          <background color="-12828863"/>
+                        </properties>
                         <border type="none"/>
-                        <children>
-                          <scrollpane id="c88a5">
-                            <constraints border-constraint="Center"/>
-                            <properties/>
-                            <border type="none"/>
-                            <children>
-                              <component id="61461" class="javax.swing.JTextArea" binding="taPlaceholder">
-                                <constraints/>
-                                <properties>
-                                  <margin top="6" left="6" bottom="6" right="6"/>
-                                  <text value=""/>
-                                </properties>
-                              </component>
-                            </children>
-                          </scrollpane>
-                        </children>
+                        <children/>
                       </grid>
                     </children>
                   </tabbedpane>

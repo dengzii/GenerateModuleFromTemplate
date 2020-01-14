@@ -5,10 +5,8 @@ import com.dengzii.plugin.template.model.Module;
 import com.dengzii.plugin.template.template.AucTemplate;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.roots.ui.componentsList.components.ScrollablePanel;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
-import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +33,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private JButton btRemove;
     private JButton btCopy;
 
-    private JTextArea taPlaceholder;
     private JTextField tfName;
-    private JBTable JB;
     private JBList listTemplate;
     private JPanel panelStructure;
+    private JPanel panelPlaceholder;
+    private JPanel panelFileTemp;
 
     private List<Module> configs;
     private DefaultListModel<String> model;
@@ -49,10 +47,23 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private ConfigurePanel panel;
     private PreviewPanel previewPanel;
 
+    private EditableTable tablePlaceholder;
+    private EditableTable tableFileTemp;
+
     private ConfigurePanel() {
+
+        initComponent();
+        initPanel();
+    }
+
+    private void initComponent() {
         setLayout(new BorderLayout());
         add(contentPane);
-        initPanel();
+
+        tablePlaceholder = new EditableTable(new String[]{"Placeholder", "Default Value"});
+        tableFileTemp = new EditableTable(new String[]{"FileName", "Template"});
+        panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
+        panelFileTemp.add(tableFileTemp, BorderLayout.CENTER);
     }
 
     @Override
@@ -61,6 +72,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
             panel.apply();
             return;
         }
+        cacheConfig();
         Config.INSTANCE.saveModuleTemplates(configs);
     }
 
@@ -79,13 +91,13 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return true;//currentConfig != null && !tfName.getText().equals(currentConfig.getTemplateName());
+        return true;
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "Module Template Generator";
+        return "Directory Template";
     }
 
     private void onAdd() {
@@ -130,9 +142,21 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         if (currentConfig == configs.get(index)) {
             return;
         }
+        if (currentConfig != null) {
+            cacheConfig();
+        }
         currentConfig = configs.get(index);
         tfName.setText(currentConfig.getTemplateName());
         previewPanel.setModuleConfig(currentConfig);
+
+        // update file template and placeholder table
+        tableFileTemp.setPairData(currentConfig.getTemplate().getFileTemplates());
+        tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceHolderMap());
+    }
+
+    private void cacheConfig() {
+        currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
+        currentConfig.getTemplate().setPlaceHolderMap(tablePlaceholder.getPairResult());
     }
 
     private void initPanel() {

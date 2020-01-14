@@ -13,14 +13,6 @@ import com.dengzii.plugin.template.model.FileTreeNode
 
 object AucTemplate {
 
-    private val res = AucFrame {
-        res {
-            drawable {}
-            layout {}
-            values {}
-        }
-    }
-
     private val aucFileTemplates: () -> MutableMap<String, String> = {
         mutableMapOf(
                 Pair("AndroidManifest.xml", "Template AndroidManifest.xml"),
@@ -58,7 +50,7 @@ object AucTemplate {
                             }
                         }
                     }
-                    include(res)
+                    include(Template.ANDROID_RES)
                     AndroidManifest.xml
                 }
                 test {}
@@ -82,7 +74,7 @@ object AucTemplate {
                             }
                         }
                     }
-                    include(res)
+                    include(Template.ANDROID_RES)
                     AndroidManifest.xml
                 }
             }
