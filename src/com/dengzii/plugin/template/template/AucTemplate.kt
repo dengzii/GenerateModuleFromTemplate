@@ -1,5 +1,7 @@
 package com.dengzii.plugin.template.template
 
+import com.dengzii.plugin.template.model.FileTreeNode
+
 /**
  * <pre>
  * author : dengzi
@@ -20,16 +22,17 @@ object AucTemplate {
         )
     }
 
-    private val BASE = AucFrame {
-
-        fileTemplates = aucFileTemplates()
-        placeholder(Placeholder.PACKAGE_NAME.value("com.example"))
-        placeholder(Placeholder.MODULE_NAME.value("feature"))
-        placeholder(Placeholder.APPLICATION_NAME.value("App"))
+    private val aucPlaceholders: () -> MutableMap<String, String> = {
+        mutableMapOf(
+                Pair("\${PACKAGE_NAME}", "com.example"),
+                Pair("\${MODULE_NAME}", "feature"),
+                Pair("\${APPLICATION_NAME}", "App")
+        )
     }
 
-    val APP = (BASE.clone()) {
-        placeholder(Placeholder.MODULE_NAME.value("feature"))
+    val APP = FileTreeNode {
+        filtemplates(aucFileTemplates())
+        placeholders(aucPlaceholders())
 
         app {
             src {
@@ -54,8 +57,9 @@ object AucTemplate {
         }
     }
 
-    val PKG = (BASE.clone()) {
-        placeholder(Placeholder.MODULE_NAME.value("feature"))
+    val PKG = FileTreeNode {
+        filtemplates(aucFileTemplates())
+        placeholders(aucPlaceholders())
         pkg {
             src {
                 main {
@@ -80,8 +84,9 @@ object AucTemplate {
         }
     }
 
-    val EXPORT = (BASE.clone()) {
-        placeholder(Placeholder.MODULE_NAME.value("feature"))
+    val EXPORT = FileTreeNode {
+        filtemplates(aucFileTemplates())
+        placeholders(aucPlaceholders())
         export {
             src {
                 main {
@@ -106,8 +111,9 @@ object AucTemplate {
         }
     }
 
-    val MODULE = (BASE.clone()) {
-        placeholder(Placeholder.MODULE_NAME.value("feature"))
+    val MODULE = FileTreeNode {
+        filtemplates(aucFileTemplates())
+        placeholders(aucPlaceholders())
         module_name {
             include(APP)
             include(PKG)

@@ -17,10 +17,7 @@ class Placeholder(var name: String, var value: String) {
     companion object {
         val MODULE_NAME = Placeholder("MODULE_NAME", "module")
         val PACKAGE_NAME = Placeholder("PACKAGE_NAME", "com.example")
-        val CLASS_NAME = Placeholder("CLASS_NAME", "Example")
-        val FILE_NAME = Placeholder("FILE_NAME", "field")
         val APPLICATION_NAME = Placeholder("APPLICATION_NAME", "App")
-        val PROJECT_NAME = Placeholder("PROJECT_NAME", "Example")
     }
 
     fun value(value: String): Placeholder {

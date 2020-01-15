@@ -153,6 +153,20 @@ open class FileTreeNode private constructor() {
         placeholder(placeholder.placeholder, placeholder.value)
     }
 
+    fun placeholders(placeholders: Map<String, String>) {
+        if (this.placeHolderMap == null) {
+            this.placeHolderMap = kotlin.collections.mutableMapOf()
+        }
+        placeHolderMap!!.putAll(placeholders)
+    }
+
+    fun filtemplates(placeholders: Map<String, String>) {
+        if (this.fileTemplates == null) {
+            this.fileTemplates = kotlin.collections.mutableMapOf()
+        }
+        fileTemplates!!.putAll(placeholders)
+    }
+
     /**
      * set current node as root.
      * the file of specified path must be a directory and exist.

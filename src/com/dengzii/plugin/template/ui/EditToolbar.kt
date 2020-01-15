@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent
 import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JPanel
+import javax.swing.border.Border
 
 /**
  * <pre>
@@ -29,16 +30,22 @@ class EditToolbar : JPanel() {
         initButton()
     }
 
-    fun onAdd(listener: (e: ActionEvent) -> Unit) {
-        btAdd.addActionListener(listener)
+    fun onAdd(listener: () -> Unit) {
+        btAdd.addActionListener{
+            listener()
+        }
     }
 
-    fun onRemove(listener: (e: ActionEvent) -> Unit) {
-        btRemove.addActionListener(listener)
+    fun onRemove(listener: () -> Unit) {
+        btRemove.addActionListener{
+            listener()
+        }
     }
 
-    fun onCopy(listener: (e: ActionEvent) -> Unit) {
-        btCopy.addActionListener(listener)
+    fun onCopy(listener: () -> Unit) {
+        btCopy.addActionListener{
+            listener()
+        }
     }
 
     private fun initLayout() {
@@ -48,7 +55,6 @@ class EditToolbar : JPanel() {
         flowLayout.hgap = 5
         flowLayout.alignment = FlowLayout.LEFT
         layout = flowLayout
-        border = JBEmptyBorder(0, 0, 0, 0)
     }
 
     private fun initButton() {

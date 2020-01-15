@@ -111,8 +111,8 @@ public class CreateModuleDialog extends JDialog {
 
     private void onModuleConfigChange(Module module) {
         selectedModule = module;
-        fieldModuleName.setText(selectedModule.getName());
-        fieldPkgName.setText(selectedModule.getPackageName());
+        fieldModuleName.setText(selectedModule.getTemplateName());
+        fieldPkgName.setText(selectedModule.getTemplateName());
         previewPanel.setModuleConfig(selectedModule);
     }
 

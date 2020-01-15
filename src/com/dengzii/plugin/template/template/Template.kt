@@ -15,9 +15,20 @@ object Template {
 
     val ANDROID_RES = FileTreeNode {
         res {
-            drawable {}
-            layout {}
-            values {}
+            drawable { }
+            layout { }
+            values { }
+        }
+    }
+    val ANDROID_TEST = FileTreeNode {
+        dir("AndroidTest") {
+
+        }
+    }
+
+    val JUNIT_TEST = FileTreeNode {
+        dir("test") {
+
         }
     }
 
@@ -25,10 +36,9 @@ object Template {
         placeholder(Placeholder.MODULE_NAME.value("app"))
         placeholder(Placeholder.PACKAGE_NAME.value("com.example"))
 
-        dir(Placeholder.MODULE_NAME.placeholder) {
-            dir("libs")
+        module_name {
             src {
-                dir("androidTest")
+                include(ANDROID_TEST)
                 main {
                     java {
                         pkg_name {
@@ -40,7 +50,7 @@ object Template {
                     include(ANDROID_RES)
                     AndroidManifest.xml
                 }
-                dir("test")
+                include(JUNIT_TEST)
             }
             gitignore
             build.gradle

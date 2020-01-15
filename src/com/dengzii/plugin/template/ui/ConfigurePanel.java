@@ -67,15 +67,15 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     private void initData() {
 
-        actionbar.onAdd(actionEvent -> {
+        actionbar.onAdd(() -> {
             onAddConfig();
             return null;
         });
-        actionbar.onRemove(actionEvent -> {
+        actionbar.onRemove(() -> {
             onRemoveConfig();
             return null;
         });
-        actionbar.onCopy(actionEvent -> {
+        actionbar.onCopy(() -> {
             onCopyConfig();
             return null;
         });
@@ -101,7 +101,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void onAddConfig() {
-        currentConfig = Config.INSTANCE.getMODULE_ANDROID_APPLICATION();
+        currentConfig = Config.INSTANCE.getTEMPLATE_ANDROID_APPLICATION();
         configs.add(currentConfig);
         templateListModel.addElement(currentConfig.getTemplateName());
         listTemplate.doLayout();
@@ -122,7 +122,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         if (noSelectedConfig()) {
             return;
         }
+        currentConfig = currentConfig.clone();
+        configs.add(currentConfig);
+        templateListModel.addElement(currentConfig.getTemplateName());
         listTemplate.doLayout();
+        listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
     }
 
     private void loadConfig() {
