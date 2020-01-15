@@ -20,7 +20,7 @@ open class FileTreeNode private constructor() {
 
     // the backing field is 'realName'
     var name: String
-        get() = realName.replacePlaceholder(placeHolderMap)
+        get() = realName.replacePlaceholder(placeholders)
         set(value) {
             realName = value
         }
@@ -33,8 +33,8 @@ open class FileTreeNode private constructor() {
         }
         get() = realChildren
 
-    var placeHolderMap: MutableMap<String, String>? = null
-        get() = field ?: parent?.placeHolderMap
+    var placeholders: MutableMap<String, String>? = null
+        get() = field ?: parent?.placeholders
 
     // template for node, higher priority than fileTemplates
     var template: String? = null
@@ -47,9 +47,8 @@ open class FileTreeNode private constructor() {
     // the origin name with original placeholder
     private var realName: String = ""
     // the label composed by 'name' and 'isDir'.
-    private val labeledChildren = mutableMapOf<String, FileTreeNode>()
-    @Transient
-    var parent: FileTreeNode? = null
+    @Transient private val labeledChildren = mutableMapOf<String, FileTreeNode>()
+    @Transient var parent: FileTreeNode? = null
 
     companion object {
 
@@ -143,10 +142,10 @@ open class FileTreeNode private constructor() {
     }
 
     fun placeholder(name: String, value: String) {
-        if (this.placeHolderMap == null) {
-            this.placeHolderMap = kotlin.collections.mutableMapOf()
+        if (this.placeholders == null) {
+            this.placeholders = kotlin.collections.mutableMapOf()
         }
-        placeHolderMap!![name] = value
+        placeholders!![name] = value
     }
 
     fun placeholder(placeholder: Placeholder) {
@@ -154,10 +153,10 @@ open class FileTreeNode private constructor() {
     }
 
     fun placeholders(placeholders: Map<String, String>) {
-        if (this.placeHolderMap == null) {
-            this.placeHolderMap = kotlin.collections.mutableMapOf()
+        if (this.placeholders == null) {
+            this.placeholders = kotlin.collections.mutableMapOf()
         }
-        placeHolderMap!!.putAll(placeholders)
+        this.placeholders!!.putAll(placeholders)
     }
 
     fun filtemplates(placeholders: Map<String, String>) {
@@ -282,7 +281,7 @@ open class FileTreeNode private constructor() {
     fun clone(): FileTreeNode {
         val clone = FileTreeNode(null, name, isDir)
         clone.fileTemplates = fileTemplates?.toMutableMap()
-        clone.placeHolderMap = placeHolderMap?.toMutableMap()
+        clone.placeholders = placeholders?.toMutableMap()
         children.forEach {
             clone.addChild(it.clone())
         }

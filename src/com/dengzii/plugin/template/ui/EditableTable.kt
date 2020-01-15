@@ -3,6 +3,8 @@ package com.dengzii.plugin.template.ui
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
 import javax.swing.JPanel
 import javax.swing.table.DefaultTableModel
 
@@ -15,12 +17,12 @@ import javax.swing.table.DefaultTableModel
  * desc   :
  * </pre>
  */
-class EditableTable(private val header: Array<String>) : JPanel() {
+class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyArray()) : JPanel() {
 
     private val scrollPanel = JBScrollPane()
     private val editToolbar = EditToolbar()
     private val table = JBTable()
-    private var tableModel = TableModel(header)
+    private var tableModel = TableModel(header, colEditable)
 
     init {
         layout = BorderLayout()
@@ -32,7 +34,12 @@ class EditableTable(private val header: Array<String>) : JPanel() {
         table.showHorizontalLines = true
         table.showVerticalLines = true
         table.model = tableModel
+        table.putClientProperty("terminateEditOnFocusLost", true)
         initListener()
+    }
+
+    fun setToolBarVisible(visible: Boolean) {
+        editToolbar.isVisible = visible
     }
 
     fun setData(data: MutableList<MutableList<String>>) {
@@ -86,7 +93,7 @@ class EditableTable(private val header: Array<String>) : JPanel() {
         }
     }
 
-    internal class TableModel(private val header: Array<String>) : DefaultTableModel() {
+    internal class TableModel(private val header: Array<String>, private val colEditable: Array<Boolean>) : DefaultTableModel() {
 
         fun setData(fileTemp: MutableList<MutableList<String>>?) {
             while (rowCount > 0) {
@@ -117,6 +124,10 @@ class EditableTable(private val header: Array<String>) : JPanel() {
             }
             addRow(r.toTypedArray())
             fireTableDataChanged()
+        }
+
+        override fun isCellEditable(row: Int, column: Int): Boolean {
+            return if (colEditable.isEmpty()) super.isCellEditable(row, column) else colEditable[column]
         }
 
         override fun getColumnClass(columnIndex: Int): Class<*> {

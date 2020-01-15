@@ -38,7 +38,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
             return
         }
         val fileTreeNode = module.template
-        Logger.d(TAG, fileTreeNode.placeHolderMap.toString())
+        Logger.d(TAG, fileTreeNode.placeholders.toString())
         fileTreeNode.children.forEach {
             createFileTree(it, current)
         }
@@ -60,7 +60,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
                 val result = kit.createFileFromTemplate(
                         treeNode.name,
                         treeNode.getTemplateName()!!,
-                        treeNode.placeHolderMap.orEmpty(),
+                        treeNode.placeholders.orEmpty(),
                         currentDirectory)
                 if (result == null) {
                     Logger.e(TAG, "create file from template failed, file: ${treeNode.name} template:${treeNode.getTemplateName()}")

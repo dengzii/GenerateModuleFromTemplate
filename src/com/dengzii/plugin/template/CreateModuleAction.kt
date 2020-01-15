@@ -22,7 +22,7 @@ class CreateModuleAction : AnAction() {
             Logger.d(CreateModuleAction::class.java.simpleName, "Project is not valid.")
             return
         }
-        CreateModuleDialog.createAndShow {
+        CreateModuleDialog.createAndShow(kit.project) {
             FileWriteCommand.startAction(kit, it)
         }
     }

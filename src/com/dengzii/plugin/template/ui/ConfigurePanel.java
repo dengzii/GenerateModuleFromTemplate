@@ -45,7 +45,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private EditableTable tablePlaceholder;
     private EditableTable tableFileTemp;
 
-    private ConfigurePanel() {
+    public ConfigurePanel() {
 
         initComponent();
         loadConfig();
@@ -57,8 +57,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         add(contentPane);
 
         panelPreview = new PreviewPanel();
-        tablePlaceholder = new EditableTable(new String[]{"Placeholder", "Default Value"});
-        tableFileTemp = new EditableTable(new String[]{"FileName", "Template"});
+        tablePlaceholder = new EditableTable(new String[]{"Placeholder", "Default Value"}, new Boolean[]{true, true});
+        tableFileTemp = new EditableTable(new String[]{"FileName", "Template"}, new Boolean[]{true, true});
         panelStructure.add(panelPreview);
         panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
         panelFileTemp.add(tableFileTemp, BorderLayout.CENTER);
@@ -148,13 +148,13 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         // update tree, file template and placeholder table
         panelPreview.setModuleConfig(currentConfig);
         tableFileTemp.setPairData(currentConfig.getTemplate().getFileTemplates());
-        tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceHolderMap());
+        tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceholders());
     }
 
     private void cacheConfig() {
         if (currentConfig == null) return;
         currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
-        currentConfig.getTemplate().setPlaceHolderMap(tablePlaceholder.getPairResult());
+        currentConfig.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
     }
 
     private int getSelectedConfigIndex() {

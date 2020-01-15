@@ -3,6 +3,8 @@ package com.dengzii.plugin.template.ui;
 import com.dengzii.plugin.template.Config;
 import com.dengzii.plugin.template.model.Module;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,8 +20,6 @@ public class CreateModuleDialog extends JDialog {
     private JPanel rootPanel;
     private JLabel labelTitle;
     private JComboBox cbModuleType;
-    private JTextField fieldModuleName;
-    private JTextField fieldPkgName;
     private JComboBox cbLanguage;
     private JPanel mainPanel;
     private JPanel contentPanel;
@@ -28,7 +28,9 @@ public class CreateModuleDialog extends JDialog {
     private JButton btCancel;
     private JButton btPrevious;
     private JButton btFinish;
+    private JPanel panelPlaceholder;
 
+    private EditableTable tablePlaceholder;
     private OnFinishListener onFinishListener;
 
     private java.util.List<Module> moduleTemplates = Collections.emptyList();
@@ -40,18 +42,19 @@ public class CreateModuleDialog extends JDialog {
     private PreviewPanel previewPanel;
 
     private int currentPanelIndex;
+    private Project project;
 
-    private CreateModuleDialog(OnFinishListener onFinishListener) {
+    private CreateModuleDialog(Project project, OnFinishListener onFinishListener) {
         setContentPane(rootPanel);
         setModal(true);
         getRootPane().setDefaultButton(btFinish);
-
+        this.project = project;
         this.onFinishListener = onFinishListener;
     }
 
-    public static void createAndShow(OnFinishListener onFinishListener) {
+    public static void createAndShow(Project project, OnFinishListener onFinishListener) {
 
-        CreateModuleDialog dialog = new CreateModuleDialog(onFinishListener);
+        CreateModuleDialog dialog = new CreateModuleDialog(project, onFinishListener);
         dialog.initDialog();
         dialog.initData();
         dialog.pack();
@@ -59,14 +62,15 @@ public class CreateModuleDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        createAndShow(config -> {
+        createAndShow(null, config -> {
 
         });
     }
 
     private void onNextClick(ActionEvent e) {
+        selectedModule.getTemplate().setFileTemplates(tablePlaceholder.getPairResult());
         if (currentPanelIndex == panels.size() - 1) {
-            onFinishListener.onFinish(moduleTemplates.get(cbModuleType.getSelectedIndex()));
+            onFinishListener.onFinish(selectedModule);
             dispose();
             return;
         }
@@ -85,8 +89,7 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onConfClick(ActionEvent e) {
-        setPanel();
-        setButton();
+        ShowSettingsUtil.getInstance().editConfigurable(project, new ConfigurePanel());
     }
 
     private void setButton() {
@@ -104,16 +107,14 @@ public class CreateModuleDialog extends JDialog {
         labelTitle.setText(title);
         contentPanel.removeAll();
         contentPanel.add(panels.get(title));
-        contentPanel.invalidate();
         contentPanel.doLayout();
         contentPanel.updateUI();
     }
 
-    private void onModuleConfigChange(Module module) {
-        selectedModule = module;
-        fieldModuleName.setText(selectedModule.getTemplateName());
-        fieldPkgName.setText(selectedModule.getTemplateName());
+    private void onModuleConfigChange() {
+        selectedModule = moduleTemplates.get(cbModuleType.getSelectedIndex());
         previewPanel.setModuleConfig(selectedModule);
+        tablePlaceholder.setPairData(selectedModule.getTemplate().getPlaceholders());
     }
 
     private void initDialog() {
@@ -131,6 +132,9 @@ public class CreateModuleDialog extends JDialog {
         rootPanel.registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        tablePlaceholder = new EditableTable(new String[]{"Placeholder", "Value"}, new Boolean[]{false, true});
+        tablePlaceholder.setToolBarVisible(false);
+        panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
         cbLanguage.setModel(new DefaultComboBoxModel<>(Module.Companion.getLangList()));
 
         btConfigure.setIcon(AllIcons.General.GearPlain);
@@ -152,7 +156,7 @@ public class CreateModuleDialog extends JDialog {
             }
         });
         cbModuleType.addItemListener(e -> {
-            onModuleConfigChange(moduleTemplates.get(cbModuleType.getSelectedIndex()));
+            onModuleConfigChange();
         });
     }
 
