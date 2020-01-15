@@ -15,12 +15,12 @@ import javax.swing.table.DefaultTableModel
  * desc   :
  * </pre>
  */
-class EditableTable(header: Array<String>) : JPanel() {
+class EditableTable(private val header: Array<String>) : JPanel() {
 
     private val scrollPanel = JBScrollPane()
     private val editToolbar = EditToolbar()
     private val table = JBTable()
-    private val tableModel = TableModel(header)
+    private var tableModel = TableModel(header)
 
     init {
         layout = BorderLayout()
@@ -37,6 +37,7 @@ class EditableTable(header: Array<String>) : JPanel() {
 
     fun setData(data: MutableList<MutableList<String>>) {
         tableModel.setData(data)
+        tableModel.fireTableDataChanged()
         table.updateUI()
     }
 
@@ -46,7 +47,6 @@ class EditableTable(header: Array<String>) : JPanel() {
             dataList.add(mutableListOf(t, u))
         }
         tableModel.setData(dataList)
-        scrollPanel.updateUI()
         tableModel.fireTableDataChanged()
         table.updateUI()
     }
@@ -89,17 +89,15 @@ class EditableTable(header: Array<String>) : JPanel() {
     internal class TableModel(private val header: Array<String>) : DefaultTableModel() {
 
         fun setData(fileTemp: MutableList<MutableList<String>>?) {
-            if (fileTemp == null) {
-                return
-            }
             while (rowCount > 0) {
                 removeRow(0)
             }
-            fireTableDataChanged()
+            if (fileTemp == null) {
+                return
+            }
             fileTemp.forEach {
                 addRow(it.toTypedArray())
             }
-            fireTableDataChanged()
         }
 
         fun add() {

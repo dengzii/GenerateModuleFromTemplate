@@ -101,11 +101,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     }
 
     private void onAddConfig() {
-        currentConfig = Config.INSTANCE.getTEMPLATE_ANDROID_APPLICATION();
-        configs.add(currentConfig);
-        templateListModel.addElement(currentConfig.getTemplateName());
+        Module newConfig = Config.INSTANCE.getTEMPLATE_ANDROID_APPLICATION().clone();
+        configs.add(newConfig);
+        templateListModel.addElement(newConfig.getTemplateName());
         listTemplate.doLayout();
-        listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
+        listTemplate.setSelectedIndex(configs.indexOf(newConfig));
     }
 
     private void onRemoveConfig() {
@@ -122,11 +122,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         if (noSelectedConfig()) {
             return;
         }
-        currentConfig = currentConfig.clone();
-        configs.add(currentConfig);
-        templateListModel.addElement(currentConfig.getTemplateName());
+        Module newConfig = currentConfig.clone();
+        configs.add(newConfig);
+        templateListModel.addElement(newConfig.getTemplateName());
         listTemplate.doLayout();
-        listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
+        listTemplate.setSelectedIndex(configs.indexOf(newConfig));
     }
 
     private void loadConfig() {
@@ -144,14 +144,15 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         }
         currentConfig = configs.get(index);
         tfName.setText(currentConfig.getTemplateName());
-        panelPreview.setModuleConfig(currentConfig);
 
-        // update file template and placeholder table
+        // update tree, file template and placeholder table
+        panelPreview.setModuleConfig(currentConfig);
         tableFileTemp.setPairData(currentConfig.getTemplate().getFileTemplates());
         tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceHolderMap());
     }
 
     private void cacheConfig() {
+        if (currentConfig == null) return;
         currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
         currentConfig.getTemplate().setPlaceHolderMap(tablePlaceholder.getPairResult());
     }
