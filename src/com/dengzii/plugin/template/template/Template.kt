@@ -22,27 +22,29 @@ object Template {
     }
 
     val ANDROID_APP = FileTreeNode {
-        placeholder(Placeholder.MODULE_NAME, "app")
-        placeholder(Placeholder.PACKAGE_NAME, "com.example")
+        placeholder(Placeholder.MODULE_NAME.value("app"))
+        placeholder(Placeholder.PACKAGE_NAME.value("com.example"))
 
-        dir("libs")
-        src {
-            dir("androidTest")
-            main {
-                java {
-                    pkg_name {
-                        module_name {
-                            file("MainActivity.java}")
+        dir(Placeholder.MODULE_NAME.placeholder) {
+            dir("libs")
+            src {
+                dir("androidTest")
+                main {
+                    java {
+                        pkg_name {
+                            module_name {
+                                file("MainActivity.java")
+                            }
                         }
                     }
+                    include(ANDROID_RES)
+                    AndroidManifest.xml
                 }
-                include(ANDROID_RES)
-                AndroidManifest.xml
+                dir("test")
             }
-            dir("test")
+            gitignore
+            build.gradle
+            proguard_rules.pro
         }
-        gitignore
-        build.gradle
-        proguard_rules.pro
     }
 }

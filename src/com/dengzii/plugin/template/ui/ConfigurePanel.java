@@ -2,8 +2,6 @@ package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
 import com.dengzii.plugin.template.model.Module;
-import com.dengzii.plugin.template.template.AucTemplate;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
@@ -29,23 +27,20 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     private JPanel contentPane;
 
-    private JButton btAdd;
-    private JButton btRemove;
-    private JButton btCopy;
-
     private JTextField tfName;
     private JBList listTemplate;
     private JPanel panelStructure;
     private JPanel panelPlaceholder;
     private JPanel panelFileTemp;
+    private EditToolbar actionbar;
 
     private List<Module> configs;
-    private DefaultListModel<String> model;
+    private DefaultListModel<String> templateListModel;
 
     private Module currentConfig;
 
-    private ConfigurePanel panel;
-    private PreviewPanel previewPanel;
+    private ConfigurePanel panelConfig;
+    private PreviewPanel panelPreview;
 
     private EditableTable tablePlaceholder;
     private EditableTable tableFileTemp;
@@ -53,23 +48,126 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private ConfigurePanel() {
 
         initComponent();
-        initPanel();
+        loadConfig();
+        initData();
     }
 
     private void initComponent() {
         setLayout(new BorderLayout());
         add(contentPane);
 
+        panelPreview = new PreviewPanel();
         tablePlaceholder = new EditableTable(new String[]{"Placeholder", "Default Value"});
         tableFileTemp = new EditableTable(new String[]{"FileName", "Template"});
+        panelStructure.add(panelPreview);
         panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
         panelFileTemp.add(tableFileTemp, BorderLayout.CENTER);
     }
 
+
+    private void initData() {
+
+        actionbar.onAdd(actionEvent -> {
+            onAddConfig();
+            return null;
+        });
+        actionbar.onRemove(actionEvent -> {
+            onRemoveConfig();
+            return null;
+        });
+        actionbar.onCopy(actionEvent -> {
+            onCopyConfig();
+            return null;
+        });
+
+        listTemplate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listTemplate.addListSelectionListener(e -> {
+            if (noSelectedConfig()) return;
+            onConfigSelect(getSelectedConfigIndex());
+
+        });
+        //noinspection unchecked
+        listTemplate.setModel(templateListModel);
+        tfName.getDocument().addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(@NotNull DocumentEvent documentEvent) {
+                if (currentConfig != null)
+                    currentConfig.setTemplateName(tfName.getText());
+            }
+        });
+        if (templateListModel.size() > 1) {
+            listTemplate.setSelectedIndex(0);
+        }
+    }
+
+    private void onAddConfig() {
+        currentConfig = Config.INSTANCE.getMODULE_ANDROID_APPLICATION();
+        configs.add(currentConfig);
+        templateListModel.addElement(currentConfig.getTemplateName());
+        listTemplate.doLayout();
+        listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
+    }
+
+    private void onRemoveConfig() {
+        if (noSelectedConfig()) {
+            return;
+        }
+        int selectedIndex = getSelectedConfigIndex();
+        configs.remove(selectedIndex);
+        templateListModel.remove(selectedIndex);
+        listTemplate.doLayout();
+    }
+
+    private void onCopyConfig() {
+        if (noSelectedConfig()) {
+            return;
+        }
+        listTemplate.doLayout();
+    }
+
+    private void loadConfig() {
+        configs = Config.INSTANCE.loadModuleTemplates();
+        templateListModel = new DefaultListModel<>();
+        configs.forEach(module -> templateListModel.addElement(module.getTemplateName()));
+    }
+
+    private void onConfigSelect(int index) {
+        if (currentConfig == configs.get(index)) {
+            return;
+        }
+        if (currentConfig != null) {
+            cacheConfig();
+        }
+        currentConfig = configs.get(index);
+        tfName.setText(currentConfig.getTemplateName());
+        panelPreview.setModuleConfig(currentConfig);
+
+        // update file template and placeholder table
+        tableFileTemp.setPairData(currentConfig.getTemplate().getFileTemplates());
+        tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceHolderMap());
+    }
+
+    private void cacheConfig() {
+        currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
+        currentConfig.getTemplate().setPlaceHolderMap(tablePlaceholder.getPairResult());
+    }
+
+    private int getSelectedConfigIndex() {
+        return listTemplate.getSelectedIndex();
+    }
+
+    private boolean noSelectedConfig() {
+        return getSelectedConfigIndex() == -1;
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Implement SearchableConfigurable
+
     @Override
     public void apply() {
-        if (panel != null) {
-            panel.apply();
+        if (panelConfig != null) {
+            panelConfig.apply();
             return;
         }
         cacheConfig();
@@ -85,8 +183,8 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        panel = new ConfigurePanel();
-        return panel;
+        panelConfig = new ConfigurePanel();
+        return panelConfig;
     }
 
     @Override
@@ -98,101 +196,5 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     @Override
     public String getDisplayName() {
         return "Directory Template";
-    }
-
-    private void onAdd() {
-        currentConfig = Module.Companion.create(AucTemplate.INSTANCE.getPKG(), "ModuleName", "com.example", "Java", "TemplateName");
-        configs.add(currentConfig);
-        model.addElement(currentConfig.getTemplateName());
-        listTemplate.doLayout();
-        listTemplate.setSelectedIndex(configs.indexOf(currentConfig));
-    }
-
-    private void onRemove() {
-        if (getSelectedIndex() == -1) {
-            return;
-        }
-        int selectedIndex = getSelectedIndex();
-        configs.remove(selectedIndex);
-        model.remove(selectedIndex);
-        listTemplate.doLayout();
-    }
-
-    private void onCopy() {
-        if (getSelectedIndex() == -1) {
-            return;
-        }
-        listTemplate.doLayout();
-    }
-
-    private int getSelectedIndex() {
-        return listTemplate.getSelectedIndex();
-    }
-
-    private void loadConfig() {
-        configs = Config.INSTANCE.loadModuleTemplates();
-        model = new DefaultListModel<>();
-        configs.forEach(module -> {
-            model.addElement(module.getTemplateName());
-        });
-        listTemplate.setModel(model);
-    }
-
-    private void onTemplateSelect(int index) {
-        if (currentConfig == configs.get(index)) {
-            return;
-        }
-        if (currentConfig != null) {
-            cacheConfig();
-        }
-        currentConfig = configs.get(index);
-        tfName.setText(currentConfig.getTemplateName());
-        previewPanel.setModuleConfig(currentConfig);
-
-        // update file template and placeholder table
-        tableFileTemp.setPairData(currentConfig.getTemplate().getFileTemplates());
-        tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceHolderMap());
-    }
-
-    private void cacheConfig() {
-        currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
-        currentConfig.getTemplate().setPlaceHolderMap(tablePlaceholder.getPairResult());
-    }
-
-    private void initPanel() {
-
-        setIconButton(btAdd, AllIcons.General.Add);
-        setIconButton(btRemove, AllIcons.General.Remove);
-        setIconButton(btCopy, AllIcons.General.CopyHovered);
-        btCopy.addActionListener(e -> onCopy());
-        btAdd.addActionListener(e -> onAdd());
-        btRemove.addActionListener(e -> onRemove());
-
-        listTemplate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listTemplate.addListSelectionListener(e -> {
-            if (getSelectedIndex() == -1) return;
-            onTemplateSelect(getSelectedIndex());
-
-        });
-        tfName.getDocument().addDocumentListener(new DocumentAdapter() {
-            @Override
-            protected void textChanged(@NotNull DocumentEvent documentEvent) {
-                if (currentConfig != null)
-                    currentConfig.setTemplateName(tfName.getText());
-            }
-        });
-        loadConfig();
-        previewPanel = new PreviewPanel();
-        panelStructure.add(previewPanel);
-        if (model.size() > 1) {
-            listTemplate.setSelectedIndex(0);
-        }
-    }
-
-    private void setIconButton(JButton button, Icon icon) {
-        button.setToolTipText(button.getText());
-        button.setIcon(icon);
-        button.setText("");
-        button.setPreferredSize(new Dimension(25, 25));
     }
 }

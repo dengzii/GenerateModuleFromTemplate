@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.dengzii.plugin.template.ui.ConfigurePanel">
   <grid id="cbd77" binding="contentPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="48" y="54" width="657" height="625"/>
+      <xy x="48" y="54" width="887" height="625"/>
     </constraints>
     <properties/>
     <border type="empty">
@@ -14,32 +14,10 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="7bf3e" layout-manager="FlowLayout" hgap="5" vgap="0" flow-align="0">
+          <component id="9661f" class="com.dengzii.plugin.template.ui.EditToolbar" binding="actionbar">
             <constraints/>
             <properties/>
-            <border type="none"/>
-            <children>
-              <component id="a8d0" class="javax.swing.JButton" binding="btAdd">
-                <constraints/>
-                <properties>
-                  <opaque value="true"/>
-                  <text value="Add"/>
-                </properties>
-              </component>
-              <component id="cede3" class="javax.swing.JButton" binding="btRemove">
-                <constraints/>
-                <properties>
-                  <text value="Remove"/>
-                </properties>
-              </component>
-              <component id="7ce47" class="javax.swing.JButton" binding="btCopy">
-                <constraints/>
-                <properties>
-                  <text value="Copy"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
+          </component>
           <grid id="699a3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="100" bottom="0" right="0"/>
             <constraints/>

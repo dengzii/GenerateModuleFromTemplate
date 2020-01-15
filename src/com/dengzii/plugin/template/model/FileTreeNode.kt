@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.dengzii.plugin.template.model
 
 import com.dengzii.plugin.template.template.Placeholder
@@ -16,6 +18,7 @@ import java.util.*
 </pre> */
 open class FileTreeNode private constructor() {
 
+    // the backing field is 'realName'
     var name: String
         get() = realName.replacePlaceholder(placeHolderMap)
         set(value) {
@@ -23,7 +26,13 @@ open class FileTreeNode private constructor() {
         }
 
     var isDir = true
-    var children = mutableListOf<FileTreeNode>()
+    var children
+        set(value) {
+            realChildren = value
+            realChildren.forEach { labeledChildren[it.getLabel()] = it }
+        }
+        get() = realChildren
+
     var placeHolderMap: MutableMap<String, String>? = null
         get() = field ?: parent?.placeHolderMap
 
@@ -34,8 +43,11 @@ open class FileTreeNode private constructor() {
     var fileTemplates: MutableMap<String, String>? = null
         get() = field ?: parent?.fileTemplates
 
+    private var realChildren = mutableSetOf<FileTreeNode>()
     // the origin name with original placeholder
     private var realName: String = ""
+    // the label composed by 'name' and 'isDir'.
+    private val labeledChildren = mutableMapOf<String, FileTreeNode>()
     @Transient
     var parent: FileTreeNode? = null
 
@@ -72,10 +84,26 @@ open class FileTreeNode private constructor() {
 
     fun removeFromParent(): Boolean {
         if (parent != null) {
+            parent!!.labeledChildren.remove(getLabel())
             parent!!.children.remove(this)
             return true
         }
         return false
+    }
+
+    fun addChild(child: FileTreeNode, override: Boolean = false): Boolean {
+        if (hasChild(child.getLabel())) {
+            if (override) {
+                Logger.d(TAG, "node has already exists $child")
+                return false
+            } else {
+                Logger.d(TAG, "override node ${child.getPath()}")
+            }
+        }
+        child.parent = this
+        children.add(child)
+        labeledChildren[child.getLabel()] = child
+        return true
     }
 
     fun hasChild(name: String, isDir: Boolean): Boolean {
@@ -87,6 +115,14 @@ open class FileTreeNode private constructor() {
         return false
     }
 
+    fun hasChild(label: String): Boolean {
+        return labeledChildren.containsKey(label)
+    }
+
+    /**
+     * get the origin name without replace with placeholder
+     * real name is the value when you set field 'name'
+     */
     fun getRealName(): String {
         return realName
     }
@@ -98,7 +134,7 @@ open class FileTreeNode private constructor() {
         fileTemplates!![fileName] = template
     }
 
-    fun hasTemplate(): Boolean {
+    fun hasFileTemplate(): Boolean {
         return template != null || fileTemplates?.containsKey(realName) == true
     }
 
@@ -106,11 +142,15 @@ open class FileTreeNode private constructor() {
         return template ?: fileTemplates?.get(realName)
     }
 
-    fun placeholder(placeholder: Placeholder, value: String) {
+    fun placeholder(name: String, value: String) {
         if (this.placeHolderMap == null) {
             this.placeHolderMap = kotlin.collections.mutableMapOf()
         }
-        placeHolderMap!![placeholder.getPlaceholder()] = value
+        placeHolderMap!![name] = value
+    }
+
+    fun placeholder(placeholder: Placeholder) {
+        placeholder(placeholder.placeholder, placeholder.value)
     }
 
     /**
@@ -153,23 +193,34 @@ open class FileTreeNode private constructor() {
     }
 
     /**
-     * merge all children of another node to 'this.children'.
+     * merge all children of another node to this.
      */
-    fun include(other: FileTreeNode) {
+    fun include(other: FileTreeNode, override: Boolean = false) {
         if (!isDir) return
         other.children.forEach {
-            val child = it.clone()
-            child.parent = this
-            children.add(child)
+            addChild(it.clone(), override)
         }
     }
 
+    /**
+     * create directory nodes from the path
+     *
+     * @param path The dir path
+     * @param block The child node domain
+     */
     fun dir(path: String, block: FileTreeNode.() -> Unit = {}) {
         if (!isDir) return
         val dirs = path.split("/").filter { it.isNotBlank() }.toMutableList()
         createDirs(dirs, this)(block)
     }
 
+    /**
+     * create directories tree from a list
+     * the larger the index, the deeper the directory
+     *
+     * @param dirs The dirs list to create tree
+     * @param parent The parent of current node
+     */
     private fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
         if (dirs.isEmpty()) {
             return parent
@@ -177,19 +228,21 @@ open class FileTreeNode private constructor() {
         val current = dirs[0]
         dirs.removeAt(0)
         val dirNode = FileTreeNode(parent, current, true)
-        parent.children.add(dirNode)
+        addChild(dirNode)
         return createDirs(dirs, dirNode)
     }
 
     fun file(name: String) {
         if (!isDir) return
-        children.add(FileTreeNode(this, name, false))
+        addChild(FileTreeNode(this, name, false))
     }
 
     /**
      * get path of current node.
      * if the current node is the root node, it will return absolute path,
      * otherwise return relative path.
+     *
+     * @return The intact path of current node
      */
     fun getPath(): String {
         if (isRoot() || parent == null || parent!!.name == "") {
@@ -206,16 +259,28 @@ open class FileTreeNode private constructor() {
         return getNodeGraph().toString()
     }
 
+    /**
+     * clone current node, the following fields will be copied:
+     * name, isDir, fileTemplates, placeHolderMap, children
+     *
+     * the parent will not be cloned
+     */
     fun clone(): FileTreeNode {
-        val cl = FileTreeNode(null, name, isDir)
-        cl.fileTemplates = fileTemplates?.toMutableMap()
-        cl.placeHolderMap = placeHolderMap?.toMutableMap()
+        val clone = FileTreeNode(null, name, isDir)
+        clone.fileTemplates = fileTemplates?.toMutableMap()
+        clone.placeHolderMap = placeHolderMap?.toMutableMap()
         children.forEach {
-            val child = it.clone()
-            child.parent = cl
-            cl.children.add(child)
+            clone.addChild(it.clone())
         }
-        return cl
+        return clone
+    }
+
+    private fun removeChild(label: String): FileTreeNode? {
+        if (hasChild(label)) {
+            children.remove(labeledChildren[label])
+            return labeledChildren.remove(label)
+        }
+        return null
     }
 
     private fun getNodeGraph(head: Stack<String> = Stack(), str: StringBuilder = StringBuilder()): StringBuilder {
@@ -263,7 +328,11 @@ open class FileTreeNode private constructor() {
         }
     }
 
+    private fun getLabel(): String {
+        return "name_$isDir"
+    }
+
     override fun toString(): String {
-        return "FileTreeNode(path='${getPath()}')"
+        return "FileTreeNode(path='${getPath()}' isDir=$isDir)"
     }
 }

@@ -16,9 +16,9 @@ class Module(
 
     companion object {
         fun create(template: FileTreeNode, moduleName: String,
-                   packageName: String, language: String, templateName: String): Module {
+                   packageName: String, templateName: String): Module {
             Logger.i(Module::class.java.simpleName, "create module.  $template moduleName=$moduleName, templateName=$templateName")
-            return Module(template, moduleName, packageName, language, templateName)
+            return Module(template, moduleName, packageName, "java", templateName)
         }
 
         fun getLangList() = Language.values().map { it.name.toLowerCase() }.toTypedArray()

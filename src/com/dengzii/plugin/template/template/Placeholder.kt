@@ -10,33 +10,27 @@ package com.dengzii.plugin.template.template
  * </pre>
  */
 
-enum class Placeholder {
+class Placeholder(var name: String, var value: String) {
 
-    MODULE_NAME,
-    PACKAGE_NAME,
-    CLASS_NAME,
-    FILE_NAME,
-    APPLICATION_NAME,
-    PROJECT_NAME,
-    BASE_APPLICATION;
+    val placeholder = "\${${name}}"
 
-    fun getPlaceholder(): String {
-        return "\${$name}"
+    companion object {
+        val MODULE_NAME = Placeholder("MODULE_NAME", "module")
+        val PACKAGE_NAME = Placeholder("PACKAGE_NAME", "com.example")
+        val CLASS_NAME = Placeholder("CLASS_NAME", "Example")
+        val FILE_NAME = Placeholder("FILE_NAME", "field")
+        val APPLICATION_NAME = Placeholder("APPLICATION_NAME", "App")
+        val PROJECT_NAME = Placeholder("PROJECT_NAME", "Example")
+    }
+
+    fun value(value: String): Placeholder {
+        this.value = value
+        return this
     }
 
     override fun toString(): String {
-        return name
+        return "Placeholder(name='$name', value='$value')"
     }
-}
-
-fun String.findPlaceholder(): List<Placeholder> {
-    val result = mutableListOf<Placeholder>()
-    Placeholder.values().forEach {
-        if (contains(it.name, true)) {
-            result.add(it)
-        }
-    }
-    return result
 }
 
 fun String.replacePlaceholder(placeholders: Map<String, String>?): String {

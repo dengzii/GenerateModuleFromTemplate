@@ -1,7 +1,5 @@
 package com.dengzii.plugin.template.template
 
-import com.dengzii.plugin.template.model.FileTreeNode
-
 /**
  * <pre>
  * author : dengzi
@@ -18,25 +16,20 @@ object AucTemplate {
                 Pair("AndroidManifest.xml", "Template AndroidManifest.xml"),
                 Pair("Application.java", "Template App.java"),
                 Pair("build.gradle", "Template build.gradle"),
-                Pair("${Placeholder.APPLICATION_NAME.getPlaceholder()}.java", "Template App.java")
+                Pair("\${APPLICATION_NAME}.java", "Template App.java")
         )
     }
 
     private val BASE = AucFrame {
 
         fileTemplates = aucFileTemplates()
-        placeholder(Placeholder.PACKAGE_NAME, "com.example")
-        placeholder(Placeholder.MODULE_NAME, "app")
-        placeholder(Placeholder.APPLICATION_NAME, "App")
-
-        gitignore
-        build.gradle
-        proguard_rules.pro
+        placeholder(Placeholder.PACKAGE_NAME.value("com.example"))
+        placeholder(Placeholder.MODULE_NAME.value("feature"))
+        placeholder(Placeholder.APPLICATION_NAME.value("App"))
     }
 
     val APP = (BASE.clone()) {
-        placeholder(Placeholder.PACKAGE_NAME, "com.example")
-        placeholder(Placeholder.MODULE_NAME, "app")
+        placeholder(Placeholder.MODULE_NAME.value("feature"))
 
         app {
             src {
@@ -55,11 +48,14 @@ object AucTemplate {
                 }
                 test {}
             }
+            gitignore
+            build.gradle
+            proguard_rules.pro
         }
     }
 
     val PKG = (BASE.clone()) {
-        placeholder(Placeholder.MODULE_NAME, "pkg")
+        placeholder(Placeholder.MODULE_NAME.value("feature"))
         pkg {
             src {
                 main {
@@ -78,11 +74,14 @@ object AucTemplate {
                     AndroidManifest.xml
                 }
             }
+            gitignore
+            build.gradle
+            proguard_rules.pro
         }
     }
 
-    val EXPORT = AucFrame {
-        placeholder(Placeholder.MODULE_NAME, "export")
+    val EXPORT = (BASE.clone()) {
+        placeholder(Placeholder.MODULE_NAME.value("feature"))
         export {
             src {
                 main {
@@ -101,13 +100,15 @@ object AucTemplate {
                     AndroidManifest.xml
                 }
             }
+            gitignore
+            build.gradle
+            proguard_rules.pro
         }
     }
 
-    val MODULE = AucFrame {
+    val MODULE = (BASE.clone()) {
+        placeholder(Placeholder.MODULE_NAME.value("feature"))
         module_name {
-            placeholder(Placeholder.MODULE_NAME, "feature")
-            placeholder(Placeholder.PACKAGE_NAME, "com.example")
             include(APP)
             include(PKG)
             include(EXPORT)

@@ -43,6 +43,7 @@ public class PreviewPanel extends JPanel {
 
     private Map<String, Icon> fileIconMap = new HashMap<>();
 
+    // render tree node icon, title
     private TreeCellRenderer treeCellRenderer = new ColoredTreeCellRenderer() {
         @Override
         public void customizeCellRenderer(@NotNull JTree jTree, Object value, boolean b, boolean b1, boolean b2, int i, boolean b3) {
@@ -97,16 +98,6 @@ public class PreviewPanel extends JPanel {
 
         fileTree.setEditable(true);
         fileTree.setCellRenderer(treeCellRenderer);
-    }
-
-    @NotNull
-    private DefaultMutableTreeNode getTree(FileTreeNode treeNode) {
-        DefaultMutableTreeNode result = new DefaultMutableTreeNode(treeNode, true);
-
-        if (treeNode.isDir()) {
-            treeNode.getChildren().forEach(i -> result.add(getTree(i)));
-        }
-        return result;
     }
 
     /**
@@ -180,6 +171,18 @@ public class PreviewPanel extends JPanel {
         return new TreeModel(getTree(fileTreeNode));
     }
 
+    // convert FileTreeNode to JTree TreeNode
+    @NotNull
+    private DefaultMutableTreeNode getTree(FileTreeNode treeNode) {
+        DefaultMutableTreeNode result = new DefaultMutableTreeNode(treeNode, true);
+
+        if (treeNode.isDir()) {
+            treeNode.getChildren().forEach(i -> result.add(getTree(i)));
+        }
+        return result;
+    }
+
+    // expand all nodes
     private void expandAll(JTree tree, @NotNull TreePath parent, boolean expand) {
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {

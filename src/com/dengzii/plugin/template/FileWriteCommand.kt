@@ -56,7 +56,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
                 createFileTree(it, dir)
             }
         } else {
-            if (treeNode.hasTemplate()) {
+            if (treeNode.hasFileTemplate()) {
                 val result = kit.createFileFromTemplate(
                         treeNode.name,
                         treeNode.getTemplateName()!!,
