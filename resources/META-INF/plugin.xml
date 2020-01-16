@@ -1,18 +1,24 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Template Module Generator</name>
-    <version>1.0</version>
-    <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">denzi</vendor>
+    <version>1.1</version>
+    <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
        <b>Create a diverse directory structure from a highly customizable template</b><br>
        <br>
-       The AndroidStudio only a limited number of module categories can be created<br>
        Using this plugin, help you create directories and files from customizable template<br>
+       <br>
+       <b>Feature</b><br>
+       1. custom directory structure<br>
+       2. support placeholders, and replace it when you create module.<br>
+       3. create file from template<br>
+       4. support file template variables<br>
        <br>
     ]]></description>
 
     <change-notes><![CDATA[
+  1.1: feature: support create module template, placeholder, file template
   1.0: basically feature, generate module directories from template
   ]]>
     </change-notes>

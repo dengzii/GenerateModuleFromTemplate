@@ -37,8 +37,8 @@ object Template {
     }
 
     val ANDROID_APP = FileTreeNode {
-        placeholder(Placeholder.MODULE_NAME.value("app"))
-        placeholder(Placeholder.PACKAGE_NAME.value("com.example"))
+        placeholder("MODULE_NAME","app")
+        placeholder("PACKAGE_NAME","com.example")
 
         module_name {
             src {

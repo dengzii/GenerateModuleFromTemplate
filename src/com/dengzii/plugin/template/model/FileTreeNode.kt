@@ -2,8 +2,6 @@
 
 package com.dengzii.plugin.template.model
 
-import com.dengzii.plugin.template.template.Placeholder
-import com.dengzii.plugin.template.template.replacePlaceholder
 import com.dengzii.plugin.template.utils.Logger
 import java.io.File
 import java.util.*
@@ -138,7 +136,7 @@ open class FileTreeNode private constructor() {
         return template != null || getFileTemplateInherit()?.containsKey(name) == true
     }
 
-    fun getTemplateName(): String? {
+    fun getTemplateFile(): String? {
         return template ?: getFileTemplateInherit()?.get(name)
     }
 
@@ -149,10 +147,6 @@ open class FileTreeNode private constructor() {
         placeholders!![name] = value
     }
 
-    fun placeholder(placeholder: Placeholder) {
-        placeholder(placeholder.placeholder, placeholder.value)
-    }
-
     fun placeholders(placeholders: Map<String, String>) {
         if (this.placeholders == null) {
             this.placeholders = kotlin.collections.mutableMapOf()
@@ -160,7 +154,7 @@ open class FileTreeNode private constructor() {
         this.placeholders!!.putAll(placeholders)
     }
 
-    fun filtemplates(placeholders: Map<String, String>) {
+    fun fileTemplates(placeholders: Map<String, String>) {
         if (this.fileTemplates == null) {
             this.fileTemplates = kotlin.collections.mutableMapOf()
         }
@@ -347,6 +341,17 @@ open class FileTreeNode private constructor() {
     }
 
     override fun toString(): String {
-        return "FileTreeNode(path='${getPath()}' isDir=$isDir)"
+        return "FileTreeNode(path='${getPath()}' isDir=$isDir, fileTemplate=${getTemplateFile()}, children=${children.size})"
+    }
+
+    private fun String.replacePlaceholder(placeholders: Map<String, String>?): String {
+        var after = this
+        if (placeholders.isNullOrEmpty()) {
+            return this
+        }
+        placeholders.forEach { (k, v) ->
+            after = after.replace("\${$k}", v)
+        }
+        return after
     }
 }

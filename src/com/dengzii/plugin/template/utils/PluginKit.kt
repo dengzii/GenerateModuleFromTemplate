@@ -93,15 +93,28 @@ class PluginKit private constructor(e: AnActionEvent) {
         val fileTemplateManager = FileTemplateManager.getInstance(project)
         val properties = Properties(fileTemplateManager.defaultProperties)
         propertiesMap.forEach { (t, u) ->
-            properties.setProperty(t, u)
+            properties.setProperty(t.strip(), u)
         }
         val template = fileTemplateManager.getTemplate(templateName) ?: return null
         val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: return null
-        return FileTemplateUtil.createFromTemplate(template, fileName, properties, psiDirectory)
+        return try {
+            FileTemplateUtil.createFromTemplate(template, fileName, properties, psiDirectory)
+        } catch (e: Throwable) {
+            Logger.e(TAG, e)
+            null
+        }
     }
 
     fun addTemplate(name: String, template: String) {
         FileTemplateManager.getInstance(project).addTemplate(name, template)
+    }
+
+    private fun String.strip(): String {
+        var result = this
+        if (startsWith("\${") && endsWith("}")) {
+            result = result.substring(2, length - 1)
+        }
+        return result
     }
 
     private fun checkCreateFile(name: String, vf: VirtualFile?): Boolean {

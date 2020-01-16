@@ -38,14 +38,15 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
             return
         }
         val fileTreeNode = module.template
-        Logger.d(TAG, fileTreeNode.getPlaceholderInherit().toString())
+        Logger.d(TAG, "Placeholders : " + fileTreeNode.getPlaceholderInherit().toString())
+        Logger.d(TAG, "FileTemplates : " + fileTreeNode.getFileTemplateInherit().toString())
         fileTreeNode.children.forEach {
             createFileTree(it, current)
         }
     }
 
     private fun createFileTree(treeNode: FileTreeNode, currentDirectory: VirtualFile) {
-        Logger.i(TAG, "Create ${treeNode.getPath()}")
+        Logger.d(TAG, "create node $treeNode")
         if (treeNode.isDir) {
             val dir = kit.createDir(treeNode.getRealName(), currentDirectory)
             if (dir == null) {
@@ -54,19 +55,23 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
             }
             treeNode.children.forEach {
                 createFileTree(it, dir)
+                Logger.d(TAG, "create dir ${it.getPath()}")
             }
         } else {
             if (treeNode.hasFileTemplate()) {
                 val result = kit.createFileFromTemplate(
                         treeNode.getRealName(),
-                        treeNode.getTemplateName()!!,
+                        treeNode.getTemplateFile()!!,
                         treeNode.getPlaceholderInherit().orEmpty(),
                         currentDirectory)
                 if (result == null) {
-                    Logger.e(TAG, "create file from template failed, file: ${treeNode.getRealName()} template:${treeNode.getTemplateName()}")
+                    Logger.e(TAG, "create file from template failed, file: ${treeNode.getRealName()} template:${treeNode.getTemplateFile()}")
+                } else {
+                    Logger.d(TAG, "create file from template ${treeNode.getRealName()}")
                 }
             } else {
                 kit.createFile(treeNode.getRealName(), currentDirectory)
+                Logger.d(TAG, "create file ${treeNode.getPath()}")
             }
         }
     }

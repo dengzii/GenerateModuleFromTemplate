@@ -3,12 +3,12 @@
     package="${PACKAGE_NAME}">
 
     <application
-        android:name="${PACKAGE_NAME}.App"
+        android:name=".${APPLICATION_NAME}"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name="${PACKAGE_NAME}.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />

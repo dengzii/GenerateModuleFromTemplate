@@ -20,7 +20,7 @@ object Logger {
     }
 
     fun e(tag: String, e: Throwable) {
-        log("e", tag, e.localizedMessage)
+        log("e", tag, e.toString())
         e.printStackTrace()
     }
 

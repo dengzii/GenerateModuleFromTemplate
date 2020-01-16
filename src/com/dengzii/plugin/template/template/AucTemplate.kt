@@ -24,23 +24,24 @@ object AucTemplate {
 
     private val aucPlaceholders: () -> MutableMap<String, String> = {
         mutableMapOf(
-                Pair("\${PACKAGE_NAME}", "com.example"),
-                Pair("\${MODULE_NAME}", "feature"),
-                Pair("\${APPLICATION_NAME}", "App")
+                Pair("PACKAGE_NAME", "com.example"),
+                Pair("FEATURE_NAME", "feature"),
+                Pair("APPLICATION_NAME", "App")
         )
     }
 
     val APP = FileTreeNode {
-        filtemplates(aucFileTemplates())
+        fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
+        placeholder("MODULE_NAME", "app")
 
-        app {
+        module_name {
             src {
                 main {
                     java {
                         pkg_name {
-                            module_name {
-                                app {
+                            feature_name {
+                                module_name {
                                     app_name.java
                                 }
                             }
@@ -58,15 +59,16 @@ object AucTemplate {
     }
 
     val PKG = FileTreeNode {
-        filtemplates(aucFileTemplates())
+        fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
-        pkg {
+        placeholder("MODULE_NAME", "pkg")
+        module_name {
             src {
                 main {
                     java {
                         pkg_name {
-                            module_name {
-                                pkg {
+                            feature_name {
+                                module_name {
                                     main {}
                                     file("\${MODULE_NAME}ApiImpl.java")
                                 }
@@ -85,15 +87,16 @@ object AucTemplate {
     }
 
     val EXPORT = FileTreeNode {
-        filtemplates(aucFileTemplates())
+        fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
-        export {
+        placeholder("MODULE_NAME", "export")
+        module_name {
             src {
                 main {
                     java {
                         pkg_name {
-                            module_name {
-                                export {
+                            feature_name {
+                                module_name {
                                     dir("api") {
                                         file("\${MODULE_NAME}Api.java")
                                     }
@@ -112,9 +115,9 @@ object AucTemplate {
     }
 
     val MODULE = FileTreeNode {
-        filtemplates(aucFileTemplates())
+        fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
-        module_name {
+        feature_name {
             include(APP)
             include(PKG)
             include(EXPORT)

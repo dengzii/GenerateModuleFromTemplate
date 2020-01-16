@@ -72,7 +72,7 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onNextClick(ActionEvent e) {
-        selectedModule.getTemplate().setFileTemplates(tablePlaceholder.getPairResult());
+        selectedModule.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
         if (currentPanelIndex == panels.size() - 1) {
             onFinishListener.onFinish(selectedModule);
             dispose();

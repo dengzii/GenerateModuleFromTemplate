@@ -2,7 +2,6 @@ package com.dengzii.plugin.template
 
 import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
-import com.dengzii.plugin.template.template.Template
 import com.dengzii.plugin.template.utils.Logger
 import com.google.gson.GsonBuilder
 import com.intellij.ide.util.PropertiesComponent
@@ -26,7 +25,7 @@ object Config {
     private val GSON by lazy { GsonBuilder().setLenient().create() }
     private val STORE by lazy { PropertiesComponent.getInstance() }
 
-    fun clear() = STORE.unsetValue(KEY_TEMPLATES)
+    private fun clear() = STORE.unsetValue(KEY_TEMPLATES)
 
     fun loadModuleTemplates(): MutableList<Module> {
         val result = mutableListOf<Module>()
@@ -43,7 +42,7 @@ object Config {
             return result
         }
         Logger.i(TAG, "loadModuleTemplates")
-        arr.forEach {
+        arr.filter { !it.isNullOrBlank() }.forEach {
             try {
                 val module = GSON.fromJson(it, Module::class.java)
                 setParent(module.template)
@@ -59,6 +58,10 @@ object Config {
     }
 
     fun saveModuleTemplates(templates: List<Module>) {
+        if (templates.isEmpty()) {
+            clear()
+            return
+        }
         val t = mutableListOf<String>()
         templates.forEach {
             t.add(GSON.toJson(it))
