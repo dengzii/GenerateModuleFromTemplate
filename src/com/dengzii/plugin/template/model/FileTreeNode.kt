@@ -29,14 +29,12 @@ open class FileTreeNode private constructor() {
         get() = realChildren
 
     var placeholders: MutableMap<String, String>? = null
-        get() = field ?: parent?.placeholders
 
     // template for node, higher priority than fileTemplates
-    var template: String? = null
+    private var template: String? = null
 
     // template of filename
     var fileTemplates: MutableMap<String, String>? = null
-        get() = field ?: parent?.fileTemplates
 
     private var realChildren = mutableSetOf<FileTreeNode>()
 
@@ -118,7 +116,15 @@ open class FileTreeNode private constructor() {
      * get the real name replace with placeholder
      */
     fun getRealName(): String {
-        return name.replacePlaceholder(placeholders)
+        return name.replacePlaceholder(getPlaceholderInherit())
+    }
+
+    fun getFileTemplateInherit(): MutableMap<String, String>? {
+        return fileTemplates ?: parent?.getFileTemplateInherit()
+    }
+
+    fun getPlaceholderInherit(): MutableMap<String, String>? {
+        return placeholders ?: parent?.getPlaceholderInherit()
     }
 
     fun fileTemplate(fileName: String, template: String) {
@@ -129,11 +135,11 @@ open class FileTreeNode private constructor() {
     }
 
     fun hasFileTemplate(): Boolean {
-        return template != null || fileTemplates?.containsKey(name) == true
+        return template != null || getFileTemplateInherit()?.containsKey(name) == true
     }
 
     fun getTemplateName(): String? {
-        return template ?: fileTemplates?.get(name)
+        return template ?: getFileTemplateInherit()?.get(name)
     }
 
     fun placeholder(name: String, value: String) {

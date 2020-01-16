@@ -24,7 +24,7 @@ object Config {
     private const val KEY_TEMPLATES = "KEY_TEMPLATES"
     private const val KEY_INIT = "KEY_INIT"
 
-    private val GSON by lazy { GsonBuilder().setLenient().serializeNulls().create() }
+    private val GSON by lazy { GsonBuilder().setLenient().create() }
     private val STORE by lazy { PropertiesComponent.getInstance() }
 
     private val AUC_MODULE_TEMPLATES = listOf(

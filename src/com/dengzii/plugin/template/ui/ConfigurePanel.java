@@ -5,6 +5,7 @@ import com.dengzii.plugin.template.model.Module;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.JBTabbedPane;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private JPanel panelFileTemp;
     private EditToolbar actionbar;
     private JCheckBox cbPlaceholder;
+    private JBTabbedPane tabbedPane;
 
     private List<Module> configs;
     private DefaultListModel<String> templateListModel;
@@ -84,6 +86,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         cbPlaceholder.addChangeListener(e -> {
             panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected());
         });
+        tabbedPane.addChangeListener(e -> onChangeTab());
         listTemplate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listTemplate.addListSelectionListener(e -> {
             if (noSelectedConfig()) return;
@@ -102,6 +105,13 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         if (templateListModel.size() > 1) {
             listTemplate.setSelectedIndex(0);
         }
+    }
+
+    private void onChangeTab() {
+        if (0 == tabbedPane.getSelectedIndex()) {
+            currentConfig.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
+        }
+        panelPreview.setModuleConfig(currentConfig);
     }
 
     private void onAddConfig() {

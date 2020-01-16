@@ -63,7 +63,7 @@ public class CreateFileDialog extends JDialog {
         setLocation(x, y);
         setPreferredSize(new Dimension(w, h));
 
-        setTitle((isRename() ? "New " : "Rename ") + (isDir ? "Directory" : "File"));
+        setTitle((isRename() ? "Rename " : "New ") + (isDir ? "Directory" : "File"));
         if (isRename()) {
             textField1.setText(current.getRealName());
         }
