@@ -5,6 +5,8 @@ import com.intellij.util.ui.JBEmptyBorder
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
+import java.awt.event.MouseAdapter
 import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -30,8 +32,12 @@ class EditToolbar : JPanel() {
         initButton()
     }
 
-    fun onAdd(listener: () -> Unit) {
-        btAdd.addActionListener{
+    fun onAdd(listener: MouseAdapter) {
+        btAdd.addMouseListener(listener)
+    }
+
+    fun onAdd(listener: ()->Unit) {
+        btAdd.addActionListener {
             listener()
         }
     }

@@ -2,18 +2,20 @@ package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
 import com.dengzii.plugin.template.model.Module;
-import com.intellij.openapi.options.SearchableConfigurable;
+import com.dengzii.plugin.template.utils.PopMenuUtils;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTabbedPane;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -24,7 +26,7 @@ import java.util.List;
  * desc   :
  * </pre>
  */
-public class ConfigurePanel extends JPanel implements SearchableConfigurable {
+public class ConfigurePanel extends JPanel {
 
     private JPanel contentPane;
 
@@ -55,6 +57,16 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         initData();
     }
 
+    public void cacheConfig() {
+        if (currentConfig == null) return;
+        currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
+        currentConfig.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
+    }
+
+    public void saveConfig() {
+        Config.INSTANCE.saveModuleTemplates(configs);
+    }
+
     private void initComponent() {
         setLayout(new BorderLayout());
         add(contentPane);
@@ -70,9 +82,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
 
     private void initData() {
 
-        actionbar.onAdd(() -> {
-            onAddConfig();
-            return null;
+        actionbar.onAdd(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                onAddConfig(e);
+            }
         });
         actionbar.onRemove(() -> {
             onRemoveConfig();
@@ -114,12 +128,23 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         panelPreview.setModuleConfig(currentConfig);
     }
 
-    private void onAddConfig() {
-        Module newConfig = Config.INSTANCE.getTEMPLATE_ANDROID_APPLICATION().clone();
-        configs.add(newConfig);
-        templateListModel.addElement(newConfig.getTemplateName());
+    private void onAddConfig(MouseEvent e) {
+
+        Map<String, PopMenuUtils.PopMenuListener> items = new HashMap<>();
+        items.put("Empty Template", () -> addModuleTemplate(Module.Companion.getEmpty()));
+        items.put("Android Application", () -> addModuleTemplate(Module.Companion.getAndroidApplication()));
+        items.put("Auc Module", () -> addModuleTemplate(Module.Companion.getAucModule()));
+        items.put("Auc app", () -> addModuleTemplate(Module.Companion.getAucApp()));
+        items.put("Auc Pkg", () -> addModuleTemplate(Module.Companion.getAucPkg()));
+        items.put("Auc Export", () -> addModuleTemplate(Module.Companion.getAucExport()));
+        PopMenuUtils.INSTANCE.create(items).show(actionbar, e.getX(), e.getY());
+    }
+
+    private void addModuleTemplate(Module module) {
+        configs.add(module);
+        templateListModel.addElement(module.getTemplateName());
         listTemplate.doLayout();
-        listTemplate.setSelectedIndex(configs.indexOf(newConfig));
+        listTemplate.setSelectedIndex(configs.indexOf(module));
     }
 
     private void onRemoveConfig() {
@@ -147,6 +172,9 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         configs = Config.INSTANCE.loadModuleTemplates();
         templateListModel = new DefaultListModel<>();
         configs.forEach(module -> templateListModel.addElement(module.getTemplateName()));
+        if (templateListModel.size() > 0) {
+            listTemplate.setSelectedIndex(0);
+        }
     }
 
     private void onConfigSelect(int index) {
@@ -165,55 +193,11 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
         tablePlaceholder.setPairData(currentConfig.getTemplate().getPlaceholders());
     }
 
-    private void cacheConfig() {
-        if (currentConfig == null) return;
-        currentConfig.getTemplate().setFileTemplates(tableFileTemp.getPairResult());
-        currentConfig.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
-    }
-
     private int getSelectedConfigIndex() {
         return listTemplate.getSelectedIndex();
     }
 
     private boolean noSelectedConfig() {
         return getSelectedConfigIndex() == -1;
-    }
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////
-    // Implement SearchableConfigurable
-
-    @Override
-    public void apply() {
-        if (panelConfig != null) {
-            panelConfig.apply();
-            return;
-        }
-        cacheConfig();
-        Config.INSTANCE.saveModuleTemplates(configs);
-    }
-
-    @NotNull
-    @Override
-    public String getId() {
-        return "preferences.ModuleTemplateConfig";
-    }
-
-    @Nullable
-    @Override
-    public JComponent createComponent() {
-        panelConfig = new ConfigurePanel();
-        return panelConfig;
-    }
-
-    @Override
-    public boolean isModified() {
-        return true;
-    }
-
-    @Nls(capitalization = Nls.Capitalization.Title)
-    @Override
-    public String getDisplayName() {
-        return "Directory Template";
     }
 }

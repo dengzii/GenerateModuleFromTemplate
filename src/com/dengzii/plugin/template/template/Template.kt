@@ -32,6 +32,10 @@ object Template {
         }
     }
 
+    val EMPTY = FileTreeNode {
+        src
+    }
+
     val ANDROID_APP = FileTreeNode {
         placeholder(Placeholder.MODULE_NAME.value("app"))
         placeholder(Placeholder.PACKAGE_NAME.value("com.example"))

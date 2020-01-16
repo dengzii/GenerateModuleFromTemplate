@@ -1,7 +1,9 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
+import com.dengzii.plugin.template.TemplateConfigurable;
 import com.dengzii.plugin.template.model.Module;
+import com.dengzii.plugin.template.utils.Logger;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
@@ -17,9 +19,11 @@ import java.util.List;
 
 public class CreateModuleDialog extends JDialog {
 
+    private static final String TAG = CreateModuleDialog.class.getSimpleName();
+
     private JPanel rootPanel;
     private JLabel labelTitle;
-    private JComboBox cbModuleType;
+    private JComboBox cbModuleTemplate;
     private JComboBox cbLanguage;
     private JPanel mainPanel;
     private JPanel contentPanel;
@@ -89,7 +93,8 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onConfClick(ActionEvent e) {
-        ShowSettingsUtil.getInstance().editConfigurable(project, new ConfigurePanel());
+        ShowSettingsUtil.getInstance().editConfigurable(project, new TemplateConfigurable(this::initData));
+
     }
 
     private void setButton() {
@@ -112,7 +117,8 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onModuleConfigChange() {
-        selectedModule = moduleTemplates.get(cbModuleType.getSelectedIndex());
+        Logger.INSTANCE.i(TAG, "onModuleConfigChange");
+        selectedModule = moduleTemplates.get(cbModuleTemplate.getSelectedIndex());
         previewPanel.setModuleConfig(selectedModule);
         tablePlaceholder.setPairData(selectedModule.getTemplate().getPlaceholders());
     }
@@ -155,19 +161,20 @@ public class CreateModuleDialog extends JDialog {
                 selectedModule.setLanguage(cbLanguage.getSelectedItem().toString().toUpperCase());
             }
         });
-        cbModuleType.addItemListener(e -> {
+        cbModuleTemplate.addItemListener(e -> {
             onModuleConfigChange();
         });
     }
 
     private void initData() {
-
+        Logger.INSTANCE.i(TAG, "initData");
         moduleTemplates = Config.INSTANCE.loadModuleTemplates();
         List<String> temp = new ArrayList<>();
         moduleTemplates.forEach(i -> temp.add(i.getTemplateName()));
-        cbModuleType.setModel(new DefaultComboBoxModel<>(temp.toArray()));
-        if (cbModuleType.getModel().getSize() > 0){
-            cbModuleType.setSelectedIndex(0);
+        cbModuleTemplate.setModel(new DefaultComboBoxModel<>(temp.toArray()));
+        if (cbModuleTemplate.getModel().getSize() > 0) {
+            cbModuleTemplate.setSelectedIndex(0);
+            onModuleConfigChange();
         }
     }
 

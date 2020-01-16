@@ -72,7 +72,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="16b27" class="javax.swing.JComboBox" binding="cbModuleType">
+                      <component id="16b27" class="javax.swing.JComboBox" binding="cbModuleTemplate">
                         <constraints border-constraint="Center"/>
                         <properties>
                           <font size="12"/>

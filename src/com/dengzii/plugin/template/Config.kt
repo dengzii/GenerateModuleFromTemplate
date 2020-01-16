@@ -2,7 +2,6 @@ package com.dengzii.plugin.template
 
 import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
-import com.dengzii.plugin.template.template.AucTemplate
 import com.dengzii.plugin.template.template.Template
 import com.dengzii.plugin.template.utils.Logger
 import com.google.gson.GsonBuilder
@@ -27,15 +26,6 @@ object Config {
     private val GSON by lazy { GsonBuilder().setLenient().create() }
     private val STORE by lazy { PropertiesComponent.getInstance() }
 
-    private val AUC_MODULE_TEMPLATES = listOf(
-            Module.create(AucTemplate.MODULE, "Auc Feature Module"),
-            Module.create(AucTemplate.APP, "Auc App Module"),
-            Module.create(AucTemplate.PKG, "Auc Pkg Module"),
-            Module.create(AucTemplate.EXPORT, "Auc Export Module")
-    )
-
-    val TEMPLATE_ANDROID_APPLICATION = Module.create(Template.ANDROID_APP, "Android Application")
-
     fun clear() = STORE.unsetValue(KEY_TEMPLATES)
 
     fun loadModuleTemplates(): MutableList<Module> {
@@ -43,13 +33,16 @@ object Config {
         val arr = STORE.getValues(KEY_TEMPLATES)
 
         if (STORE.getBoolean(KEY_INIT)) {
-            Logger.i(TAG, "INIT...")
-            result.addAll(AUC_MODULE_TEMPLATES)
+            Logger.i(TAG, "INIT... load AucFrame template")
+            result.add(Module.getAucModule())
+            result.add(Module.getAucApp())
+            result.add(Module.getAucExport())
+            result.add(Module.getAucPkg())
         }
         if (arr.isNullOrEmpty()) {
             return result
         }
-        Logger.d(TAG, "loadModuleTemplates")
+        Logger.i(TAG, "loadModuleTemplates")
         arr.forEach {
             try {
                 val module = GSON.fromJson(it, Module::class.java)
