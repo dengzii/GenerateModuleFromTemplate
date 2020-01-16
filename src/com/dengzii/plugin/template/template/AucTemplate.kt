@@ -43,6 +43,7 @@ object AucTemplate {
                             feature_name {
                                 module_name {
                                     app_name.java
+                                    file("MainActivity.java")
                                 }
                             }
                         }
