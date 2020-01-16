@@ -101,7 +101,7 @@ public class CreateFileDialog extends JDialog {
 
     public static void main(String[] args) {
         CreateFileDialog.showForCreate(null, true, fileTreeNode -> {
-            System.out.println("CreateFileDialog.main " + fileTreeNode.getName());
+
         });
     }
 }

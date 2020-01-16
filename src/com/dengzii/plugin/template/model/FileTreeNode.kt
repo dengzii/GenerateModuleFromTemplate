@@ -18,12 +18,7 @@ import java.util.*
 </pre> */
 open class FileTreeNode private constructor() {
 
-    // the backing field is 'realName'
-    var name: String
-        get() = realName.replacePlaceholder(placeholders)
-        set(value) {
-            realName = value
-        }
+    var name: String = ""
 
     var isDir = true
     var children
@@ -44,11 +39,12 @@ open class FileTreeNode private constructor() {
         get() = field ?: parent?.fileTemplates
 
     private var realChildren = mutableSetOf<FileTreeNode>()
-    // the origin name with original placeholder
-    private var realName: String = ""
+
     // the label composed by 'name' and 'isDir'.
-    @Transient private val labeledChildren = mutableMapOf<String, FileTreeNode>()
-    @Transient var parent: FileTreeNode? = null
+    @Transient
+    private val labeledChildren = mutableMapOf<String, FileTreeNode>()
+    @Transient
+    var parent: FileTreeNode? = null
 
     companion object {
 
@@ -107,7 +103,7 @@ open class FileTreeNode private constructor() {
 
     fun hasChild(name: String, isDir: Boolean): Boolean {
         children.forEach {
-            if (it.isDir == isDir && it.realName == name) {
+            if (it.name == name && isDir == it.isDir) {
                 return true
             }
         }
@@ -119,11 +115,10 @@ open class FileTreeNode private constructor() {
     }
 
     /**
-     * get the origin name without replace with placeholder
-     * real name is the value when you set field 'name'
+     * get the real name replace with placeholder
      */
     fun getRealName(): String {
-        return realName
+        return name.replacePlaceholder(placeholders)
     }
 
     fun fileTemplate(fileName: String, template: String) {
@@ -134,11 +129,11 @@ open class FileTreeNode private constructor() {
     }
 
     fun hasFileTemplate(): Boolean {
-        return template != null || fileTemplates?.containsKey(realName) == true
+        return template != null || fileTemplates?.containsKey(name) == true
     }
 
     fun getTemplateName(): String? {
-        return template ?: fileTemplates?.get(realName)
+        return template ?: fileTemplates?.get(name)
     }
 
     fun placeholder(name: String, value: String) {
@@ -258,10 +253,10 @@ open class FileTreeNode private constructor() {
      * @return The intact path of current node
      */
     fun getPath(): String {
-        if (isRoot() || parent == null || parent!!.name == "") {
-            return name
+        if (isRoot() || parent == null || parent!!.getRealName() == "") {
+            return getRealName()
         }
-        return parent!!.getPath() + "/" + name
+        return parent!!.getPath() + "/" + getRealName()
     }
 
     fun isRoot(): Boolean {
@@ -306,7 +301,7 @@ open class FileTreeNode private constructor() {
             parent?.children?.first() -> "├─"
             else -> if (parent?.parent != null) "├─" else "┌─"
         })
-        str.append(name).append("\n")
+        str.append(getRealName()).append("\n")
 
         if (!children.isNullOrEmpty()) {
             head.push(when {
@@ -342,7 +337,7 @@ open class FileTreeNode private constructor() {
     }
 
     private fun getLabel(): String {
-        return "name_$isDir"
+        return "${name}_$isDir"
     }
 
     override fun toString(): String {

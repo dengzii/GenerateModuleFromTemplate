@@ -47,9 +47,9 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
     private fun createFileTree(treeNode: FileTreeNode, currentDirectory: VirtualFile) {
         Logger.i(TAG, "Create ${treeNode.getPath()}")
         if (treeNode.isDir) {
-            val dir = kit.createDir(treeNode.name, currentDirectory)
+            val dir = kit.createDir(treeNode.getRealName(), currentDirectory)
             if (dir == null) {
-                Logger.e(TAG, "create directory failure: ${treeNode.name}")
+                Logger.e(TAG, "create directory failure: ${treeNode.getRealName()}")
                 return
             }
             treeNode.children.forEach {
@@ -58,15 +58,15 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         } else {
             if (treeNode.hasFileTemplate()) {
                 val result = kit.createFileFromTemplate(
-                        treeNode.name,
+                        treeNode.getRealName(),
                         treeNode.getTemplateName()!!,
                         treeNode.placeholders.orEmpty(),
                         currentDirectory)
                 if (result == null) {
-                    Logger.e(TAG, "create file from template failed, file: ${treeNode.name} template:${treeNode.getTemplateName()}")
+                    Logger.e(TAG, "create file from template failed, file: ${treeNode.getRealName()} template:${treeNode.getTemplateName()}")
                 }
             } else {
-                kit.createFile(treeNode.name, currentDirectory)
+                kit.createFile(treeNode.getRealName(), currentDirectory)
             }
         }
     }

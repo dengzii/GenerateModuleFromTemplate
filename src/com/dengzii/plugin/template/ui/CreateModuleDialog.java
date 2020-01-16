@@ -132,7 +132,7 @@ public class CreateModuleDialog extends JDialog {
         rootPanel.registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        tablePlaceholder = new EditableTable(new String[]{"Placeholder", "Value"}, new Boolean[]{false, true});
+        tablePlaceholder = new EditableTable(new String[]{"Key", "Value"}, new Boolean[]{false, true});
         tablePlaceholder.setToolBarVisible(false);
         panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
         cbLanguage.setModel(new DefaultComboBoxModel<>(Module.Companion.getLangList()));
@@ -166,7 +166,9 @@ public class CreateModuleDialog extends JDialog {
         List<String> temp = new ArrayList<>();
         moduleTemplates.forEach(i -> temp.add(i.getTemplateName()));
         cbModuleType.setModel(new DefaultComboBoxModel<>(temp.toArray()));
-        cbModuleType.setSelectedIndex(1);
+        if (cbModuleType.getModel().getSize() > 0){
+            cbModuleType.setSelectedIndex(0);
+        }
     }
 
     public interface OnFinishListener {

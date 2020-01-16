@@ -13,10 +13,7 @@ import com.intellij.util.IconUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,6 +39,7 @@ public class PreviewPanel extends JPanel {
     private Tree fileTree;
 
     private Map<String, Icon> fileIconMap = new HashMap<>();
+    private boolean replacePlaceholder = true;
 
     // render tree node icon, title
     private TreeCellRenderer treeCellRenderer = new ColoredTreeCellRenderer() {
@@ -52,7 +50,7 @@ public class PreviewPanel extends JPanel {
                 if (object instanceof FileTreeNode) {
                     FileTreeNode node = (FileTreeNode) object;
                     setIcon(IconUtil.getAddClassIcon());
-                    this.append(node.getName());
+                    this.append(replacePlaceholder ? node.getRealName() : node.getName());
                     if (node.isDir()) {
                         setIcon(AllIcons.Nodes.Package);
                     } else {
@@ -73,6 +71,13 @@ public class PreviewPanel extends JPanel {
         setLayout(new BorderLayout());
         add(contentPanel);
         initPanel();
+    }
+
+    public void setReplacePlaceholder(boolean replace){
+        if (replace != replacePlaceholder){
+            replacePlaceholder = replace;
+            fileTree.updateUI();
+        }
     }
 
     public void setModuleConfig(Module module) {

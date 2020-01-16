@@ -33,6 +33,7 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
     private JPanel panelPlaceholder;
     private JPanel panelFileTemp;
     private EditToolbar actionbar;
+    private JCheckBox cbPlaceholder;
 
     private List<Module> configs;
     private DefaultListModel<String> templateListModel;
@@ -80,6 +81,9 @@ public class ConfigurePanel extends JPanel implements SearchableConfigurable {
             return null;
         });
 
+        cbPlaceholder.addChangeListener(e -> {
+            panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected());
+        });
         listTemplate.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listTemplate.addListSelectionListener(e -> {
             if (noSelectedConfig()) return;

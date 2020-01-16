@@ -44,6 +44,13 @@
               </component>
             </children>
           </grid>
+          <component id="d7b5e" class="javax.swing.JCheckBox" binding="cbPlaceholder">
+            <constraints/>
+            <properties>
+              <selected value="true"/>
+              <text value="replace placeholder"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="e3588" layout-manager="BorderLayout" hgap="0" vgap="0">
