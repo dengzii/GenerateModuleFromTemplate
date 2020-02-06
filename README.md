@@ -1,5 +1,8 @@
 # Generate Module From Template
 
+![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/13586-generate-module-from-template) 
+![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/v/13586-generate-module-from-template)
+
 ### Create a directory structure from a highly customizable template
 
 Using this plugin, help you create directories and files from customizable template
