@@ -149,7 +149,7 @@ public class PreviewPanel extends JPanel {
         }
         if (!current.isRoot()) {
             jbPopupMenu.add(getMenuItem("Rename", e -> {
-                CreateFileDialog.showForRename(current, fileTreeNode -> {
+                CreateFileDialog.showForRefactor(current, fileTreeNode -> {
                     ((DefaultMutableTreeNode) fileTree.getLastSelectedPathComponent()).setUserObject(fileTreeNode);
                     fileTree.updateUI();
                 });

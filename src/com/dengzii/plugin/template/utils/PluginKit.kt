@@ -1,7 +1,9 @@
 package com.dengzii.plugin.template.utils
 
+import com.intellij.ide.fileTemplates.FileTemplate
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
+import com.intellij.ide.fileTemplates.impl.FileTemplateManagerImpl
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.module.Module
@@ -136,5 +138,9 @@ class PluginKit private constructor(e: AnActionEvent) {
         fun get(e: AnActionEvent): PluginKit {
             return PluginKit(e)
         }
+
+        fun getAllFileTemplate(): Array<FileTemplate> = FileTemplateManagerImpl.getDefaultInstance().allTemplates
+
+        fun getFileTemplate(name: String): FileTemplate? = FileTemplateManagerImpl.getDefaultInstance().getTemplate(name)
     }
 }

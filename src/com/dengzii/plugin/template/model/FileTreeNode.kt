@@ -140,6 +140,10 @@ open class FileTreeNode private constructor() {
         return template ?: getFileTemplateInherit()?.get(name)
     }
 
+    fun setTemplate(name: String) {
+        template = name
+    }
+
     fun placeholder(name: String, value: String) {
         if (this.placeholders == null) {
             this.placeholders = kotlin.collections.mutableMapOf()

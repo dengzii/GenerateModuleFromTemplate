@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.dengzii.plugin.template.ui.ConfigurePanel">
   <grid id="cbd77" binding="contentPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="48" y="54" width="887" height="625"/>
+      <xy x="48" y="54" width="888" height="631"/>
     </constraints>
     <properties/>
     <border type="empty">
@@ -145,6 +145,24 @@
           </grid>
         </children>
       </grid>
+      <scrollpane id="96fb5">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="empty"/>
+        <children>
+          <component id="184d" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <enabled value="true"/>
+              <font size="11"/>
+              <text value="&lt;html&gt;What is Auc? &lt;br&gt;&#10;Auc is the abbreviation of AndroidUtilCode, you can see github repo &lt;a href='https://github.com/Blankj/AucFrameTemplate'&gt;[Blankj/AucFrameTemplate]&lt;/a&gt; for more information.&lt;/html&gt;"/>
+            </properties>
+            <clientProperties>
+              <html.disable class="java.lang.Boolean" value="false"/>
+            </clientProperties>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

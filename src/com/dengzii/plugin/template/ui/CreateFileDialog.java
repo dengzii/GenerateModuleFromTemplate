@@ -1,6 +1,8 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.model.FileTreeNode;
+import com.dengzii.plugin.template.utils.PluginKit;
+import com.intellij.ide.fileTemplates.FileTemplate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,18 +10,21 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class CreateFileDialog extends JDialog {
+    private static final String NONE = "None";
+
     private JPanel contentPane;
-    private JComboBox comboBox1;
-    private JTextField textField1;
-    private JLabel label1;
-    private JLabel label2;
+    private JComboBox cbTemplate;
+    private JTextField tfName;
+    private JLabel lbTemplate;
+    private JLabel lbName;
+    private JButton btConfirm;
 
     private CreateFileCallback createFileCallback;
     private boolean isDir;
     private FileTreeNode parent;
     private FileTreeNode current;
 
-    public static void showForRename(FileTreeNode node, CreateFileCallback createFileCallback) {
+    public static void showForRefactor(FileTreeNode node, CreateFileCallback createFileCallback) {
         CreateFileDialog createFileDialog = new CreateFileDialog();
         createFileDialog.createFileCallback = createFileCallback;
         createFileDialog.isDir = node.isDir();
@@ -40,18 +45,52 @@ public class CreateFileDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
 
-        contentPane.registerKeyboardAction(e -> {
-                },
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    private void initFileTemplateList() {
+        FileTemplate[] fileTemplates = PluginKit.Companion.getAllFileTemplate();
+        String[] items = new String[fileTemplates.length + 1];
+        items[0] = NONE;
+        for (int i = 0; i < fileTemplates.length; i++) {
+            items[i + 1] = fileTemplates[i].getName();
+        }
+        cbTemplate.setModel(new DefaultComboBoxModel<>(items));
+        if (isRefactor() && current.getTemplateFile() != null
+                && PluginKit.Companion.getFileTemplate(current.getTemplateFile()) != null) {
+            cbTemplate.setSelectedItem(current.getTemplateFile());
+        }
+    }
+
+    private void onConfirm() {
+        if (tfName.getText().trim().isEmpty()) {
+            return;
+        }
+        if (isRefactor()) {
+            current.setName(tfName.getText());
+            // setup template
+            if (!isDir && getSelectedTemplate() != null && !getSelectedTemplate().equals(NONE)) {
+                current.setTemplate(getSelectedTemplate());
+            }
+        } else {
+            current = new FileTreeNode(parent, tfName.getText(), isDir);
+        }
+
+        if (!isRefactor() && parent != null && parent.hasChild(tfName.getText(), isDir)) {
+            lbName.setText(lbName.getText() + "  (already exist.)");
+            return;
+        }
+
+        createFileCallback.callback(current);
+        dispose();
     }
 
     private void initDialog() {
 
         if (isDir) {
-            label1.setVisible(false);
-            comboBox1.setVisible(false);
+            lbTemplate.setVisible(false);
+            cbTemplate.setVisible(false);
+        } else {
+            initFileTemplateList();
         }
         pack();
 
@@ -63,35 +102,32 @@ public class CreateFileDialog extends JDialog {
         setLocation(x, y);
         setPreferredSize(new Dimension(w, h));
 
-        setTitle((isRename() ? "Rename " : "New ") + (isDir ? "Directory" : "File"));
-        if (isRename()) {
-            textField1.setText(current.getRealName());
+        setTitle((isRefactor() ? "Refactor " : "New ") + (isDir ? "Directory" : "File"));
+        if (isRefactor()) {
+            tfName.setText(current.getRealName());
         }
-        textField1.addKeyListener(new KeyAdapter() {
+        tfName.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (parent != null && parent.hasChild(textField1.getText(), isDir)) {
-                        label2.setText(label2.getText() + "  (already exist.)");
-                        return;
-                    }
-                    if (isRename()) {
-                        current.setName(textField1.getText());
-                        createFileCallback.callback(current);
-                    } else {
-                        createFileCallback.callback(new FileTreeNode(parent, textField1.getText(), isDir));
-                    }
-
-                    dispose();
+                    onConfirm();
                 }
             }
         });
+        btConfirm.addActionListener(e -> onConfirm());
         setVisible(true);
-        textField1.requestFocus();
+        tfName.requestFocus();
     }
 
-    private boolean isRename() {
+    private String getSelectedTemplate() {
+        if (isDir) {
+            return null;
+        }
+        return cbTemplate.getSelectedItem().toString();
+    }
+
+    private boolean isRefactor() {
         return current != null;
     }
 
