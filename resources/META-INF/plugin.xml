@@ -39,8 +39,8 @@ Using this plugin, help you create directories and files from customizable templ
 
     <idea-version since-build="183.2153.8"/>
 
-    <depends>com.intellij.modules.java</depends>
-    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
