@@ -24,7 +24,6 @@ public class CreateModuleDialog extends JDialog {
     private JPanel rootPanel;
     private JLabel labelTitle;
     private JComboBox cbModuleTemplate;
-    private JComboBox cbLanguage;
     private JPanel mainPanel;
     private JPanel contentPanel;
 
@@ -141,7 +140,6 @@ public class CreateModuleDialog extends JDialog {
         tablePlaceholder = new EditableTable(new String[]{"Key", "Value"}, new Boolean[]{false, true});
         tablePlaceholder.setToolBarVisible(false);
         panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
-        cbLanguage.setModel(new DefaultComboBoxModel<>(Module.Companion.getLangList()));
 
         btConfigure.setIcon(AllIcons.General.GearPlain);
         previewPanel = new PreviewPanel();
@@ -156,11 +154,6 @@ public class CreateModuleDialog extends JDialog {
         btCancel.addActionListener(e -> dispose());
         btConfigure.addActionListener(this::onConfClick);
 
-        cbLanguage.addItemListener(e -> {
-            if (cbLanguage.getSelectedItem() != null) {
-                selectedModule.setLanguage(cbLanguage.getSelectedItem().toString().toUpperCase());
-            }
-        });
         cbModuleTemplate.addItemListener(e -> {
             onModuleConfigChange();
         });
