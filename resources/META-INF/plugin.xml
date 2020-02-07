@@ -32,13 +32,13 @@ Using this plugin, help you create directories and files from customizable templ
     ]]></description>
 
     <change-notes><![CDATA[
-  1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.
-  1.1: feature: support create module template, placeholder, file template
-  1.0: basically feature, generate module directories from template
+  1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.<br>
+  1.1: feature: support create module template, placeholder, file template<br>
+  1.0: basically feature, generate module directories from template<br>
   ]]>
     </change-notes>
 
-    <idea-version since-build="183.2153.8"/>
+    <idea-version since-build="191.8026.42"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
