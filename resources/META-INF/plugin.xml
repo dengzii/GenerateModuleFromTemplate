@@ -23,6 +23,12 @@ Using this plugin, help you create directories and files from customizable templ
 4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders for FileName field.<br>
 5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates<br>
 
+<br>
+<b>Contribute</b><br>
+<a href='https://github.com/dengzii/GenerateModuleFromTemplate'>GitHub</a><br>
+Any question please <a href='https://github.com/dengzii/GenerateModuleFromTemplate/issues/new'>create issue</a><br>
+<br>
+
 <b>Screenshot</b><br>
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/main.png" height="360">
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/preview.png" height="360">
