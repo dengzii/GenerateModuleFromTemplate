@@ -10,15 +10,14 @@ import com.dengzii.plugin.template.model.FileTreeNode
  * time   : 2019/1/1
  * desc   :
 </pre> */
-
 object AucTemplate {
 
     private val aucFileTemplates: () -> MutableMap<String, String> = {
         mutableMapOf(
-                Pair("AndroidManifest.xml", "Template AndroidManifest.xml"),
-                Pair("Application.java", "Template App.java"),
+                Pair("AndroidManifest.xml", "Template Manifest.xml"),
+                Pair("Application.java", "Template Application.java"),
                 Pair("build.gradle", "Template build.gradle"),
-                Pair("\${APPLICATION_NAME}.java", "Template App.java")
+                Pair("\${APPLICATION_NAME}.java", "Template Application.java")
         )
     }
 
@@ -35,7 +34,7 @@ object AucTemplate {
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "app")
 
-        module_name {
+        dir("app") {
             src {
                 main {
                     java {
@@ -63,15 +62,14 @@ object AucTemplate {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "pkg")
-        module_name {
+        dir("pkg") {
             src {
                 main {
                     java {
                         pkg_name {
                             feature_name {
                                 module_name {
-                                    main {}
-                                    file("\${MODULE_NAME}ApiImpl.java")
+                                    file("\${FEATURE_NAME}ApiImpl.java")
                                 }
 
                             }
@@ -91,7 +89,7 @@ object AucTemplate {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "export")
-        module_name {
+        dir("export") {
             src {
                 main {
                     java {
@@ -99,7 +97,7 @@ object AucTemplate {
                             feature_name {
                                 module_name {
                                     dir("api") {
-                                        file("\${MODULE_NAME}Api.java")
+                                        file("\${FEATURE_NAME}Api.java")
                                     }
                                     dir("bean")
                                 }

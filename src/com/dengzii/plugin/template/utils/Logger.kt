@@ -1,6 +1,7 @@
 package com.dengzii.plugin.template.utils
 
 import com.jetbrains.rd.util.printlnError
+import java.text.SimpleDateFormat
 
 /**
  * <pre>
@@ -14,6 +15,7 @@ import com.jetbrains.rd.util.printlnError
 object Logger {
 
     var enable: Boolean = true
+    var timeFormatter = SimpleDateFormat("MM-dd hh:mm:ss")
 
     fun e(tag: String, log: String) {
         log("e", tag, log)
@@ -32,15 +34,24 @@ object Logger {
         log("d", tag, log)
     }
 
+    fun w(tag: String, log: String) {
+        log("w", tag, log)
+    }
+
     private fun log(level: String, tag: String, log: String) {
         if (!enable) {
             return
         }
-        val logStr = "${level.toUpperCase()}/$tag: $log"
+
+        val logStr = "${getTime()} ${level.toUpperCase()}/$tag: $log"
         if (level == "e") {
             printlnError(logStr)
             return
         }
         println(logStr)
+    }
+
+    private fun getTime(): String {
+        return timeFormatter.format(System.currentTimeMillis())
     }
 }

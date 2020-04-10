@@ -20,9 +20,8 @@ class FileTemplateFactory : FileTemplateGroupDescriptorFactory {
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
 
         val descriptor = FileTemplateGroupDescriptor("Module Template Plugin Descriptor", AllIcons.Nodes.Plugin)
-        val manifestDesc = FileTemplateDescriptor("AndroidManifest.xml", StdFileTypes.XML.icon)
+        val manifestDesc = FileTemplateDescriptor("Manifest.xml", StdFileTypes.XML.icon)
         val applicationDesc = FileTemplateDescriptor("Application.java", StdFileTypes.JAVA.icon)
-        val applicationDescKt = FileTemplateDescriptor("Application.kt", StdFileTypes.JAVA.icon)
         descriptor.addTemplate(applicationDesc)
         descriptor.addTemplate(manifestDesc)
         return descriptor

@@ -41,7 +41,7 @@ object Template {
         placeholder("PACKAGE_NAME", "com.example")
 
         fileTemplate("MainActivity.java", "Template MainActivity.java")
-        fileTemplate("AndroidManifest.xml", "Template AndroidManifest.xml")
+        fileTemplate("AndroidManifest.xml", "Template Manifest.xml")
         fileTemplate("build.gradle", "Template build.gradle")
 
         module_name {

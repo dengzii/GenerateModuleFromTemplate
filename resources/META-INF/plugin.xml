@@ -51,7 +51,6 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
 
     <extensions defaultExtensionNs="com.intellij">
         <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
-        <internalFileTemplate name="AndroidManifest" id="com.dengzii.plugin.template.ft.manifest"/>
         <applicationConfigurable groupId="tools" displayName="Module Template Settings"
                                  id="preferences.ModuleTemplateConfig"
                                  instance="com.dengzii.plugin.template.TemplateConfigurable"/>

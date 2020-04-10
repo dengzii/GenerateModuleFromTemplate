@@ -88,7 +88,7 @@ open class FileTreeNode private constructor() {
                 Logger.d(TAG, "node has already exists $child")
                 return false
             } else {
-                Logger.d(TAG, "override node ${child.getPath()}")
+                Logger.w(TAG, "THE SAME CHILE ALREADY EXISTS IN $name: ${child.name}")
             }
         }
         child.parent = this
@@ -206,11 +206,26 @@ open class FileTreeNode private constructor() {
 
     /**
      * merge all children of another node to this.
+     * all placeholders and file templates of target node
+     * will be copied to it's each children
      */
     fun include(other: FileTreeNode, override: Boolean = false) {
         if (!isDir) return
         other.children.forEach {
-            addChild(it.clone(), override)
+            val clone = it.clone()
+            if (other.placeholders != null) {
+                if (clone.placeholders == null) {
+                    clone.placeholders = mutableMapOf()
+                }
+                clone.placeholders?.putAll(other.placeholders!!)
+            }
+            if (other.fileTemplates != null) {
+                if (clone.fileTemplates == null) {
+                    clone.fileTemplates = mutableMapOf()
+                }
+                clone.fileTemplates?.putAll(other.fileTemplates!!)
+            }
+            addChild(clone, override)
         }
     }
 
