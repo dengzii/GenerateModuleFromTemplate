@@ -1,7 +1,7 @@
 # Generate Module From Template
 
-![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/13586-generate-module-from-template) 
-![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/v/13586-generate-module-from-template)
+[![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/13586-generate-module-from-template) ](https://plugins.jetbrains.com/plugin/13586-generate-module-from-template)
+[![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/v/13586-generate-module-from-template) ](https://plugins.jetbrains.com/plugin/13586-generate-module-from-template)
 
 ### Create a directory structure from a highly customizable template
 
@@ -21,7 +21,11 @@ Using this plugin, help you create directories and files from customizable templ
 5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates
 
 ### Changelog
+- 1.3: fix: Placeholder don't work when call FileTreeNode.include.
+- 1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.
+- 1.1: feature: support create module template, placeholder, file template
 - 1.1: feature: support create module template, placeholder, file template 1.0: basically feature, generate module directories from template
+- 1.0: basically feature, generate module directories from template
 
 ### Screenshot
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/main.png" height="360">

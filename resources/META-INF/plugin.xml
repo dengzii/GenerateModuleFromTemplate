@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.2</version>
+    <version>1.3</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
@@ -38,6 +38,7 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     ]]></description>
 
     <change-notes><![CDATA[
+  1.3: fix: Placeholder don't work when call FileTreeNode.include
   1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.<br>
   1.1: feature: support create module template, placeholder, file template<br>
   1.0: basically feature, generate module directories from template<br>
