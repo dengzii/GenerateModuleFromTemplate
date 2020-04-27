@@ -14,7 +14,7 @@ import java.util.*
  * time   : 2019/1/1
  * desc   :
 </pre> */
-open class FileTreeNode private constructor() {
+open class FileTreeNode() {
 
     var name: String = ""
 
@@ -58,19 +58,10 @@ open class FileTreeNode private constructor() {
         }
     }
 
-    constructor(block: FileTreeNode.() -> Unit) : this() {
-        invoke(block)
-    }
-
     constructor(parent: FileTreeNode?, name: String, isDir: Boolean) : this() {
         this.name = name
         this.parent = parent
         this.isDir = isDir
-    }
-
-    operator fun invoke(block: FileTreeNode.() -> Unit): FileTreeNode {
-        this.block()
-        return this
     }
 
     fun removeFromParent(): Boolean {
@@ -110,6 +101,10 @@ open class FileTreeNode private constructor() {
         return labeledChildren.containsKey(label)
     }
 
+    fun getChild(name: String, isDir: Boolean): FileTreeNode? {
+        return labeledChildren["${name}_$isDir"]
+    }
+
     /**
      * get the real name replace with placeholder
      */
@@ -125,17 +120,6 @@ open class FileTreeNode private constructor() {
         return placeholders ?: parent?.getPlaceholderInherit()
     }
 
-    fun fileTemplate(fileName: String, template: String) {
-        if (this.fileTemplates == null) {
-            this.fileTemplates = mutableMapOf()
-        }
-        fileTemplates!![fileName] = template
-    }
-
-    fun hasFileTemplate(): Boolean {
-        return template != null || getFileTemplateInherit()?.containsKey(name) == true
-    }
-
     fun getTemplateFile(): String? {
         return template ?: getFileTemplateInherit()?.get(name)
     }
@@ -146,21 +130,21 @@ open class FileTreeNode private constructor() {
 
     fun placeholder(name: String, value: String) {
         if (this.placeholders == null) {
-            this.placeholders = kotlin.collections.mutableMapOf()
+            this.placeholders = mutableMapOf()
         }
         placeholders!![name] = value
     }
 
     fun placeholders(placeholders: Map<String, String>) {
         if (this.placeholders == null) {
-            this.placeholders = kotlin.collections.mutableMapOf()
+            this.placeholders = mutableMapOf()
         }
         this.placeholders!!.putAll(placeholders)
     }
 
     fun fileTemplates(placeholders: Map<String, String>) {
         if (this.fileTemplates == null) {
-            this.fileTemplates = kotlin.collections.mutableMapOf()
+            this.fileTemplates = mutableMapOf()
         }
         fileTemplates!!.putAll(placeholders)
     }
@@ -230,25 +214,13 @@ open class FileTreeNode private constructor() {
     }
 
     /**
-     * create directory nodes from the path
-     *
-     * @param path The dir path
-     * @param block The child node domain
-     */
-    fun dir(path: String, block: FileTreeNode.() -> Unit = {}) {
-        if (!isDir) return
-        val dirs = path.split("/").filter { it.isNotBlank() }.toMutableList()
-        createDirs(dirs, this)(block)
-    }
-
-    /**
      * create directories tree from a list
      * the larger the index, the deeper the directory
      *
      * @param dirs The dirs list to create tree
      * @param parent The parent of current node
      */
-    private fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
+    open fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
         if (dirs.isEmpty()) {
             return parent
         }
@@ -257,11 +229,6 @@ open class FileTreeNode private constructor() {
         val dirNode = FileTreeNode(parent, current, true)
         addChild(dirNode)
         return createDirs(dirs, dirNode)
-    }
-
-    fun file(name: String) {
-        if (!isDir) return
-        addChild(FileTreeNode(this, name, false))
     }
 
     /**
@@ -318,7 +285,12 @@ open class FileTreeNode private constructor() {
         str.append(when (this) {
             parent?.children?.last() -> "└─"
             parent?.children?.first() -> "├─"
-            else -> if (parent?.parent != null) "├─" else "┌─"
+            else -> {
+                when {
+                    parent != null -> "├─"
+                    else -> ""
+                }
+            }
         })
         str.append(getRealName()).append("\n")
 
@@ -355,7 +327,7 @@ open class FileTreeNode private constructor() {
         }
     }
 
-    private fun getLabel(): String {
+    protected fun getLabel(): String {
         return "${name}_$isDir"
     }
 

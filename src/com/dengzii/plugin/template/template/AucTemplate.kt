@@ -1,5 +1,6 @@
 package com.dengzii.plugin.template.template
 
+import com.dengzii.plugin.template.model.FileTreeDsl
 import com.dengzii.plugin.template.model.FileTreeNode
 
 /**
@@ -29,7 +30,7 @@ object AucTemplate {
         )
     }
 
-    val APP = FileTreeNode {
+    val APP = FileTreeDsl {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "app")
@@ -58,7 +59,7 @@ object AucTemplate {
         }
     }
 
-    val PKG = FileTreeNode {
+    val PKG = FileTreeDsl {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "pkg")
@@ -85,7 +86,7 @@ object AucTemplate {
         }
     }
 
-    val EXPORT = FileTreeNode {
+    val EXPORT = FileTreeDsl {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "export")
@@ -113,7 +114,7 @@ object AucTemplate {
         }
     }
 
-    val MODULE = FileTreeNode {
+    val MODULE = FileTreeDsl {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
         feature_name {

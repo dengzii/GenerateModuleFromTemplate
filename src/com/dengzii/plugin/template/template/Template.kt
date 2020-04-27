@@ -1,5 +1,6 @@
 package com.dengzii.plugin.template.template
 
+import com.dengzii.plugin.template.model.FileTreeDsl
 import com.dengzii.plugin.template.model.FileTreeNode
 
 /**
@@ -13,30 +14,30 @@ import com.dengzii.plugin.template.model.FileTreeNode
  */
 object Template {
 
-    val ANDROID_RES = FileTreeNode {
+    val ANDROID_RES = FileTreeDsl {
         res {
             drawable { }
             layout { }
             values { }
         }
     }
-    val ANDROID_TEST = FileTreeNode {
+    val ANDROID_TEST = FileTreeDsl {
         dir("AndroidTest") {
 
         }
     }
 
-    val JUNIT_TEST = FileTreeNode {
+    val JUNIT_TEST = FileTreeDsl {
         dir("test") {
 
         }
     }
 
-    val EMPTY = FileTreeNode {
+    val EMPTY = FileTreeDsl {
         src
     }
 
-    val ANDROID_APP = FileTreeNode {
+    val ANDROID_APP = FileTreeDsl {
         placeholder("MODULE_NAME", "app")
         placeholder("PACKAGE_NAME", "com.example")
 

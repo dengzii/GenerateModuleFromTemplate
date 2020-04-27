@@ -2,6 +2,7 @@
 
 package com.dengzii.plugin.template.template
 
+import com.dengzii.plugin.template.model.FileTreeDsl
 import com.dengzii.plugin.template.model.FileTreeNode
 
 /**
@@ -19,7 +20,7 @@ typealias AucFrame = FileTreeNode
 
 typealias ChildNodeBlock = (parent: Node) -> Unit
 
-typealias Node = FileTreeNode
+typealias Node = FileTreeDsl
 
 val Node.test: Node get() = dirNode("test")
 val Node.main: Node get() = dirNode("main")

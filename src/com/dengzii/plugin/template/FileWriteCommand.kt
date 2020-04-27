@@ -58,14 +58,15 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
                 Logger.d(TAG, "create dir ${it.getPath()}")
             }
         } else {
-            if (treeNode.hasFileTemplate()) {
+            val template = treeNode.getTemplateFile()
+            if (template != null) {
                 val result = kit.createFileFromTemplate(
                         treeNode.getRealName(),
-                        treeNode.getTemplateFile()!!,
+                        template,
                         treeNode.getPlaceholderInherit().orEmpty(),
                         currentDirectory)
                 if (result == null) {
-                    Logger.e(TAG, "create file from template failed, file: ${treeNode.getRealName()} template:${treeNode.getTemplateFile()}")
+                    Logger.e(TAG, "create file from template failed, file: ${treeNode.getRealName()} template:$template")
                 } else {
                     Logger.d(TAG, "create file from template ${treeNode.getRealName()}")
                 }
