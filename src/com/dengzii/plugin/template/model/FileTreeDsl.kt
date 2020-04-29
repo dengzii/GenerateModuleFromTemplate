@@ -11,6 +11,11 @@ class FileTreeDsl() : FileTreeNode() {
         return this
     }
 
+    operator fun FileTreeNode.invoke(block: FileTreeDsl.() -> Unit): FileTreeNode {
+        block()
+        return this
+    }
+
     constructor(parent: FileTreeDsl?, name: String, isDir: Boolean) : this() {
         this.name = name
         this.parent = parent
@@ -43,6 +48,7 @@ class FileTreeDsl() : FileTreeNode() {
                 .filter {
                     it.isNotBlank()
                 }.toMutableList()
+        println(dirs)
         createDirs(dirs, this)(block)
     }
 
@@ -58,20 +64,4 @@ class FileTreeDsl() : FileTreeNode() {
         fileTemplates!![fileName] = template
     }
 
-    private fun createDirs(dirs: MutableList<String>, parent: FileTreeDsl): FileTreeNode {
-        if (dirs.isEmpty()) {
-            return parent
-        }
-        // the first dir
-        val first = dirs[0]
-        dirs.removeAt(0)
-        val firstDir = FileTreeDsl(parent, first, true)
-        val findChild = getChild(first, true)
-        if (findChild != null) {
-            return createDirs(dirs, findChild)
-        }
-        addChild(firstDir)
-        // create child dir
-        return createDirs(dirs, firstDir)
-    }
 }
