@@ -227,11 +227,11 @@ open class FileTreeNode() {
         // the first dir
         val first = dirs.first()
         dirs.removeAt(0)
-        val newNode = FileTreeNode(parent, first, true)
-        val find = getChild(first, true)
+        val find = parent.getChild(first, true)
         if (find != null) {
             return createDirs(dirs, find)
         }
+        val newNode = FileTreeNode(parent, first, true)
         parent.addChild(newNode)
         // create child dir
         return createDirs(dirs, newNode)

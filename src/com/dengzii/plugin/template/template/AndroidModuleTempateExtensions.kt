@@ -22,7 +22,7 @@ typealias ChildNodeBlock = (parent: Node) -> Unit
 
 typealias Node = FileTreeDsl
 
-val Node.test: Node get() = dirNode("test")
+val Node.test: Node get() = dirNode("")
 val Node.main: Node get() = dirNode("main")
 val Node.java: Node get() = dirNode("java")
 val Node.src: Node get() = dirNode("src")

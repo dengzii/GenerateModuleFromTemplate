@@ -48,7 +48,6 @@ class FileTreeDsl() : FileTreeNode() {
                 .filter {
                     it.isNotBlank()
                 }.toMutableList()
-        println(dirs)
         createDirs(dirs, this)(block)
     }
 

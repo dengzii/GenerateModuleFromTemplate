@@ -1,7 +1,6 @@
 package com.dengzii.plugin.template.template
 
 import com.dengzii.plugin.template.model.FileTreeDsl
-import com.dengzii.plugin.template.model.FileTreeNode
 
 /**
  * <pre>
