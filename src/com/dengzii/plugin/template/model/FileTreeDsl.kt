@@ -11,15 +11,8 @@ class FileTreeDsl() : FileTreeNode() {
         return this
     }
 
-    operator fun FileTreeNode.invoke(block: FileTreeDsl.() -> Unit): FileTreeNode {
-        block()
-        return this
-    }
-
-    constructor(parent: FileTreeDsl?, name: String, isDir: Boolean) : this() {
-        this.name = name
-        this.parent = parent
-        this.isDir = isDir
+    operator fun FileTreeNode.invoke(block: FileTreeNode.() -> Unit){
+        block(this)
     }
 
     /**
@@ -28,7 +21,7 @@ class FileTreeDsl() : FileTreeNode() {
      * @param path The dir path
      * @param block The child node domain
      */
-    fun dir(path: String, block: FileTreeDsl.() -> Unit = {}) {
+    fun FileTreeNode.dir(path: String, block: FileTreeNode.() -> Unit = {}) {
         if (!isDir) {
             this(block)
             return
@@ -37,30 +30,29 @@ class FileTreeDsl() : FileTreeNode() {
             path.contains(".") -> path.split(".")
             path.contains("/") -> path.split("/")
             else -> {
-                val newNode = FileTreeDsl(this, path, true)
+                val newNode = FileTreeNode(this, path, true)
                 if (addChild(newNode)) {
                     newNode(block)
                 }
                 return
             }
         }
-        dirs = dirs
-                .filter {
+        dirs = dirs.filter {
                     it.isNotBlank()
                 }.toMutableList()
-        createDirs(dirs, this)(block)
+        val domain = createDirs(dirs, this)
+        domain.invoke(block)
     }
 
-    fun file(name: String) {
+    fun FileTreeNode.file(name: String) {
         if (!isDir) return
         addChild(FileTreeNode(this, name, false))
     }
 
-    fun fileTemplate(fileName: String, template: String) {
+    fun FileTreeNode.fileTemplate(fileName: String, template: String) {
         if (this.fileTemplates == null) {
             this.fileTemplates = mutableMapOf()
         }
         fileTemplates!![fileName] = template
     }
-
 }

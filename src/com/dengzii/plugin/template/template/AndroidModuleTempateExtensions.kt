@@ -20,7 +20,7 @@ typealias AucFrame = FileTreeNode
 
 typealias ChildNodeBlock = (parent: Node) -> Unit
 
-typealias Node = FileTreeDsl
+typealias Node = FileTreeNode
 
 val Node.test: Node get() = dirNode("")
 val Node.main: Node get() = dirNode("main")
