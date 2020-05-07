@@ -2,6 +2,7 @@ package test
 
 import com.dengzii.plugin.template.model.FileTreeDsl
 import org.junit.Test
+import java.util.regex.Pattern
 
 class FileTreeDslTest {
 
@@ -50,7 +51,7 @@ class FileTreeDslTest {
             placeholder("FILE_1", "first_file")
             placeholder("FILE_2", "second_file")
             file("\${FILE_1}.java")
-            dir("com/example"){
+            dir("com/example") {
                 println(name)
                 file("\${FILE_2}.java")
             }

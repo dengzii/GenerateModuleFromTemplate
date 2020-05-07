@@ -5,6 +5,7 @@ package com.dengzii.plugin.template.model
 import com.dengzii.plugin.template.utils.Logger
 import java.io.File
 import java.util.*
+import java.util.regex.Pattern
 
 /**
  * <pre>
@@ -45,6 +46,7 @@ open class FileTreeNode() {
     companion object {
 
         private val TAG = FileTreeNode::class.java.simpleName
+        private val sPathSplitPattern = Pattern.compile("[./]")
 
         fun root(path: String): FileTreeNode {
             val root = File(path)
@@ -109,7 +111,7 @@ open class FileTreeNode() {
      * get the real name replace with placeholder
      */
     fun getRealName(): String {
-        return name.replacePlaceholder(getPlaceholderInherit())
+        return name.replacePlaceholder(getPlaceholderInherit(), !isDir)
     }
 
     fun getFileTemplateInherit(): MutableMap<String, String>? {
@@ -220,7 +222,7 @@ open class FileTreeNode() {
      * @param dirs The dirs list to create tree
      * @param parent The parent of current node
      */
-    open fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
+    fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
         if (dirs.isEmpty()) {
             return parent
         }
@@ -341,13 +343,18 @@ open class FileTreeNode() {
         return "FileTreeNode(path='${getPath()}' isDir=$isDir, fileTemplate=${getTemplateFile()}, children=${children.size})"
     }
 
-    private fun String.replacePlaceholder(placeholders: Map<String, String>?): String {
+    private fun String.replacePlaceholder(placeholders: Map<String, String>?, capitalize: Boolean = false): String {
         var after = this
         if (placeholders.isNullOrEmpty()) {
             return this
         }
         placeholders.forEach { (k, v) ->
-            after = after.replace("\${$k}", v)
+            val replaced = if (capitalize) {
+                v.toLowerCase().capitalize()
+            } else {
+                v
+            }
+            after = after.replace("\${$k}", replaced)
         }
         return after
     }

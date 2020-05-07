@@ -14,10 +14,10 @@ import com.dengzii.plugin.template.model.FileTreeDsl
 object Template {
 
     val ANDROID_RES = FileTreeDsl {
-        res {
-            drawable { }
-            layout { }
-            values { }
+        dir("res") {
+            dir("drawable") { }
+            dir("layout") { }
+            dir("values") { }
         }
     }
     val ANDROID_TEST = FileTreeDsl {
@@ -33,7 +33,7 @@ object Template {
     }
 
     val EMPTY = FileTreeDsl {
-        src
+        file("src")
     }
 
     val ANDROID_APP = FileTreeDsl {
@@ -44,25 +44,25 @@ object Template {
         fileTemplate("AndroidManifest.xml", "Template Manifest.xml")
         fileTemplate("build.gradle", "Template build.gradle")
 
-        module_name {
-            src {
+        dir("\${MODULE_NAME}") {
+            dir("src") {
                 include(ANDROID_TEST)
-                main {
-                    java {
-                        pkg_name {
-                            module_name {
+                dir("main") {
+                    dir("java") {
+                        dir("\${PACKAGE_NAME}") {
+                            dir("\${MODULE_NAME}") {
                                 file("MainActivity.java")
                             }
                         }
                     }
                     include(ANDROID_RES)
-                    AndroidManifest.xml
+                    file("AndroidManifest.xml")
                 }
                 include(JUNIT_TEST)
             }
-            gitignore
-            build.gradle
-            proguard_rules.pro
+            file(".gitignore")
+            file("build.gradle")
+            file("ProGuard.pro")
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.dengzii.plugin.template.template
 
 import com.dengzii.plugin.template.model.FileTreeDsl
-import com.dengzii.plugin.template.model.FileTreeNode
 
 /**
  * <pre>
@@ -24,7 +23,7 @@ object AucTemplate {
 
     private val aucPlaceholders: () -> MutableMap<String, String> = {
         mutableMapOf(
-                Pair("PACKAGE_NAME", "com.example"),
+                Pair("PACKAGE_NAME", "com/example"),
                 Pair("FEATURE_NAME", "feature"),
                 Pair("APPLICATION_NAME", "App")
         )
@@ -36,26 +35,25 @@ object AucTemplate {
         placeholder("MODULE_NAME", "app")
 
         dir("app") {
-            src {
-                main {
-                    java {
-                        pkg_name {
-                            feature_name {
-                                module_name {
-                                    app_name.java
+            dir("src") {
+                dir("main") {
+                    dir("java") {
+                        dir("\${PACKAGE_NAME}") {
+                            dir("\${FEATURE_NAME}") {
+                                dir("app") {
                                     file("MainActivity.java")
+                                    file("\${FEATURE_NAME}App.java")
                                 }
                             }
                         }
                     }
                     include(Template.ANDROID_RES)
-                    AndroidManifest.xml
+                    file("AndroidManifest.xml")
                 }
-                test {}
             }
-            gitignore
-            build.gradle
-            proguard_rules.pro
+            file(".gitignore")
+            file("build.gradle")
+            file("proguard-rules.pro")
         }
     }
 
@@ -64,25 +62,24 @@ object AucTemplate {
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "pkg")
         dir("pkg") {
-            src {
-                main {
-                    java {
-                        pkg_name {
-                            feature_name {
-                                module_name {
+            dir("src") {
+                dir("main") {
+                    dir("java") {
+                        dir("\${PACKAGE_NAME}") {
+                            dir("\${FEATURE_NAME}") {
+                                dir("pkg") {
                                     file("\${FEATURE_NAME}ApiImpl.java")
                                 }
-
                             }
                         }
                     }
                     include(Template.ANDROID_RES)
-                    AndroidManifest.xml
+                    file("AndroidManifest.xml")
                 }
             }
-            gitignore
-            build.gradle
-            proguard_rules.pro
+            file(".gitignore")
+            file("build.gradle")
+            file("proguard-rules.pro")
         }
     }
 
@@ -91,33 +88,31 @@ object AucTemplate {
         placeholders(aucPlaceholders())
         placeholder("MODULE_NAME", "export")
         dir("export") {
-            src {
-                main {
-                    java {
-                        pkg_name {
-                            feature_name {
-                                module_name {
-                                    dir("api") {
-                                        file("\${FEATURE_NAME}Api.java")
-                                    }
-                                    dir("bean")
+            dir("src") {
+                dir("main") {
+                    dir("java") {
+                        dir("\${PACKAGE_NAME}") {
+                            dir("\${FEATURE_NAME}") {
+                                dir("export") {
+                                    file("\${FEATURE_NAME}Api.java")
                                 }
                             }
                         }
                     }
-                    AndroidManifest.xml
+                    include(Template.ANDROID_RES)
+                    file("AndroidManifest.xml")
                 }
             }
-            gitignore
-            build.gradle
-            proguard_rules.pro
+            file(".gitignore")
+            file("build.gradle")
+            file("proguard-rules.pro")
         }
     }
 
     val MODULE = FileTreeDsl {
         fileTemplates(aucFileTemplates())
         placeholders(aucPlaceholders())
-        feature_name {
+        dir("\${FEATURE_NAME}") {
             include(APP)
             include(PKG)
             include(EXPORT)
