@@ -7,6 +7,8 @@ class AucTemplateTest {
 
     @Test
     fun aucAppModuleTest() {
-        println(AucTemplate.APP.getTreeGraph())
+        val app = AucTemplate.APP
+        println(app.getTreeGraph())
+
     }
 }

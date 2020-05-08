@@ -1,10 +1,16 @@
 package test
 
 import com.dengzii.plugin.template.model.FileTreeDsl
+import com.dengzii.plugin.template.model.FileTreeNode
+import com.dengzii.plugin.template.template.Template
 import org.junit.Test
-import java.util.regex.Pattern
 
 class FileTreeDslTest {
+
+    @Test
+    fun traversalTest() {
+
+    }
 
     @Test
     fun createSimpleFileTreeTest() {
@@ -44,6 +50,7 @@ class FileTreeDslTest {
         }
         println(tree.getTreeGraph())
     }
+
 
     @Test
     fun fileNamePlaceholderTest() {

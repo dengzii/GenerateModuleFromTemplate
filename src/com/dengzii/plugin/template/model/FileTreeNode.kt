@@ -111,7 +111,12 @@ open class FileTreeNode() {
      * get the real name replace with placeholder
      */
     fun getRealName(): String {
-        return name.replacePlaceholder(getPlaceholderInherit(), !isDir)
+        return getRealName(this.name)
+    }
+
+    fun getRealName(fileName: String = this.name): String {
+
+        return fileName.replacePlaceholder(getPlaceholderInherit(), !isDir)
     }
 
     fun getFileTemplateInherit(): MutableMap<String, String>? {
@@ -130,21 +135,21 @@ open class FileTreeNode() {
         template = name
     }
 
-    fun placeholder(name: String, value: String) {
-        if (this.placeholders == null) {
-            this.placeholders = mutableMapOf()
-        }
-        placeholders!![name] = value
-    }
-
-    fun placeholders(placeholders: Map<String, String>) {
+    fun addPlaceholders(placeholders: Map<String, String>) {
         if (this.placeholders == null) {
             this.placeholders = mutableMapOf()
         }
         this.placeholders!!.putAll(placeholders)
     }
 
-    fun fileTemplates(placeholders: Map<String, String>) {
+//    fun getAllPlaceholderInName(): Map<String, String> {
+//        val result = mutableMapOf<String, String>()
+//        traversal({ fileTreeNode: FileTreeNode, i: Int ->
+//
+//        })
+//    }
+
+    fun addFileTemplates(placeholders: Map<String, String>) {
         if (this.fileTemplates == null) {
             this.fileTemplates = mutableMapOf()
         }
@@ -191,31 +196,6 @@ open class FileTreeNode() {
     }
 
     /**
-     * merge all children of another node to this.
-     * all placeholders and file templates of target node
-     * will be copied to it's each children
-     */
-    fun include(other: FileTreeNode, override: Boolean = false) {
-        if (!isDir) return
-        other.children.forEach {
-            val clone = it.clone()
-            if (other.placeholders != null) {
-                if (clone.placeholders == null) {
-                    clone.placeholders = mutableMapOf()
-                }
-                clone.placeholders?.putAll(other.placeholders!!)
-            }
-            if (other.fileTemplates != null) {
-                if (clone.fileTemplates == null) {
-                    clone.fileTemplates = mutableMapOf()
-                }
-                clone.fileTemplates?.putAll(other.fileTemplates!!)
-            }
-            addChild(clone, override)
-        }
-    }
-
-    /**
      * create directories tree from a list
      * the larger the index, the deeper the directory
      *
@@ -255,6 +235,16 @@ open class FileTreeNode() {
 
     fun isRoot(): Boolean {
         return this == parent
+    }
+
+    fun getAllPlaceholders(): Map<String, String> {
+        val result = mutableMapOf<String, String>()
+        traversal({ fileTreeNode: FileTreeNode, _: Int ->
+            if (fileTreeNode.placeholders != null) {
+                result.putAll(fileTreeNode.placeholders!!)
+            }
+        })
+        return result
     }
 
     fun getTreeGraph(): String {
@@ -335,7 +325,7 @@ open class FileTreeNode() {
         }
     }
 
-    protected fun getLabel(): String {
+    private fun getLabel(): String {
         return "${name}_$isDir"
     }
 

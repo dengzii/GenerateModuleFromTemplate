@@ -11,12 +11,13 @@ class FileTreeDsl() : FileTreeNode() {
         return this
     }
 
-    operator fun FileTreeNode.invoke(block: FileTreeNode.() -> Unit){
+    operator fun FileTreeNode.invoke(block: FileTreeNode.() -> Unit) {
         block(this)
     }
 
     /**
      * create directory nodes from the path
+     * if contains '/' or '.' in path
      *
      * @param path The dir path
      * @param block The child node domain
@@ -26,11 +27,12 @@ class FileTreeDsl() : FileTreeNode() {
             this(block)
             return
         }
+        val realPath = getRealName(path)
         var dirs = when {
-            path.contains(".") -> path.split(".")
-            path.contains("/") -> path.split("/")
+            realPath.contains(".") -> realPath.split(".")
+            realPath.contains("/") -> realPath.split("/")
             else -> {
-                val newNode = FileTreeNode(this, path, true)
+                val newNode = FileTreeNode(this, realPath, true)
                 if (addChild(newNode)) {
                     newNode(block)
                 }
@@ -38,8 +40,8 @@ class FileTreeDsl() : FileTreeNode() {
             }
         }
         dirs = dirs.filter {
-                    it.isNotBlank()
-                }.toMutableList()
+            it.isNotBlank()
+        }.toMutableList()
         val domain = createDirs(dirs, this)
         domain.invoke(block)
     }
@@ -47,6 +49,38 @@ class FileTreeDsl() : FileTreeNode() {
     fun FileTreeNode.file(name: String) {
         if (!isDir) return
         addChild(FileTreeNode(this, name, false))
+    }
+
+    fun FileTreeNode.placeholder(name: String, value: String) {
+        if (this.placeholders == null) {
+            this.placeholders = mutableMapOf()
+        }
+        placeholders!![name] = value
+    }
+
+    /**
+     * merge all children of another node to this.
+     * all placeholders and file templates of target node
+     * will be copied to it's each children
+     */
+    fun FileTreeNode.include(other: FileTreeNode, override: Boolean = false) {
+        if (!isDir) return
+        other.children.forEach {
+            val clone = it.clone()
+            if (other.placeholders != null) {
+                if (clone.placeholders == null) {
+                    clone.placeholders = mutableMapOf()
+                }
+                clone.placeholders?.putAll(other.placeholders!!)
+            }
+            if (other.fileTemplates != null) {
+                if (clone.fileTemplates == null) {
+                    clone.fileTemplates = mutableMapOf()
+                }
+                clone.fileTemplates?.putAll(other.fileTemplates!!)
+            }
+            addChild(clone, override)
+        }
     }
 
     fun FileTreeNode.fileTemplate(fileName: String, template: String) {
