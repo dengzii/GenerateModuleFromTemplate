@@ -1,5 +1,7 @@
 package com.dengzii.plugin.template.model
 
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
+
 class FileTreeDsl() : FileTreeNode() {
 
     constructor(block: FileTreeDsl.() -> Unit) : this() {
@@ -27,27 +29,37 @@ class FileTreeDsl() : FileTreeNode() {
             this(block)
             return
         }
-        val realPath = getRealName(path)
-        var dirs = when {
-            realPath.contains(".") -> realPath.split(".")
-            realPath.contains("/") -> realPath.split("/")
-            else -> {
-                val newNode = FileTreeNode(this, realPath, true)
-                if (addChild(newNode)) {
-                    newNode(block)
-                }
-                return
-            }
+        path.getPlaceholder().ifNotEmpty {
+            allPlaceholder.addAll(this)
         }
-        dirs = dirs.filter {
-            it.isNotBlank()
-        }.toMutableList()
-        val domain = createDirs(dirs, this)
-        domain.invoke(block)
+//        val realPath = getRealName(path)
+//        var dirs = when {
+//            realPath.contains(".") -> realPath.split(".")
+//            realPath.contains("/") -> realPath.split("/")
+//            else -> {
+//                val newNode = FileTreeNode(this, realPath, true)
+//                if (addChild(newNode)) {
+//                    newNode(block)
+//                }
+//                return
+//            }
+//        }
+//        dirs = dirs.filter {
+//            it.isNotBlank()
+//        }.toMutableList()
+        val newNode = FileTreeNode(this, path, true)
+        if (addChild(newNode)) {
+            newNode.invoke(block)
+        }
+//        val domain = createDirs(dirs, this)
+//        domain.invoke(block)
     }
 
     fun FileTreeNode.file(name: String) {
         if (!isDir) return
+        name.getPlaceholder().ifNotEmpty {
+            allPlaceholder.addAll(this)
+        }
         addChild(FileTreeNode(this, name, false))
     }
 

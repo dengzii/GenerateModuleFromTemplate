@@ -8,6 +8,11 @@ class AucTemplateTest {
     @Test
     fun aucAppModuleTest() {
         val app = AucTemplate.APP
+        app {
+            placeholder("PACKAGE_NAME", "com.dengzii.plugin")
+        }
+        println(app.placeholders)
+        println(app.getAllPlaceholderInTree())
         println(app.getTreeGraph())
 
     }

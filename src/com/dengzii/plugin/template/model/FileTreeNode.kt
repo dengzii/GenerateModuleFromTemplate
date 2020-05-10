@@ -3,6 +3,7 @@
 package com.dengzii.plugin.template.model
 
 import com.dengzii.plugin.template.utils.Logger
+import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -28,6 +29,8 @@ open class FileTreeNode() {
         get() = realChildren
 
     var placeholders: MutableMap<String, String>? = null
+    // all placeholder in tree node name
+    val allPlaceholder by lazy { mutableListOf<String>() }
 
     // template for node, higher priority than fileTemplates
     private var template: String? = null
@@ -47,6 +50,7 @@ open class FileTreeNode() {
 
         private val TAG = FileTreeNode::class.java.simpleName
         private val sPathSplitPattern = Pattern.compile("[./]")
+        private val sPlaceholderPattern = Pattern.compile("\\$\\{([A-Za-z0-9_\\-]+)}")
 
         fun root(path: String): FileTreeNode {
             val root = File(path)
@@ -64,6 +68,9 @@ open class FileTreeNode() {
         this.name = name
         this.parent = parent
         this.isDir = isDir
+        name.getPlaceholder().ifNotEmpty {
+            allPlaceholder.addAll(this)
+        }
     }
 
     fun removeFromParent(): Boolean {
@@ -142,12 +149,6 @@ open class FileTreeNode() {
         this.placeholders!!.putAll(placeholders)
     }
 
-//    fun getAllPlaceholderInName(): Map<String, String> {
-//        val result = mutableMapOf<String, String>()
-//        traversal({ fileTreeNode: FileTreeNode, i: Int ->
-//
-//        })
-//    }
 
     fun addFileTemplates(placeholders: Map<String, String>) {
         if (this.fileTemplates == null) {
@@ -237,8 +238,22 @@ open class FileTreeNode() {
         return this == parent
     }
 
-    fun getAllPlaceholders(): Map<String, String> {
+    fun build() {
+
+    }
+
+    fun getAllPlaceholderInTree(): List<String> {
+        val result = mutableListOf<String>()
+        result.addAll(allPlaceholder)
+        traversal({ fileTreeNode: FileTreeNode, _: Int ->
+            result.addAll(fileTreeNode.allPlaceholder)
+        })
+        return result
+    }
+
+    fun getAllPlaceholdersMap(): Map<String, String> {
         val result = mutableMapOf<String, String>()
+        result.putAll(placeholders.orEmpty())
         traversal({ fileTreeNode: FileTreeNode, _: Int ->
             if (fileTreeNode.placeholders != null) {
                 result.putAll(fileTreeNode.placeholders!!)
@@ -331,6 +346,15 @@ open class FileTreeNode() {
 
     override fun toString(): String {
         return "FileTreeNode(path='${getPath()}' isDir=$isDir, fileTemplate=${getTemplateFile()}, children=${children.size})"
+    }
+
+    protected fun String.getPlaceholder(): List<String> {
+        val result = mutableListOf<String>()
+        val nameMatcher = sPlaceholderPattern.matcher(this)
+        while (nameMatcher.find()) {
+            result.add(nameMatcher.group(1))
+        }
+        return result
     }
 
     private fun String.replacePlaceholder(placeholders: Map<String, String>?, capitalize: Boolean = false): String {
