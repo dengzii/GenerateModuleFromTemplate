@@ -240,6 +240,33 @@ open class FileTreeNode() {
 
     fun build() {
 
+        name = getRealName()
+        var r = sPathSplitPattern.matcher(name)
+        val dirs = mutableListOf<String>()
+        while (r.find()) {
+            dirs.add(r.group(1))
+        }
+        traversal({ fileTreeNode: FileTreeNode, _: Int ->
+            fileTreeNode.name = fileTreeNode.getRealName()
+            r = sPathSplitPattern.matcher(fileTreeNode.name)
+            dirs.clear()
+            while (r.find()) {
+                dirs.add(r.group(1))
+            }
+            expandDirs(dirs)
+        })
+    }
+
+    private fun expandDirs(dirs: List<String>) {
+        if (dirs.isEmpty()) {
+            return
+        }
+        this.name = dirs.first()
+        dirs.drop(0)
+        var node: FileTreeNode = this
+        dirs.forEach {
+            node = FileTreeNode(node, it, true)
+        }
     }
 
     fun getAllPlaceholderInTree(): List<String> {
