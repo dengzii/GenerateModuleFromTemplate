@@ -263,10 +263,18 @@ open class FileTreeNode() {
         }
         this.name = dirs.first()
         dirs.drop(0)
-        var node: FileTreeNode = this
+
+        var parent: FileTreeNode = this
+        var newChild: FileTreeNode
         dirs.forEach {
-            node = FileTreeNode(node, it, true)
+            newChild = FileTreeNode(parent, it, true)
+            parent.addChild(newChild)
+            parent = newChild
         }
+        parent.children.addAll(children)
+        children.clear()
+        labeledChildren.clear()
+        realChildren.clear()
     }
 
     fun getAllPlaceholderInTree(): List<String> {
