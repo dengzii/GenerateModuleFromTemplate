@@ -15,5 +15,8 @@ class AucTemplateTest {
         println(app.getAllPlaceholderInTree())
         println(app.getTreeGraph())
 
+        app.build()
+        println(app)
+        println(app.getTreeGraph())
     }
 }

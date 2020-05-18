@@ -235,43 +235,43 @@ open class FileTreeNode() {
     }
 
     fun isRoot(): Boolean {
-        return this == parent
+        return this == parent || parent == null
     }
 
     fun build() {
 
         name = getRealName()
-        var r = sPathSplitPattern.matcher(name)
-        val dirs = mutableListOf<String>()
-        while (r.find()) {
-            dirs.add(r.group(1))
+        if (!isDir) {
+            return
         }
-        traversal({ fileTreeNode: FileTreeNode, _: Int ->
-            fileTreeNode.name = fileTreeNode.getRealName()
-            r = sPathSplitPattern.matcher(fileTreeNode.name)
-            dirs.clear()
-            while (r.find()) {
-                dirs.add(r.group(1))
-            }
-            expandDirs(dirs)
-        })
+        if (!isRoot()) {
+            val dir = name.split(sPathSplitPattern).toMutableList()
+            expandDirs(dir)
+        }
+        children.forEach {
+            it.build()
+        }
     }
 
     private fun expandDirs(dirs: List<String>) {
-        if (dirs.isEmpty()) {
+        if (dirs.isEmpty() || dirs.size == 1) {
             return
         }
         this.name = dirs.first()
         dirs.drop(0)
 
-        var parent: FileTreeNode = this
+        var node: FileTreeNode? = null
+        var preNode: FileTreeNode = this
         var newChild: FileTreeNode
         dirs.forEach {
-            newChild = FileTreeNode(parent, it, true)
-            parent.addChild(newChild)
-            parent = newChild
+            newChild = FileTreeNode(preNode, it, true)
+            if (node == null) {
+                node = newChild
+            }
+            preNode.addChild(newChild)
+            preNode = newChild
         }
-        parent.children.addAll(children)
+        preNode.children = children
         children.clear()
         labeledChildren.clear()
         realChildren.clear()
