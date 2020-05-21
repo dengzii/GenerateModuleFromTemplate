@@ -40,6 +40,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         val fileTreeNode = module.template
         Logger.d(TAG, "Placeholders : " + fileTreeNode.getPlaceholderInherit().toString())
         Logger.d(TAG, "FileTemplates : " + fileTreeNode.getFileTemplateInherit().toString())
+        fileTreeNode.build()
         fileTreeNode.children.forEach {
             createFileTree(it, current)
         }

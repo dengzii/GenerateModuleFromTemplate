@@ -83,7 +83,9 @@ public class PreviewPanel extends JPanel {
     public void setModuleConfig(Module module) {
         Logger.INSTANCE.i("PreviewPanel", "setModuleConfig");
 
-        fileTree.setModel(getTreeModel(module.getTemplate()));
+        FileTreeNode node = module.getTemplate();
+        node.build();
+        fileTree.setModel(getTreeModel(node));
         fileTree.doLayout();
         fileTree.updateUI();
         expandAll(fileTree, new TreePath(fileTree.getModel().getRoot()), true);
