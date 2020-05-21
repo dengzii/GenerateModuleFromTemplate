@@ -58,4 +58,52 @@ class FileTreeDslTest {
         }
         println(tree.getTreeGraph())
     }
+
+    @Test
+    fun expandDirectoriesTest() {
+        val tree = FileTreeDsl {
+            dir("src") {
+                dir("com.dengzii.plugin") {
+                    dir("model")
+                    dir("template")
+                }
+                dir("test")
+            }
+        }
+        tree.build()
+        println(tree.getTreeGraph())
+
+        val tree2 = FileTreeDsl {
+            dir("src") {
+                dir("com.dengzii.plugin") {
+                    dir("dir1/dir2/") {
+                        dir("model")
+                        dir("template")
+                    }
+                    dir("model")
+                    dir("template")
+                }
+                dir("test")
+            }
+        }
+        tree2.build()
+        println(tree2.getTreeGraph())
+    }
+
+    @Test
+    fun expandDirectoriesInPlaceholderTest() {
+
+        val tree = FileTreeDsl {
+            placeholder("PACKAGE_NAME", "com.dengzii.plugin")
+            dir("src") {
+                dir("\${PACKAGE_NAME}") {
+                    dir("model")
+                    dir("template")
+                }
+                dir("test")
+            }
+        }
+        tree.build()
+        println(tree.getTreeGraph())
+    }
 }

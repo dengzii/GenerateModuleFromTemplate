@@ -48,6 +48,7 @@ open class FileTreeNode() {
 
     companion object {
 
+        var packageNameToDirs = true
         private val TAG = FileTreeNode::class.java.simpleName
         private val sPathSplitPattern = Pattern.compile("[./]")
         private val sPlaceholderPattern = Pattern.compile("\\$\\{([A-Za-z0-9_\\-]+)}")
@@ -76,12 +77,19 @@ open class FileTreeNode() {
     fun removeFromParent(): Boolean {
         if (parent != null) {
             parent!!.labeledChildren.remove(getLabel())
-            parent!!.children.remove(this)
+            parent!!.realChildren.remove(this)
+            parent = null
             return true
         }
         return false
     }
 
+    /**
+     * add child to this node
+     *
+     * @param child The child need be add
+     * @param override Weather override the node with the same name and type
+     */
     fun addChild(child: FileTreeNode, override: Boolean = false): Boolean {
         if (hasChild(child.getLabel())) {
             if (override) {
@@ -92,13 +100,13 @@ open class FileTreeNode() {
             }
         }
         child.parent = this
-        children.add(child)
+        realChildren.add(child)
         labeledChildren[child.getLabel()] = child
         return true
     }
 
     fun hasChild(name: String, isDir: Boolean): Boolean {
-        children.forEach {
+        realChildren.forEach {
             if (it.name == name && isDir == it.isDir) {
                 return true
             }
@@ -122,7 +130,6 @@ open class FileTreeNode() {
     }
 
     fun getRealName(fileName: String = this.name): String {
-
         return fileName.replacePlaceholder(getPlaceholderInherit(), !isDir)
     }
 
@@ -190,7 +197,7 @@ open class FileTreeNode() {
     fun traversal(block: (it: FileTreeNode, depth: Int) -> Unit, depth: Int = 0) {
         if (!isDir) return
 
-        children.forEach {
+        realChildren.forEach {
             block(it, depth)
             it.traversal(block, depth + 1)
         }
@@ -238,43 +245,60 @@ open class FileTreeNode() {
         return this == parent || parent == null
     }
 
+    /**
+     * build file tree
+     * replace placeholder in name
+     * if this is directory and name is a path or package name
+     * the name will expand to several dirs
+     */
     fun build() {
 
-        name = getRealName()
         if (!isDir) {
             return
         }
+        name = getRealName()
         if (!isRoot()) {
-            val dir = name.split(sPathSplitPattern).toMutableList()
+            val dir = if (packageNameToDirs) {
+                name.split(sPathSplitPattern)
+            } else {
+                name.split("/")
+            }.filter {
+                it.isNotBlank()
+            }.toMutableList()
+
             expandDirs(dir)
         }
-        children.forEach {
+        realChildren.forEach {
             it.build()
         }
     }
 
-    private fun expandDirs(dirs: List<String>) {
+    /**
+     * expand the dir list
+     * all the children of this will move the new dir
+     */
+    private fun expandDirs(dirs: MutableList<String>) {
         if (dirs.isEmpty() || dirs.size == 1) {
             return
         }
         this.name = dirs.first()
-        dirs.drop(0)
+        dirs.removeAt(0)
 
-        var node: FileTreeNode? = null
         var preNode: FileTreeNode = this
         var newChild: FileTreeNode
+
+        val oldChildren = realChildren.toMutableList()
+        oldChildren.forEach {
+            it.removeFromParent()
+        }
         dirs.forEach {
             newChild = FileTreeNode(preNode, it, true)
-            if (node == null) {
-                node = newChild
-            }
             preNode.addChild(newChild)
             preNode = newChild
         }
-        preNode.children = children
-        children.clear()
-        labeledChildren.clear()
-        realChildren.clear()
+        oldChildren.forEach {
+            preNode.addChild(it)
+        }
     }
 
     fun getAllPlaceholderInTree(): List<String> {
@@ -297,6 +321,11 @@ open class FileTreeNode() {
         return result
     }
 
+    /**
+     * get the tree graph of node inherit
+     *
+     * @return The tree graph of node
+     */
     fun getTreeGraph(): String {
         return getNodeGraph().toString()
     }
