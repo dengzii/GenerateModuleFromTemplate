@@ -36,6 +36,17 @@ object Template {
         file("src")
     }
 
+    val ANDROID_MVP = FileTreeDsl {
+        placeholder("MVP_NAME", "Example")
+
+//        fileTemplate("", "")
+
+        file("\${MVP_NAME}Contract.java")
+        file("\${MVP_NAME}View.java")
+        file("\${MVP_NAME}Presenter.java")
+        file("\${MVP_NAME}Model.java")
+    }
+
     val ANDROID_APP = FileTreeDsl {
         placeholder("MODULE_NAME", "app")
         placeholder("PACKAGE_NAME", "com.example")

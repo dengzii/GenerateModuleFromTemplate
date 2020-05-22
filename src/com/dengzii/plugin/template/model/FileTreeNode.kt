@@ -340,7 +340,7 @@ open class FileTreeNode() {
         val clone = FileTreeNode(null, name, isDir)
         clone.fileTemplates = fileTemplates?.toMutableMap()
         clone.placeholders = placeholders?.toMutableMap()
-        children.forEach {
+        realChildren.forEach {
             clone.addChild(it.clone())
         }
         return clone
@@ -348,7 +348,7 @@ open class FileTreeNode() {
 
     private fun removeChild(label: String): FileTreeNode? {
         if (hasChild(label)) {
-            children.remove(labeledChildren[label])
+            realChildren.remove(labeledChildren[label])
             return labeledChildren.remove(label)
         }
         return null
@@ -360,8 +360,8 @@ open class FileTreeNode() {
             str.append(it)
         }
         str.append(when (this) {
-            parent?.children?.last() -> "└─"
-            parent?.children?.first() -> "├─"
+            parent?.realChildren?.last() -> "└─"
+            parent?.realChildren?.first() -> "├─"
             else -> {
                 when {
                     parent != null -> "├─"
@@ -371,13 +371,13 @@ open class FileTreeNode() {
         })
         str.append(getRealName()).append("\n")
 
-        if (!children.isNullOrEmpty()) {
+        if (!realChildren.isNullOrEmpty()) {
             head.push(when {
                 parent == null -> ""
-                parent?.children?.last() != this -> "│\t"
+                parent?.realChildren?.last() != this -> "│\t"
                 else -> "\t"
             })
-            children.forEach {
+            realChildren.forEach {
                 str.append(it.getNodeGraph(head))
             }
             head.pop()
@@ -386,7 +386,7 @@ open class FileTreeNode() {
     }
 
     private fun createChild() {
-        children.forEach {
+        realChildren.forEach {
             val file = File(it.getPath())
             if (file.exists()) {
                 Logger.d(TAG, "${file.absolutePath} already exists.")

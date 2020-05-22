@@ -3,6 +3,7 @@ package com.dengzii.plugin.template.model
 import com.dengzii.plugin.template.template.AucTemplate
 import com.dengzii.plugin.template.template.Template
 import com.dengzii.plugin.template.utils.Logger
+import com.intellij.packaging.impl.elements.TestModuleOutputPackagingElement
 
 class Module(
         var template: FileTreeNode,
@@ -39,6 +40,10 @@ class Module(
 
         fun getAucExport(): Module {
             return create(AucTemplate.EXPORT.clone(), "Auc Export")
+        }
+
+        fun getAndroidMvp(): Module {
+            return create(Template.ANDROID_MVP, "Android MVP")
         }
 
         fun getLangList() = Language.values().map { it.name.toLowerCase() }.toTypedArray()

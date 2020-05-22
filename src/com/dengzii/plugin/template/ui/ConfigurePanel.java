@@ -137,6 +137,7 @@ public class ConfigurePanel extends JPanel {
         items.put("Auc app", () -> addModuleTemplate(Module.Companion.getAucApp()));
         items.put("Auc Pkg", () -> addModuleTemplate(Module.Companion.getAucPkg()));
         items.put("Auc Export", () -> addModuleTemplate(Module.Companion.getAucExport()));
+        items.put("Android Mvp", () -> addModuleTemplate(Module.Companion.getAndroidMvp()));
         PopMenuUtils.INSTANCE.create(items).show(actionbar, e.getX(), e.getY());
     }
 

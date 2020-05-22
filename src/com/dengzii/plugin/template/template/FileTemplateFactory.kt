@@ -5,6 +5,7 @@ import com.intellij.ide.fileTemplates.FileTemplateDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory
 import com.intellij.openapi.fileTypes.StdFileTypes
+import javax.swing.Icon
 
 
 /**
@@ -17,13 +18,20 @@ import com.intellij.openapi.fileTypes.StdFileTypes
  * </pre>
  */
 class FileTemplateFactory : FileTemplateGroupDescriptorFactory {
+
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
 
         val descriptor = FileTemplateGroupDescriptor("Module Template Plugin Descriptor", AllIcons.Nodes.Plugin)
-        val manifestDesc = FileTemplateDescriptor("Manifest.xml", StdFileTypes.XML.icon)
-        val applicationDesc = FileTemplateDescriptor("Application.java", StdFileTypes.JAVA.icon)
-        descriptor.addTemplate(applicationDesc)
-        descriptor.addTemplate(manifestDesc)
+
+        descriptor.addTemplate(getDescriptor("MainActivity", StdFileTypes.JAVA.icon))
+        descriptor.addTemplate(getDescriptor("Manifest.xml", StdFileTypes.XML.icon))
+        descriptor.addTemplate(getDescriptor("Application.java", StdFileTypes.JAVA.icon))
+        descriptor.addTemplate(getDescriptor("build.gradle", StdFileTypes.PLAIN_TEXT.icon))
+
         return descriptor
+    }
+
+    private fun getDescriptor(templateName: String, icon: Icon?): FileTemplateDescriptor {
+        return FileTemplateDescriptor(templateName, icon)
     }
 }
