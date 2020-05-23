@@ -30,7 +30,7 @@ open class FileTreeNode() {
 
     var placeholders: MutableMap<String, String>? = null
     // all placeholder in tree node name
-    val allPlaceholder by lazy { mutableListOf<String>() }
+    val allPlaceholder = mutableListOf<String>()
 
     // template for node, higher priority than fileTemplates
     private var template: String? = null
@@ -302,12 +302,11 @@ open class FileTreeNode() {
     }
 
     fun getAllPlaceholderInTree(): List<String> {
-        val result = mutableListOf<String>()
-        result.addAll(allPlaceholder)
+        val result = mutableSetOf<String>()
         traversal({ fileTreeNode: FileTreeNode, _: Int ->
             result.addAll(fileTreeNode.allPlaceholder)
         })
-        return result
+        return result.toList()
     }
 
     fun getAllPlaceholdersMap(): Map<String, String> {

@@ -125,6 +125,16 @@ public class ConfigurePanel extends JPanel {
         if (0 == tabbedPane.getSelectedIndex()) {
             currentConfig.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
         }
+        if (2 == tabbedPane.getSelectedIndex()) {
+            Map<String, String> mergedPlaceholder = currentConfig.getTemplate().getAllPlaceholdersMap();
+            List<String> allPlaceholders = currentConfig.getTemplate().getAllPlaceholderInTree();
+            allPlaceholders.forEach(s -> {
+                if (!mergedPlaceholder.containsKey(s)) {
+                    mergedPlaceholder.put(s, "");
+                }
+            });
+            tablePlaceholder.setPairData(mergedPlaceholder);
+        }
         panelPreview.setModuleConfig(currentConfig);
     }
 

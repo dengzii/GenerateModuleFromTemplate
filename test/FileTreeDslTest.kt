@@ -106,4 +106,22 @@ class FileTreeDslTest {
         tree.build()
         println(tree.getTreeGraph())
     }
+
+    @Test
+    fun getAllPlaceholderInTreeNodeNameTest() {
+        val tree = FileTreeDsl {
+            placeholder("PACKAGE_NAME", "com.dengzii.plugin")
+            dir("src") {
+                dir("\${PACKAGE_NAME}") {
+                    dir("model")
+                    dir("template"){
+                        file("\${TEST}")
+                        file("\${TEST2}")
+                    }
+                }
+                dir("test")
+            }
+        }
+        println(tree.getAllPlaceholderInTree())
+    }
 }

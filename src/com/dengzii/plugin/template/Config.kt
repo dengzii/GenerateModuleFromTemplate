@@ -37,7 +37,6 @@ object Config {
             result.add(Module.getAucApp())
             result.add(Module.getAucExport())
             result.add(Module.getAucPkg())
-            result.add(Module.getAndroidMvp())
         }
         if (arr.isNullOrEmpty()) {
             return result

@@ -7,6 +7,7 @@ import com.dengzii.plugin.template.utils.Logger;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import org.bouncycastle.math.raw.Mod;
 
 import javax.swing.*;
 import java.awt.*;
@@ -72,6 +73,8 @@ public class CreateModuleDialog extends JDialog {
 
     private void onNextClick(ActionEvent e) {
         selectedModule.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
+        previewPanel.setModuleConfigPreview(selectedModule);
+
         if (currentPanelIndex == panels.size() - 1) {
             onFinishListener.onFinish(selectedModule);
             dispose();
@@ -118,8 +121,8 @@ public class CreateModuleDialog extends JDialog {
     private void onModuleConfigChange() {
         Logger.INSTANCE.i(TAG, "onModuleConfigChange");
         selectedModule = moduleTemplates.get(cbModuleTemplate.getSelectedIndex());
-        previewPanel.setModuleConfig(selectedModule);
-        tablePlaceholder.setPairData(selectedModule.getTemplate().getPlaceholders());
+        previewPanel.setModuleConfigPreview(selectedModule);
+        tablePlaceholder.setPairData(selectedModule.getTemplate().getPlaceholderInherit());
     }
 
     private void initDialog() {

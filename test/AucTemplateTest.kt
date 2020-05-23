@@ -18,4 +18,14 @@ class AucTemplateTest {
         println(app)
         println(app.getTreeGraph())
     }
+
+    @Test
+    fun aucModuleTemplateTest() {
+        val module = AucTemplate.MODULE {
+            placeholder("FEATURE_NAME","plugin")
+            placeholder("PACKAGE_NAME","com.dengzi")
+        }
+        module.build()
+        println(module.getTreeGraph())
+    }
 }

@@ -13,7 +13,10 @@ import com.intellij.util.IconUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -73,18 +76,23 @@ public class PreviewPanel extends JPanel {
         initPanel();
     }
 
-    public void setReplacePlaceholder(boolean replace){
-        if (replace != replacePlaceholder){
+    public void setReplacePlaceholder(boolean replace) {
+        if (replace != replacePlaceholder) {
             replacePlaceholder = replace;
             fileTree.updateUI();
         }
+    }
+
+    public void setModuleConfigPreview(Module module) {
+        Module clone = module.clone();
+        clone.getTemplate().build();
+        setModuleConfig(clone);
     }
 
     public void setModuleConfig(Module module) {
         Logger.INSTANCE.i("PreviewPanel", "setModuleConfig");
 
         FileTreeNode node = module.getTemplate();
-        node.build();
         fileTree.setModel(getTreeModel(node));
         fileTree.doLayout();
         fileTree.updateUI();
