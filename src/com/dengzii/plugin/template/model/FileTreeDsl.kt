@@ -58,20 +58,28 @@ class FileTreeDsl() : FileTreeNode() {
     fun FileTreeNode.include(other: FileTreeNode, override: Boolean = false) {
         if (!isDir) return
         other.children.forEach {
-            val clone = it.clone()
+            val includeChild = it.clone()
             if (other.placeholders != null) {
-                if (clone.placeholders == null) {
-                    clone.placeholders = mutableMapOf()
+                if (includeChild.placeholders == null) {
+                    includeChild.placeholders = mutableMapOf()
                 }
-                clone.placeholders?.putAll(other.placeholders!!)
+                other.placeholders?.forEach { k, v ->
+                    if (getFileTemplateInherit()?.containsKey(k) != true) {
+                        includeChild.placeholders?.put(k, v)
+                    }
+                }
             }
             if (other.fileTemplates != null) {
-                if (clone.fileTemplates == null) {
-                    clone.fileTemplates = mutableMapOf()
+                if (includeChild.fileTemplates == null) {
+                    includeChild.fileTemplates = mutableMapOf()
                 }
-                clone.fileTemplates?.putAll(other.fileTemplates!!)
+                other.fileTemplates?.forEach { k, v ->
+                    if (fileTemplates?.containsKey(k) != true) {
+                        includeChild.fileTemplates?.put(k, v)
+                    }
+                }
             }
-            addChild(clone, override)
+            addChild(includeChild, override)
         }
     }
 

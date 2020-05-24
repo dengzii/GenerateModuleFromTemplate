@@ -129,8 +129,12 @@ open class FileTreeNode() {
         return getRealName(this.name)
     }
 
-    fun getRealName(fileName: String = this.name): String {
-        return fileName.replacePlaceholder(getPlaceholderInherit(), !isDir)
+    private fun getRealName(fileName: String = this.name): String {
+        return if (isDir) {
+            fileName.replacePlaceholder(getPlaceholderInherit(), false).toLowerCase()
+        } else {
+            fileName.replacePlaceholder(getPlaceholderInherit(), true)
+        }
     }
 
     fun getFileTemplateInherit(): MutableMap<String, String>? {
@@ -368,7 +372,11 @@ open class FileTreeNode() {
                 }
             }
         })
-        str.append(getRealName()).append("\n")
+        str.append(getRealName())
+        if (isDir) {
+//            str.append("\tplaceholder: ").append(placeholders)
+        }
+        str.append("\n")
 
         if (!realChildren.isNullOrEmpty()) {
             head.push(when {

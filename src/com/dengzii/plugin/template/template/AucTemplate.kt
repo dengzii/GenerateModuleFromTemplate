@@ -15,17 +15,18 @@ object AucTemplate {
     private val aucFileTemplates: () -> MutableMap<String, String> = {
         mutableMapOf(
                 Pair("AndroidManifest.xml", "Template Manifest.xml"),
-                Pair("Application.java", "Template Application.java"),
                 Pair("build.gradle", "Template build.gradle"),
-                Pair("\${APPLICATION_NAME}.java", "Template Application.java")
+                Pair("MainActivity.java", "Template MainActivity.java"),
+                Pair("\${FEATURE_NAME}App.java", "Template Application.java"),
+                Pair("\${FEATURE_NAME}Api.java", "Template AucApiClass.java"),
+                Pair("\${FEATURE_NAME}ApiImpl.java", "Template AucApiImplClass.java")
         )
     }
 
     private val aucPlaceholders: () -> MutableMap<String, String> = {
         mutableMapOf(
-                Pair("PACKAGE_NAME", "com/example"),
-                Pair("FEATURE_NAME", "feature"),
-                Pair("APPLICATION_NAME", "App")
+                Pair("PACKAGE_NAME", "com.example"),
+                Pair("FEATURE_NAME", "Feature1")
         )
     }
 
@@ -113,9 +114,19 @@ object AucTemplate {
         addFileTemplates(aucFileTemplates())
         addPlaceholders(aucPlaceholders())
         dir("\${FEATURE_NAME}") {
-            include(APP)
-            include(PKG)
-            include(EXPORT)
+
+            include(APP {
+                placeholders?.remove("\${FEATURE_NAME}")
+                placeholders?.remove("\${PACKAGE_NAME}")
+            })
+            include(PKG {
+                placeholders?.remove("\${FEATURE_NAME}")
+                placeholders?.remove("\${PACKAGE_NAME}")
+            })
+            include(EXPORT {
+                placeholders?.remove("\${FEATURE_NAME}")
+                placeholders?.remove("\${PACKAGE_NAME}")
+            })
         }
     }
 }

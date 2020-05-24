@@ -1,0 +1,11 @@
+package ${PACKAGE_NAME};
+
+import ${PACKAGE_NAME}.export.${FEATURE_NAME}Api;
+import com.blankj.utilcode.util.ApiUtils;
+
+#parse("File Header.java")
+@ApiUtils.Api
+public class Feature1ApiImpl extends ${FEATURE_NAME}Api {
+
+
+}
