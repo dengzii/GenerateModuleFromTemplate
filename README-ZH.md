@@ -3,26 +3,26 @@
 [![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/13586-generate-module-from-template) ](https://plugins.jetbrains.com/plugin/13586-generate-module-from-template)
 [![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/v/13586-generate-module-from-template) ](https://plugins.jetbrains.com/plugin/13586-generate-module-from-template)
 
-[中文 - README](https://github.com/dengzii/GenerateModuleFromTemplate/blob/master/README-ZH.md)
+[README - EN](https://github.com/dengzii/GenerateModuleFromTemplate/blob/master/README.md)
 
-### Create a directory structure from a highly customizable template
+使用这个用于 IntelliJ IDEs 的目录模板插件, 帮助你从模板生成任何目录结构
 
-Using this plugin, help you create directories and files from customizable template
+### 功能
+1. 自定义目录结构
+2. 目录, 文件名, 文件模板支持配置占位符
+3. 支持文件模板配置
 
-### Feature
-1. custom directory structure
-2. support placeholders, and replace it when you create module.
-3. create file from template
-4. support file template variables
+### 使用
+1. 在设置中配置插件的模板: <b>File > Settings > Tools > Module Template Settings
+2. 在 Structure 中配置目录树, 右键编辑树结构.
+3. 目录树可以使用占位符, 占位符是这样的 -> <b>${YOUR_PLACEHOLDER_HERE}.
+4. File Template 中可以配置指定文件的模板, 文件名中可以使用占位符, 会自动替换成你创建时配置的.
+5. Placeholder 中列出了你目录树中所有的占位符, 你可以给他们设置默认值.
+6. 插件中使用的模板是在 IDE 本身 Editor>File And Code Templates 中的模板.
+7. 如果插件更新升级了, 则之前配置保存的模板可能会存在不兼容问题.
+8. 你的 star, 是我更新的动力.
 
-### Usage
-1. Configure template in plugin settings: <b>File > Settings > Tools > Module Template Settings</b>
-2. Create directories from the 'Structure' tab, click the right mouse button to operate the file tree.
-3. FileTree can use placeholders, the placeholder should like this -> <b>${YOUR_PLACEHOLDER_HERE}</b>.
-4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders for FileName field.
-5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates
-
-### Changelog
+### 更新日志
 - 1.3.1: fix: AucFrame module template bugs.
 - 1.3: fix: Placeholder don't work when call FileTreeNode.include.
 - 1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.
@@ -30,7 +30,7 @@ Using this plugin, help you create directories and files from customizable templ
 - 1.1: feature: support create module template, placeholder, file template 1.0: basically feature, generate module directories from template
 - 1.0: basically feature, generate module directories from template
 
-### Screenshot
+### 截图
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/main.png" height="360">
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/preview.png" height="360">
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/settings.png" height="360">
