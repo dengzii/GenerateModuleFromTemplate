@@ -11,6 +11,7 @@
 1. 自定义目录结构
 2. 目录, 文件名, 文件模板支持配置占位符
 3. 支持文件模板配置
+4. 与小伙伴分享你的模板
 
 ### 使用
 1. 在设置中配置插件的模板: <b>File > Settings > Tools > Module Template Settings
@@ -23,6 +24,7 @@
 8. 你的 star, 是我更新的动力.
 
 ### 更新日志
+- 1.4.0: feature: Support export and import template to file, adjust action button position.
 - 1.3.1: fix: AucFrame module template bugs.
 - 1.3: fix: Placeholder don't work when call FileTreeNode.include.
 - 1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.

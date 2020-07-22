@@ -10,10 +10,11 @@
 Using this plugin, help you create directories and files from customizable template
 
 ### Feature
-1. custom directory structure
+1. custom directory structure.
 2. support placeholders, and replace it when you create module.
-3. create file from template
-4. support file template variables
+3. create file from template.
+4. support file template variables.
+5. share your template with partner.
 
 ### Usage
 1. Configure template in plugin settings: <b>File > Settings > Tools > Module Template Settings</b>
@@ -23,6 +24,7 @@ Using this plugin, help you create directories and files from customizable templ
 5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates
 
 ### Changelog
+- 1.4.0: feature: Support export and import template to file, adjust action button position.
 - 1.3.1: fix: AucFrame module template bugs.
 - 1.3: fix: Placeholder don't work when call FileTreeNode.include.
 - 1.2: feature: all IntelliJ platform IDEs support, file template selection support when edit module template.
