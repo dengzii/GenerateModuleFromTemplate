@@ -1,6 +1,5 @@
 package com.dengzii.plugin.template
 
-import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.utils.Logger
 import com.google.gson.GsonBuilder
@@ -22,7 +21,7 @@ object Config {
     private const val KEY_TEMPLATES = "KEY_TEMPLATES"
     private const val KEY_INIT = "KEY_INIT"
 
-    private val GSON by lazy { GsonBuilder().setLenient().create() }
+    val GSON by lazy { GsonBuilder().setLenient().create() }
     private val STORE by lazy { PropertiesComponent.getInstance() }
 
     private fun clear() = STORE.unsetValue(KEY_TEMPLATES)
@@ -45,7 +44,7 @@ object Config {
         arr.filter { !it.isNullOrBlank() }.forEach {
             try {
                 val module = GSON.fromJson(it, Module::class.java)
-                setParent(module.template)
+                module.initTemplate()
                 result.add(module)
             } catch (e: Exception) {
                 clear()
@@ -69,14 +68,5 @@ object Config {
         }
         STORE.setValue(KEY_INIT, false, false)
         STORE.setValues(KEY_TEMPLATES, t.toTypedArray())
-    }
-
-    private fun setParent(node: FileTreeNode) {
-        node.children.forEach {
-            it.parent = node
-            if (it.isDir) {
-                setParent(it)
-            }
-        }
     }
 }

@@ -3,7 +3,6 @@ package com.dengzii.plugin.template.model
 import com.dengzii.plugin.template.template.AucTemplate
 import com.dengzii.plugin.template.template.Template
 import com.dengzii.plugin.template.utils.Logger
-import com.intellij.packaging.impl.elements.TestModuleOutputPackagingElement
 
 class Module(
         var template: FileTreeNode,
@@ -51,6 +50,15 @@ class Module(
 
     enum class Language {
         JAVA;
+    }
+
+    fun initTemplate(node: FileTreeNode = template) {
+        node.children.forEach {
+            it.parent = node
+            if (it.isDir) {
+                initTemplate(it)
+            }
+        }
     }
 
     fun clone(): Module {

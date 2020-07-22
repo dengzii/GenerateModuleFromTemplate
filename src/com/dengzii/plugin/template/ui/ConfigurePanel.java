@@ -1,8 +1,13 @@
 package com.dengzii.plugin.template.ui;
 
 import com.dengzii.plugin.template.Config;
+import com.dengzii.plugin.template.CreateModuleAction;
 import com.dengzii.plugin.template.model.Module;
 import com.dengzii.plugin.template.utils.PopMenuUtils;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTabbedPane;
@@ -13,6 +18,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +102,10 @@ public class ConfigurePanel extends JPanel {
             onCopyConfig();
             return null;
         });
+        actionbar.onExport(() -> {
+            onExportTemplate();
+            return null;
+        });
 
         cbPlaceholder.addChangeListener(e -> {
             panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected());
@@ -105,7 +115,15 @@ public class ConfigurePanel extends JPanel {
         listTemplate.addListSelectionListener(e -> {
             if (noSelectedConfig()) return;
             onConfigSelect(getSelectedConfigIndex());
-
+        });
+        listTemplate.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (e.getButton() != MouseEvent.BUTTON3) {
+                    return;
+                }
+            }
         });
         //noinspection unchecked
         listTemplate.setModel(templateListModel);
@@ -148,11 +166,13 @@ public class ConfigurePanel extends JPanel {
         items.put("Auc Pkg", () -> addModuleTemplate(Module.Companion.getAucPkg()));
         items.put("Auc Export", () -> addModuleTemplate(Module.Companion.getAucExport()));
         items.put("Android Mvp", () -> addModuleTemplate(Module.Companion.getAndroidMvp()));
+        items.put("=> Import From File", this::onImportTemplate);
         PopMenuUtils.INSTANCE.create(items).show(actionbar, e.getX(), e.getY());
     }
 
     private void addModuleTemplate(Module module) {
         configs.add(module);
+        currentConfig = module;
         templateListModel.addElement(module.getTemplateName());
         listTemplate.doLayout();
         listTemplate.setSelectedIndex(configs.indexOf(module));
@@ -185,6 +205,70 @@ public class ConfigurePanel extends JPanel {
         configs.forEach(module -> templateListModel.addElement(module.getTemplateName()));
         if (templateListModel.size() > 0) {
             listTemplate.setSelectedIndex(0);
+        }
+    }
+
+    private void onExportTemplate() {
+
+        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+        descriptor.setTitle("Save Template to File");
+        VirtualFile vf = FileChooser.chooseFile(descriptor,
+                CreateModuleAction.Companion.getProject(),
+                null);
+        if (vf != null && vf.isWritable()) {
+            String config = Config.INSTANCE.getGSON().toJson(currentConfig);
+            File file = new File(vf.getPath(), currentConfig.getTemplateName() + ".json");
+            OutputStreamWriter outputStream = null;
+            try {
+                outputStream = new OutputStreamWriter(new FileOutputStream(file));
+                outputStream.write(config);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (outputStream != null) {
+                    try {
+                        outputStream.flush();
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void onImportTemplate() {
+
+        FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFileDescriptor("json");
+        descriptor.setTitle("Import Template From File");
+        VirtualFile vf = FileChooser.chooseFile(descriptor,
+                CreateModuleAction.Companion.getProject(),
+                null);
+        if (vf != null && vf.exists()) {
+            File file = new File(vf.getPath());
+            BufferedInputStream inputStream = null;
+            try {
+                inputStream = new BufferedInputStream(new FileInputStream(file));
+                byte[] bytes = new byte[1024];
+                int len = 0;
+                StringBuilder stringBuilder = new StringBuilder();
+                while ((len = inputStream.read(bytes)) > 0) {
+                    stringBuilder.append(new String(bytes, 0, len));
+                }
+                Module template = Config.INSTANCE.getGSON().fromJson(stringBuilder.toString(), Module.class);
+                template.initTemplate(template.getTemplate());
+                addModuleTemplate(template);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 

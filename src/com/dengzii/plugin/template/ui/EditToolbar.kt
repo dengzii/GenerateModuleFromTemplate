@@ -1,16 +1,12 @@
 package com.dengzii.plugin.template.ui
 
 import com.intellij.icons.AllIcons
-import com.intellij.util.ui.JBEmptyBorder
 import java.awt.Dimension
 import java.awt.FlowLayout
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
 import java.awt.event.MouseAdapter
 import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JPanel
-import javax.swing.border.Border
 
 /**
  * <pre>
@@ -26,6 +22,7 @@ class EditToolbar : JPanel() {
     private val btAdd = JButton("Add")
     private val btRemove = JButton("Remove")
     private val btCopy = JButton("Copy")
+    private val btShare = JButton("Export")
 
     init {
         initLayout()
@@ -36,20 +33,26 @@ class EditToolbar : JPanel() {
         btAdd.addMouseListener(listener)
     }
 
-    fun onAdd(listener: ()->Unit) {
+    fun onAdd(listener: () -> Unit) {
         btAdd.addActionListener {
             listener()
         }
     }
 
     fun onRemove(listener: () -> Unit) {
-        btRemove.addActionListener{
+        btRemove.addActionListener {
             listener()
         }
     }
 
     fun onCopy(listener: () -> Unit) {
-        btCopy.addActionListener{
+        btCopy.addActionListener {
+            listener()
+        }
+    }
+
+    fun onExport(listener: () -> Unit) {
+        btShare.addActionListener {
             listener()
         }
     }
@@ -67,6 +70,7 @@ class EditToolbar : JPanel() {
         setIconButton(btAdd, AllIcons.General.Add)
         setIconButton(btRemove, AllIcons.General.Remove)
         setIconButton(btCopy, AllIcons.General.CopyHovered)
+        setIconButton(btShare, AllIcons.Actions.Download)
     }
 
     private fun setIconButton(button: JButton, icon: Icon) {
