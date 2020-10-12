@@ -14,7 +14,7 @@
 4. 与小伙伴分享你的模板
 
 ### 使用
-1. 在设置中配置插件的模板: <b>File > Settings > Tools > Module Template Settings
+1. 在设置中配置插件的模板: File > Settings > Tools > Module Template Settings
 2. 在 Structure 中配置目录树, 右键编辑树结构.
 3. 目录树可以使用占位符, 占位符是这样的 -> <b>${YOUR_PLACEHOLDER_HERE}.
 4. File Template 中可以配置指定文件的模板, 文件名中可以使用占位符, 会自动替换成你创建时配置的.
@@ -22,6 +22,22 @@
 6. 插件中使用的模板是在 IDE 本身 Editor>File And Code Templates 中的模板.
 7. 如果插件更新升级了, 则之前配置保存的模板可能会存在不兼容问题.
 8. 你的 star, 是我更新的动力.
+
+### 构建
+IDEA 无法正常导入这个项目, 不是 gradle , pom, java 项目, 而是 IDEA Platform Plugin 项目, 需要手动处理一些问题.
+
+#### 导入
+必须使用 IDEA Community版本, `File -> New -> Project from Exsiting Sources -> Create project  from exsiting sources` 然后一直点 next 直到 Finish.
+
+快捷键 `Ctrl + Alt + Shift + S` 打开 **Project Structure** 窗口, 选择 **Project** tab, 将 **Project SDK** 改为 `IntelliJ IDEA Community Edition IC-xxxx`, 然后应用改变关闭窗口.
+
+最后, 编辑根目录下的 `GenerateModuleFromTemplate.iml`, 把 `module` 节点的 `type` 改为 `PLUGIN_MODULE`, 最小化IDEA然后恢复, IDE 会检测到插件项目.
+
+最最后, `Run -> Edit Configuretions -> Alt + Insert -> Plugin -> Apply`, 项目就导入成功了.
+
+### 输出 Jar 文件
+
+`Run -> Prepare Plugin Module xxx For Deployment`
 
 ### 更新日志
 - 1.4.0: feature: Support export and import template to file, adjust action button position.
