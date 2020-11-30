@@ -16,7 +16,9 @@
         <children>
           <component id="9661f" class="com.dengzii.plugin.template.ui.EditToolbar" binding="actionbar">
             <constraints/>
-            <properties/>
+            <properties>
+              <enabled value="true"/>
+            </properties>
           </component>
           <grid id="699a3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="100" bottom="0" right="0"/>
@@ -61,7 +63,7 @@
         <border type="none"/>
         <children>
           <grid id="6e9e7" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="6" left="6" bottom="6" right="6"/>
+            <margin top="6" left="6" bottom="6" right="0"/>
             <constraints border-constraint="West"/>
             <properties/>
             <border type="empty"/>
@@ -99,7 +101,7 @@
             </border>
             <children>
               <grid id="6d154" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="6" bottom="6" right="6"/>
+                <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints border-constraint="Center"/>
                 <properties/>
                 <border type="none"/>

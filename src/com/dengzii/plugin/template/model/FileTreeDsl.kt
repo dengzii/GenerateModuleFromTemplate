@@ -1,7 +1,5 @@
 package com.dengzii.plugin.template.model
 
-import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
-
 class FileTreeDsl() : FileTreeNode() {
 
     constructor(block: FileTreeDsl.() -> Unit) : this() {
@@ -37,8 +35,8 @@ class FileTreeDsl() : FileTreeNode() {
 
     fun FileTreeNode.file(name: String) {
         if (!isDir) return
-        name.getPlaceholder().ifNotEmpty {
-            allPlaceholder.addAll(this)
+        if (name.getPlaceholder().isNotEmpty()) {
+            allPlaceholder.addAll(name.getPlaceholder())
         }
         addChild(FileTreeNode(this, name, false))
     }

@@ -7,7 +7,6 @@ import com.dengzii.plugin.template.utils.Logger;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import org.bouncycastle.math.raw.Mod;
 
 import javax.swing.*;
 import java.awt.*;

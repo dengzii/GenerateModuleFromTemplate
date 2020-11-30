@@ -1,6 +1,7 @@
 package com.dengzii.plugin.template
 
 import com.dengzii.plugin.template.ui.ConfigurePanel
+import com.dengzii.plugin.template.ui.RealConfigurePanel
 import com.intellij.openapi.options.SearchableConfigurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
@@ -16,7 +17,7 @@ import javax.swing.JComponent
  */
 class TemplateConfigurable() : SearchableConfigurable {
 
-    private lateinit var panelConfig: ConfigurePanel
+    private lateinit var panelConfig: RealConfigurePanel
     private var onApplyListener: OnApplyListener? = null
 
     constructor(onApplyListener: OnApplyListener) : this() {
@@ -34,7 +35,7 @@ class TemplateConfigurable() : SearchableConfigurable {
     }
 
     override fun createComponent(): JComponent? {
-        panelConfig = ConfigurePanel()
+        panelConfig = RealConfigurePanel()
         return panelConfig
     }
 

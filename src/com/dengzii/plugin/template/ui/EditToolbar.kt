@@ -3,7 +3,9 @@ package com.dengzii.plugin.template.ui
 import com.intellij.icons.AllIcons
 import java.awt.Dimension
 import java.awt.FlowLayout
+import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -33,10 +35,13 @@ class EditToolbar : JPanel() {
         btAdd.addMouseListener(listener)
     }
 
-    fun onAdd(listener: () -> Unit) {
-        btAdd.addActionListener {
-            listener()
-        }
+    fun onAdd(listener: (MouseEvent?) -> Unit) {
+        btAdd.addMouseListener(object :MouseAdapter(){
+            override fun mouseClicked(e: MouseEvent?) {
+                super.mouseClicked(e)
+                listener(e)
+            }
+        })
     }
 
     fun onRemove(listener: () -> Unit) {

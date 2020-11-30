@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class CreateFileDialog extends JDialog {
+public class FileDialog extends JDialog {
     private static final String NONE = "None";
 
     private JPanel contentPane;
@@ -25,23 +25,23 @@ public class CreateFileDialog extends JDialog {
     private FileTreeNode current;
 
     public static void showForRefactor(FileTreeNode node, CreateFileCallback createFileCallback) {
-        CreateFileDialog createFileDialog = new CreateFileDialog();
-        createFileDialog.createFileCallback = createFileCallback;
-        createFileDialog.isDir = node.isDir();
-        createFileDialog.parent = node.getParent();
-        createFileDialog.current = node;
-        createFileDialog.initDialog();
+        FileDialog fileDialog = new FileDialog();
+        fileDialog.createFileCallback = createFileCallback;
+        fileDialog.isDir = node.isDir();
+        fileDialog.parent = node.getParent();
+        fileDialog.current = node;
+        fileDialog.initDialog();
     }
 
     public static void showForCreate(FileTreeNode parent, boolean isDir, CreateFileCallback createFileCallback) {
-        CreateFileDialog createFileDialog = new CreateFileDialog();
-        createFileDialog.createFileCallback = createFileCallback;
-        createFileDialog.isDir = isDir;
-        createFileDialog.parent = parent;
-        createFileDialog.initDialog();
+        FileDialog fileDialog = new FileDialog();
+        fileDialog.createFileCallback = createFileCallback;
+        fileDialog.isDir = isDir;
+        fileDialog.parent = parent;
+        fileDialog.initDialog();
     }
 
-    private CreateFileDialog() {
+    private FileDialog() {
         setContentPane(contentPane);
         setModal(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -136,7 +136,7 @@ public class CreateFileDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        CreateFileDialog.showForCreate(null, true, fileTreeNode -> {
+        FileDialog.showForCreate(null, true, fileTreeNode -> {
 
         });
     }

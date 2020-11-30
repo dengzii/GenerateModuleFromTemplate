@@ -3,7 +3,6 @@
 package com.dengzii.plugin.template.model
 
 import com.dengzii.plugin.template.utils.Logger
-import org.jetbrains.kotlin.utils.addToStdlib.ifNotEmpty
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -29,6 +28,7 @@ open class FileTreeNode() {
         get() = realChildren
 
     var placeholders: MutableMap<String, String>? = null
+
     // all placeholder in tree node name
     val allPlaceholder = mutableListOf<String>()
 
@@ -43,6 +43,7 @@ open class FileTreeNode() {
     // the label composed by 'name' and 'isDir'.
     @Transient
     private val labeledChildren = mutableMapOf<String, FileTreeNode>()
+
     @Transient
     var parent: FileTreeNode? = null
 
@@ -69,9 +70,17 @@ open class FileTreeNode() {
         this.name = name
         this.parent = parent
         this.isDir = isDir
-        name.getPlaceholder().ifNotEmpty {
-            allPlaceholder.addAll(this)
+        if (name.getPlaceholder().isNotEmpty()) {
+            allPlaceholder.addAll(name.getPlaceholder())
         }
+    }
+
+    fun getTreeNodeCount(): Int {
+        var count = realChildren.size
+        realChildren.forEach {
+            count += it.getTreeNodeCount()
+        }
+        return count
     }
 
     fun removeFromParent(): Boolean {
@@ -135,6 +144,17 @@ open class FileTreeNode() {
         } else {
             fileName.replacePlaceholder(getPlaceholderInherit(), true)
         }
+    }
+
+    fun getNodeHasTemplateInTree(): List<FileTreeNode> {
+        val nodes = mutableListOf<FileTreeNode>()
+        if (fileTemplates != null) {
+            nodes.add(this)
+        }
+        realChildren.forEach {
+            nodes.addAll(it.getNodeHasTemplateInTree())
+        }
+        return nodes
     }
 
     fun getFileTemplateInherit(): MutableMap<String, String>? {
