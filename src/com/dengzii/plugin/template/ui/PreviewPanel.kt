@@ -4,8 +4,7 @@ import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.tools.ui.PopMenuUtils
 import com.dengzii.plugin.template.tools.ui.onRightMouseButtonClicked
-import com.dengzii.plugin.template.utils.Logger.d
-import com.dengzii.plugin.template.utils.Logger.i
+import com.dengzii.plugin.template.utils.Logger
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.packageDependencies.ui.TreeModel
@@ -29,8 +28,10 @@ class PreviewPanel : JPanel() {
 
     private var fileTree: Tree = Tree()
 
+    private lateinit var module:Module
     private val fileIconMap: MutableMap<String, Icon> = HashMap()
     private var replacePlaceholder = true
+    private var onTreeUpdateListener: (() -> Unit)? = null
 
     // render tree node icon, title
     private val treeCellRenderer = object : ColoredTreeCellRenderer() {
@@ -67,10 +68,13 @@ class PreviewPanel : JPanel() {
     fun setReplacePlaceholder(replace: Boolean) {
         if (replace != replacePlaceholder) {
             replacePlaceholder = replace
-            updateFileTreeUI()
+            fileTree.updateUI()
         }
     }
 
+    /**
+     * Preview file tree, clone and build tree.
+     */
     fun setModuleConfigPreview(module: Module) {
         val clone = module.clone()
         clone.template.build()
@@ -78,12 +82,19 @@ class PreviewPanel : JPanel() {
     }
 
     fun setModuleConfig(module: Module) {
-        i("PreviewPanel", "setModuleConfig")
-        val node = module.template
-        fileTree.model = getTreeModel(node)
+        Logger.i("PreviewPanel", "setModuleConfig")
+        this.module = module
+        fileTree.model = getTreeModel(this.module.template)
         fileTree.doLayout()
-        updateFileTreeUI()
+        fileTree.updateUI()
         expandAll(fileTree, TreePath(fileTree.model.root), true)
+    }
+
+    /**
+     * Set the callback of tree edit, delete, add event.
+     */
+    fun setOnTreeUpdateListener(listener: (() -> Unit)?) {
+        onTreeUpdateListener = listener
     }
 
     /**
@@ -107,7 +118,7 @@ class PreviewPanel : JPanel() {
                 }
                 val selectedNode = nodes[nodes.size - 1] as FileTreeNode
                 showEditMenu(e, selectedNode)
-                d("PreviewPanel", selectedNode.toString())
+                Logger.d("PreviewPanel", selectedNode.toString())
             }
         }
         fileTree.addKeyListener(object : KeyAdapter() {
@@ -162,10 +173,15 @@ class PreviewPanel : JPanel() {
 
     private fun updateFileTreeUI() {
         fileTree.updateUI()
+        onTreeUpdateListener?.invoke()
     }
 
     private fun addTreeNode(parent: FileTreeNode, node: FileTreeNode) {
-        parent.children.add(node)
+        parent.addChild(node, true)
+        module.template.addPlaceholders(node.placeholders.orEmpty())
+        module.template.addFileTemplates(node.fileTemplates.orEmpty())
+        node.fileTemplates?.clear()
+        node.placeholders?.clear()
         (fileTree.lastSelectedPathComponent as DefaultMutableTreeNode).add(DefaultMutableTreeNode(node))
         updateFileTreeUI()
     }
@@ -200,28 +216,4 @@ class PreviewPanel : JPanel() {
             tree.collapsePath(parent)
         }
     }
-
-    private fun getMenuItem(title: String, listener: ActionListener): JBMenuItem? {
-        val jbMenuItem = JBMenuItem(title)
-        jbMenuItem.addActionListener(listener)
-        return jbMenuItem
-    }
-
-}
-
-class Dialog : JDialog() {
-    init {
-        contentPane = PreviewPanel().apply {
-            setModuleConfig(Module.getAucModule())
-        }
-    }
-}
-
-
-fun main() {
-    Dialog().apply {
-        pack()
-        isVisible = true
-    }
-
 }

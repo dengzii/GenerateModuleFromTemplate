@@ -1,6 +1,5 @@
 package com.dengzii.plugin.template
 
-import com.dengzii.plugin.template.ui.ConfigurePanel
 import com.dengzii.plugin.template.ui.RealConfigurePanel
 import com.intellij.openapi.options.SearchableConfigurable
 import org.jetbrains.annotations.Nls
@@ -34,17 +33,17 @@ class TemplateConfigurable() : SearchableConfigurable {
         return "preferences.ModuleTemplateConfig"
     }
 
-    override fun createComponent(): JComponent? {
+    override fun createComponent(): JComponent {
         panelConfig = RealConfigurePanel()
         return panelConfig
     }
 
     override fun isModified(): Boolean {
-        return true
+        return panelConfig.isModified()
     }
 
     @Nls(capitalization = Nls.Capitalization.Title)
-    override fun getDisplayName(): String? {
+    override fun getDisplayName(): String {
         return "Module Template Settings"
     }
 

@@ -146,6 +146,17 @@ open class FileTreeNode() {
         }
     }
 
+    /**
+     * Return all file template in tree node
+     */
+    fun getAllTemplateMap(): Map<String, String> {
+        val templates = fileTemplates.orEmpty().toMutableMap()
+        realChildren.forEach {
+            templates.putAll(it.getAllTemplateMap())
+        }
+        return templates
+    }
+
     fun getNodeHasTemplateInTree(): List<FileTreeNode> {
         val nodes = mutableListOf<FileTreeNode>()
         if (fileTemplates != null) {
@@ -180,6 +191,21 @@ open class FileTreeNode() {
         this.placeholders!!.putAll(placeholders)
     }
 
+    fun addPlaceholders(placeholders: Array<String>) {
+        addPlaceholders(placeholders.associate {
+            it to (this.placeholders?.getOrDefault(it, "") ?: "")
+        })
+    }
+
+    /**
+     * Add placeholders with empty value.
+     */
+    fun addFileTemplate(fileName: String, template: String) {
+        if (fileTemplates == null) {
+            fileTemplates = mutableMapOf()
+        }
+        fileTemplates!![fileName] = template
+    }
 
     fun addFileTemplates(placeholders: Map<String, String>) {
         if (this.fileTemplates == null) {
@@ -325,14 +351,20 @@ open class FileTreeNode() {
         }
     }
 
+    /**
+     * Return the placeholder key list in node tree.
+     */
     fun getAllPlaceholderInTree(): List<String> {
-        val result = mutableSetOf<String>()
+        val result = allPlaceholder.toMutableList()
         traversal({ fileTreeNode: FileTreeNode, _: Int ->
             result.addAll(fileTreeNode.allPlaceholder)
         })
         return result.toList()
     }
 
+    /**
+     * Return the placeholder key/replacement map of the node tree.
+     */
     fun getAllPlaceholdersMap(): Map<String, String> {
         val result = mutableMapOf<String, String>()
         result.putAll(placeholders.orEmpty())

@@ -1,5 +1,6 @@
 package com.dengzii.plugin.template.utils
 
+import com.dengzii.plugin.template.tools.NotificationUtils
 import com.intellij.ide.fileTemplates.FileTemplate
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
@@ -34,6 +35,13 @@ class PluginKit private constructor(e: AnActionEvent) {
     init {
         if (e.project != null) {
             project = e.project!!
+        }
+    }
+
+    private inline fun requireProject(action: () -> Unit) {
+        if (!isProjectValid()) {
+            NotificationUtils.showError("Plugin GenerateModuleFromTemplate require a project.")
+            action.invoke()
         }
     }
 
@@ -87,6 +95,13 @@ class PluginKit private constructor(e: AnActionEvent) {
         vf!!.createChildData(null, name)
     }
 
+    fun calculateTemplate(templateContent: String): Array<String>? {
+        requireProject {
+            return null
+        }
+        return FileTemplateUtil.calculateAttributes(templateContent, Properties(), true, project)
+    }
+
     fun createFileFromTemplate(fileName: String,
                                templateName: String,
                                propertiesMap: Map<String, String>,
@@ -133,10 +148,13 @@ class PluginKit private constructor(e: AnActionEvent) {
 
     companion object {
 
-        private val TAG = PluginKit::class.java.simpleName;
+        private val TAG = PluginKit::class.java.simpleName
 
-        fun get(e: AnActionEvent): PluginKit {
-            return PluginKit(e)
+        private lateinit var INSTANCE: PluginKit
+
+        fun init(e: AnActionEvent): PluginKit {
+            INSTANCE = PluginKit(e)
+            return INSTANCE
         }
 
         fun getAllFileTemplate(): Array<FileTemplate> = FileTemplateManagerImpl.getDefaultInstance().allTemplates

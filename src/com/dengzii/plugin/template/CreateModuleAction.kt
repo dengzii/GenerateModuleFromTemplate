@@ -23,7 +23,7 @@ class CreateModuleAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val kit = PluginKit.get(e)
+        val kit = PluginKit.init(e)
         if (!kit.isProjectValid()) {
             Logger.d(CreateModuleAction::class.java.simpleName, "Project is not valid.")
             return

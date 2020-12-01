@@ -3,9 +3,8 @@ package com.dengzii.plugin.template.ui
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import javax.swing.JPanel
+import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
 
 /**
@@ -36,6 +35,12 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
         table.model = tableModel
         table.putClientProperty("terminateEditOnFocusLost", true)
         initListener()
+    }
+
+    fun addChangeListener(listener: (TableModelEvent) -> Unit) {
+        tableModel.addTableModelListener {
+            listener.invoke(it)
+        }
     }
 
     fun setToolBarVisible(visible: Boolean) {

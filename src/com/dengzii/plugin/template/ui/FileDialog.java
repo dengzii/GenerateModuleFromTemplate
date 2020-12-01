@@ -3,11 +3,15 @@ package com.dengzii.plugin.template.ui;
 import com.dengzii.plugin.template.model.FileTreeNode;
 import com.dengzii.plugin.template.utils.PluginKit;
 import com.intellij.ide.fileTemplates.FileTemplate;
+import com.intellij.ide.fileTemplates.FileTemplateUtil;
+import com.intellij.openapi.project.ProjectManager;
+import org.apache.velocity.runtime.parser.ParseException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Properties;
 
 public class FileDialog extends JDialog {
     private static final String NONE = "None";
@@ -18,18 +22,21 @@ public class FileDialog extends JDialog {
     private JLabel lbTemplate;
     private JLabel lbName;
     private JButton btConfirm;
+    private JPanel panelTemplate;
+    private JCheckBox cbProperties;
 
     private CreateFileCallback createFileCallback;
     private boolean isDir;
     private FileTreeNode parent;
-    private FileTreeNode current;
+    private FileTreeNode fileNode;
+    private FileTemplate[] fileTemplates;
 
     public static void showForRefactor(FileTreeNode node, CreateFileCallback createFileCallback) {
         FileDialog fileDialog = new FileDialog();
         fileDialog.createFileCallback = createFileCallback;
         fileDialog.isDir = node.isDir();
         fileDialog.parent = node.getParent();
-        fileDialog.current = node;
+        fileDialog.fileNode = node;
         fileDialog.initDialog();
     }
 
@@ -48,16 +55,16 @@ public class FileDialog extends JDialog {
     }
 
     private void initFileTemplateList() {
-        FileTemplate[] fileTemplates = PluginKit.Companion.getAllFileTemplate();
+        fileTemplates = PluginKit.Companion.getAllFileTemplate();
         String[] items = new String[fileTemplates.length + 1];
         items[0] = NONE;
         for (int i = 0; i < fileTemplates.length; i++) {
             items[i + 1] = fileTemplates[i].getName();
         }
         cbTemplate.setModel(new DefaultComboBoxModel<>(items));
-        if (isRefactor() && current.getTemplateFile() != null
-                && PluginKit.Companion.getFileTemplate(current.getTemplateFile()) != null) {
-            cbTemplate.setSelectedItem(current.getTemplateFile());
+        if (isRefactor() && fileNode.getTemplateFile() != null
+                && PluginKit.Companion.getFileTemplate(fileNode.getTemplateFile()) != null) {
+            cbTemplate.setSelectedItem(fileNode.getTemplateFile());
         }
     }
 
@@ -65,22 +72,34 @@ public class FileDialog extends JDialog {
         if (tfName.getText().trim().isEmpty()) {
             return;
         }
+        String template = getSelectedTemplate();
+        template = NONE.equals(template) ? "" : template;
+
         if (isRefactor()) {
-            current.setName(tfName.getText());
+            fileNode.setName(tfName.getText());
             // setup template
-            if (!isDir && getSelectedTemplate() != null && !getSelectedTemplate().equals(NONE)) {
-                current.setTemplate(getSelectedTemplate());
-            }
         } else {
-            current = new FileTreeNode(parent, tfName.getText(), isDir);
+            fileNode = new FileTreeNode(parent, tfName.getText(), isDir);
+        }
+        if (!isDir && template != null) {
+            if (!template.isEmpty() && cbProperties.isSelected()) {
+                FileTemplate ft = fileTemplates[cbTemplate.getSelectedIndex() - 1];
+                String[] p = new String[0];
+                try {
+                    p = FileTemplateUtil.calculateAttributes(ft.getText(), new Properties(), true, ProjectManager.getInstance().getDefaultProject());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                fileNode.addPlaceholders(p);
+            }
+            fileNode.addFileTemplate(fileNode.getName(), template);
         }
 
         if (!isRefactor() && parent != null && parent.hasChild(tfName.getText(), isDir)) {
             lbName.setText(lbName.getText() + "  (already exist.)");
             return;
         }
-
-        createFileCallback.callback(current);
+        createFileCallback.callback(fileNode);
         dispose();
     }
 
@@ -89,6 +108,7 @@ public class FileDialog extends JDialog {
         if (isDir) {
             lbTemplate.setVisible(false);
             cbTemplate.setVisible(false);
+            panelTemplate.setVisible(false);
         } else {
             initFileTemplateList();
         }
@@ -104,7 +124,7 @@ public class FileDialog extends JDialog {
 
         setTitle((isRefactor() ? "Refactor " : "New ") + (isDir ? "Directory" : "File"));
         if (isRefactor()) {
-            tfName.setText(current.getRealName());
+            tfName.setText(fileNode.getRealName());
         }
         tfName.addKeyListener(new KeyAdapter() {
             @Override
@@ -128,7 +148,7 @@ public class FileDialog extends JDialog {
     }
 
     private boolean isRefactor() {
-        return current != null;
+        return fileNode != null;
     }
 
     public interface CreateFileCallback {

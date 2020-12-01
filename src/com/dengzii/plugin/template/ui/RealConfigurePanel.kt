@@ -1,8 +1,7 @@
 package com.dengzii.plugin.template.ui
 
+import com.dengzii.plugin.template.Config
 import com.dengzii.plugin.template.Config.GSON
-import com.dengzii.plugin.template.Config.loadModuleTemplates
-import com.dengzii.plugin.template.Config.saveModuleTemplates
 import com.dengzii.plugin.template.CreateModuleAction.Companion.project
 import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.model.Module.Companion.getAndroidApplication
@@ -37,6 +36,7 @@ class RealConfigurePanel : ConfigurePanel() {
 
     private lateinit var tablePlaceholder: EditableTable
     private lateinit var tableFileTemp: EditableTable
+    private var modified = false
 
     init {
         initComponent()
@@ -44,14 +44,17 @@ class RealConfigurePanel : ConfigurePanel() {
         initData()
     }
 
+    fun isModified() = modified
+
     fun cacheConfig() {
-        if (currentConfig == null) return
+        currentConfig ?: return
         currentConfig!!.template.fileTemplates = tableFileTemp.getPairResult()
         currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
     }
 
     fun saveConfig() {
-        saveModuleTemplates(configs!!)
+        Config.saveModuleTemplates(configs!!)
+        modified = false
     }
 
     private fun initComponent() {
@@ -72,6 +75,15 @@ class RealConfigurePanel : ConfigurePanel() {
                 onAddConfig(e)
             }
         }
+        tableFileTemp.addChangeListener {
+            modified = true
+        }
+        tableFileTemp.addChangeListener {
+            modified = true
+        }
+        panelPreview.setOnTreeUpdateListener {
+            modified = true
+        }
         actionbar.onRemove(this::onRemoveConfig)
         actionbar.onCopy(this::onCopyConfig)
         actionbar.onExport(this::onExportTemplate)
@@ -79,12 +91,18 @@ class RealConfigurePanel : ConfigurePanel() {
             panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
         }
         tabbedPane.addChangeListener {
-            onChangeTab()
+            currentConfig ?: return@addChangeListener
+            when (tabbedPane.selectedIndex) {
+                0 -> currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
+                1 -> updateTableFileTemplate()
+                2 -> updateTablePlaceholder()
+            }
+            panelPreview.setModuleConfig(currentConfig!!)
         }
         listTemplate.selectionMode = ListSelectionModel.SINGLE_SELECTION
         listTemplate.addListSelectionListener {
             if (isNoConfigSelected()) return@addListSelectionListener
-            setCurrentConfigIndex(getSelectedConfigIndex())
+            onConfigListSelected()
         }
         listTemplate.setModel(templateListModel)
         tfName.document.addDocumentListener(object : DocumentAdapter() {
@@ -97,29 +115,28 @@ class RealConfigurePanel : ConfigurePanel() {
         }
     }
 
-    private fun onChangeTab() {
-        if (0 == tabbedPane.selectedIndex) {
-            currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
+    private fun updateTableFileTemplate() {
+        val fileTemplates = currentConfig!!.template.getAllTemplateMap()
+        tableFileTemp.setPairData(fileTemplates)
+    }
+
+    private fun updateTablePlaceholder() {
+        val mergedPlaceholder = currentConfig!!.template.getAllPlaceholdersMap().toMutableMap()
+        val allPlaceholders = currentConfig!!.template.getAllPlaceholderInTree()
+        allPlaceholders.forEach { s: String ->
+            if (s !in mergedPlaceholder) {
+                mergedPlaceholder[s] = ""
+            }
         }
-        if (2 == tabbedPane.selectedIndex) {
-            val mergedPlaceholder = currentConfig!!.template.getAllPlaceholdersMap().toMutableMap()
-            val allPlaceholders = currentConfig!!.template.getAllPlaceholderInTree()
-            allPlaceholders.forEach(Consumer { s: String ->
-                if (!mergedPlaceholder.containsKey(s)) {
-                    mergedPlaceholder[s] = ""
-                }
-            })
-            tablePlaceholder.setPairData(mergedPlaceholder)
-        }
-        panelPreview.setModuleConfig(currentConfig!!)
+        tablePlaceholder.setPairData(mergedPlaceholder)
     }
 
     private fun addModuleTemplate(module: Module) {
         configs!!.add(module)
-        currentConfig = module
         templateListModel!!.addElement(module.templateName)
         listTemplate.doLayout()
         listTemplate.selectedIndex = configs!!.indexOf(module)
+        onConfigListSelected()
     }
 
     private fun onRemoveConfig() {
@@ -144,7 +161,7 @@ class RealConfigurePanel : ConfigurePanel() {
     }
 
     private fun loadConfig() {
-        configs = loadModuleTemplates()
+        configs = Config.loadModuleTemplates()
         templateListModel = DefaultListModel()
         configs!!.forEach(Consumer { module: Module -> templateListModel!!.addElement(module.templateName) })
         if (templateListModel!!.size() > 0) {
@@ -152,13 +169,12 @@ class RealConfigurePanel : ConfigurePanel() {
         }
     }
 
-    private fun setCurrentConfigIndex(index: Int) {
+    private fun onConfigListSelected() {
+        val index = getSelectedConfigIndex()
         if (currentConfig == configs!![index]) {
             return
         }
-        if (currentConfig != null) {
-            cacheConfig()
-        }
+        cacheConfig()
         currentConfig = configs!![index]
         tfName.text = currentConfig!!.templateName
 
@@ -173,15 +189,15 @@ class RealConfigurePanel : ConfigurePanel() {
     private fun isNoConfigSelected() = getSelectedConfigIndex() == -1
 
     private fun onAddConfig(e: MouseEvent) {
-        PopMenuUtils.show(e, mapOf(
+        PopMenuUtils.show(e, linkedMapOf(
                 "Empty Template" to { addModuleTemplate(getEmpty()) },
+                "* Import From File" to { onImportTemplate() },
                 "Android Application" to { addModuleTemplate(getAndroidApplication()) },
-                "Auc Module" to { addModuleTemplate(getAucModule()) },
-                "Auc app" to { addModuleTemplate(getAucApp()) },
-                "Auc Pkg" to { addModuleTemplate(getAucPkg()) },
-                "Auc Export" to { addModuleTemplate(getAucExport()) },
                 "Android Mvp" to { addModuleTemplate(getAndroidMvp()) },
-                "=> Import From File" to { onImportTemplate() }
+                "Auc Module" to { addModuleTemplate(getAucModule()) },
+                "Auc App" to { addModuleTemplate(getAucApp()) },
+                "Auc Pkg" to { addModuleTemplate(getAucPkg()) },
+                "Auc Export" to { addModuleTemplate(getAucExport()) }
         ))
     }
 

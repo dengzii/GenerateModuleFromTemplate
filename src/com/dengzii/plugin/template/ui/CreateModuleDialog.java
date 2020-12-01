@@ -12,9 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 public class CreateModuleDialog extends JDialog {
@@ -31,9 +29,13 @@ public class CreateModuleDialog extends JDialog {
     private JButton btCancel;
     private JButton btPrevious;
     private JButton btFinish;
-    private JPanel panelPlaceholder;
+    private JScrollPane scrollPanePlaceHolder;
+    private JScrollPane scrollPaneFileTemplate;
+//    private JPanel panelPlaceholder;
 
     private EditableTable tablePlaceholder;
+    private EditableTable tableFileTemplate;
+
     private OnFinishListener onFinishListener;
 
     private java.util.List<Module> moduleTemplates = Collections.emptyList();
@@ -72,6 +74,7 @@ public class CreateModuleDialog extends JDialog {
 
     private void onNextClick(ActionEvent e) {
         selectedModule.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
+        selectedModule.getTemplate().setFileTemplates(tableFileTemplate.getPairResult());
         previewPanel.setModuleConfigPreview(selectedModule);
 
         if (currentPanelIndex == panels.size() - 1) {
@@ -121,7 +124,8 @@ public class CreateModuleDialog extends JDialog {
         Logger.INSTANCE.i(TAG, "onModuleConfigChange");
         selectedModule = moduleTemplates.get(cbModuleTemplate.getSelectedIndex());
         previewPanel.setModuleConfigPreview(selectedModule);
-        tablePlaceholder.setPairData(selectedModule.getTemplate().getPlaceholderInherit());
+        tablePlaceholder.setPairData(selectedModule.getTemplate().getAllPlaceholdersMap());
+        tableFileTemplate.setPairData(selectedModule.getTemplate().getAllTemplateMap());
     }
 
     private void initDialog() {
@@ -141,7 +145,11 @@ public class CreateModuleDialog extends JDialog {
 
         tablePlaceholder = new EditableTable(new String[]{"Key", "Value"}, new Boolean[]{false, true});
         tablePlaceholder.setToolBarVisible(false);
-        panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER);
+        tableFileTemplate = new EditableTable(new String[]{"File Name", "Template"}, new Boolean[]{false, true});
+        tableFileTemplate.setToolBarVisible(false);
+
+        scrollPanePlaceHolder.setViewportView(tablePlaceholder);
+        scrollPaneFileTemplate.setViewportView(tableFileTemplate);
 
         btConfigure.setIcon(AllIcons.General.GearPlain);
         previewPanel = new PreviewPanel();
