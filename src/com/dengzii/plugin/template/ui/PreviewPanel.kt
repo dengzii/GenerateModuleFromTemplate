@@ -6,7 +6,6 @@ import com.dengzii.plugin.template.tools.ui.PopMenuUtils
 import com.dengzii.plugin.template.tools.ui.onRightMouseButtonClicked
 import com.dengzii.plugin.template.utils.Logger
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.ui.JBMenuItem
 import com.intellij.packageDependencies.ui.TreeModel
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.components.JBScrollPane
@@ -17,7 +16,6 @@ import java.awt.event.*
 import java.util.*
 import java.util.function.Consumer
 import javax.swing.Icon
-import javax.swing.JDialog
 import javax.swing.JPanel
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
@@ -28,7 +26,7 @@ class PreviewPanel : JPanel() {
 
     private var fileTree: Tree = Tree()
 
-    private lateinit var module:Module
+    private lateinit var module: Module
     private val fileIconMap: MutableMap<String, Icon> = HashMap()
     private var replacePlaceholder = true
     private var onTreeUpdateListener: (() -> Unit)? = null

@@ -12,7 +12,7 @@ class AucTemplateTest {
             placeholder("PACKAGE_NAME", "com.dengzii.plugin")
         }
         println(app.placeholders)
-        println(app.getAllPlaceholderInTree())
+//        println(app.getAllPlaceholderInTree())
 
         app.build()
         println(app)

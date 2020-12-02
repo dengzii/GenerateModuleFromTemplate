@@ -29,9 +29,6 @@ open class FileTreeNode() {
 
     var placeholders: MutableMap<String, String>? = null
 
-    // all placeholder in tree node name
-    val allPlaceholder = mutableListOf<String>()
-
     // template for node, higher priority than fileTemplates
     private var template: String? = null
 
@@ -70,9 +67,6 @@ open class FileTreeNode() {
         this.name = name
         this.parent = parent
         this.isDir = isDir
-        if (name.getPlaceholder().isNotEmpty()) {
-            allPlaceholder.addAll(name.getPlaceholder())
-        }
     }
 
     fun getTreeNodeCount(): Int {
@@ -146,6 +140,21 @@ open class FileTreeNode() {
         }
     }
 
+    fun removeAllTemplateInTree() {
+        fileTemplates?.clear()
+        template = null
+        traversal({ it, _ ->
+            it.removeAllTemplateInTree()
+        })
+    }
+
+    fun removeAllPlaceHolderInTree() {
+        placeholders?.clear()
+        traversal({ it, _ ->
+            it.removeAllPlaceHolderInTree()
+        })
+    }
+
     /**
      * Return all file template in tree node
      */
@@ -169,11 +178,19 @@ open class FileTreeNode() {
     }
 
     fun getFileTemplateInherit(): MutableMap<String, String>? {
-        return fileTemplates ?: parent?.getFileTemplateInherit()
+        return if (fileTemplates.isNullOrEmpty()) {
+            return parent?.getFileTemplateInherit()
+        } else {
+            fileTemplates
+        }
     }
 
     fun getPlaceholderInherit(): MutableMap<String, String>? {
-        return placeholders ?: parent?.getPlaceholderInherit()
+        return if (placeholders.isNullOrEmpty()) {
+            return parent?.getPlaceholderInherit()
+        } else {
+            placeholders
+        }
     }
 
     fun getTemplateFile(): String? {
@@ -349,17 +366,6 @@ open class FileTreeNode() {
         oldChildren.forEach {
             preNode.addChild(it)
         }
-    }
-
-    /**
-     * Return the placeholder key list in node tree.
-     */
-    fun getAllPlaceholderInTree(): List<String> {
-        val result = allPlaceholder.toMutableList()
-        traversal({ fileTreeNode: FileTreeNode, _: Int ->
-            result.addAll(fileTreeNode.allPlaceholder)
-        })
-        return result.toList()
     }
 
     /**

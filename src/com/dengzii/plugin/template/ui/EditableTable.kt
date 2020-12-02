@@ -68,7 +68,7 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
         for (i in 0 until table.rowCount) {
             val key = table.getValueAt(i, 0).toString()
             val value = table.getValueAt(i, 1).toString()
-            if (key.isBlank() || value.isBlank()) {
+            if (key.isBlank()) {
                 continue
             }
             result[key] = value

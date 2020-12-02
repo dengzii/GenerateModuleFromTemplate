@@ -35,8 +35,10 @@ class FileTreeDsl() : FileTreeNode() {
 
     fun FileTreeNode.file(name: String) {
         if (!isDir) return
-        if (name.getPlaceholder().isNotEmpty()) {
-            allPlaceholder.addAll(name.getPlaceholder())
+        name.getPlaceholder().forEach {
+            if (getPlaceholderInherit()?.containsKey(it) == false) {
+                placeholder(it, "")
+            }
         }
         addChild(FileTreeNode(this, name, false))
     }

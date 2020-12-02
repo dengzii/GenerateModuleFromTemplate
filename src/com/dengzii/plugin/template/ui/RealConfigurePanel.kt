@@ -48,8 +48,12 @@ class RealConfigurePanel : ConfigurePanel() {
 
     fun cacheConfig() {
         currentConfig ?: return
-        currentConfig!!.template.fileTemplates = tableFileTemp.getPairResult()
-        currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
+        currentConfig!!.template.run {
+            removeAllPlaceHolderInTree()
+            removeAllTemplateInTree()
+            fileTemplates = tableFileTemp.getPairResult()
+            placeholders = tablePlaceholder.getPairResult()
+        }
     }
 
     fun saveConfig() {
@@ -67,7 +71,6 @@ class RealConfigurePanel : ConfigurePanel() {
         panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER)
         panelFileTemp.add(tableFileTemp, BorderLayout.CENTER)
     }
-
 
     private fun initData() {
         actionbar.onAdd { e ->
@@ -93,9 +96,12 @@ class RealConfigurePanel : ConfigurePanel() {
         tabbedPane.addChangeListener {
             currentConfig ?: return@addChangeListener
             when (tabbedPane.selectedIndex) {
-                0 -> currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
-                1 -> updateTableFileTemplate()
-                2 -> updateTablePlaceholder()
+                0 -> {
+                    currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
+                    currentConfig!!.template.fileTemplates = tableFileTemp.getPairResult()
+                }
+                1 -> tableFileTemp.setPairData(currentConfig!!.template.getAllTemplateMap())
+                2 -> tablePlaceholder.setPairData(currentConfig!!.template.getAllPlaceholdersMap().toMutableMap())
             }
             panelPreview.setModuleConfig(currentConfig!!)
         }
@@ -115,22 +121,6 @@ class RealConfigurePanel : ConfigurePanel() {
         }
     }
 
-    private fun updateTableFileTemplate() {
-        val fileTemplates = currentConfig!!.template.getAllTemplateMap()
-        tableFileTemp.setPairData(fileTemplates)
-    }
-
-    private fun updateTablePlaceholder() {
-        val mergedPlaceholder = currentConfig!!.template.getAllPlaceholdersMap().toMutableMap()
-        val allPlaceholders = currentConfig!!.template.getAllPlaceholderInTree()
-        allPlaceholders.forEach { s: String ->
-            if (s !in mergedPlaceholder) {
-                mergedPlaceholder[s] = ""
-            }
-        }
-        tablePlaceholder.setPairData(mergedPlaceholder)
-    }
-
     private fun addModuleTemplate(module: Module) {
         configs!!.add(module)
         templateListModel!!.addElement(module.templateName)
@@ -146,6 +136,17 @@ class RealConfigurePanel : ConfigurePanel() {
         val selectedIndex = getSelectedConfigIndex()
         configs!!.removeAt(selectedIndex)
         templateListModel!!.remove(selectedIndex)
+        if (!listTemplate.isEmpty) {
+            panelPreview.isEnabled = true
+            listTemplate.selectedIndex = 0
+            onConfigListSelected()
+        } else {
+            currentConfig = null
+            tablePlaceholder.setPairData(mapOf())
+            tableFileTemp.setPairData(mapOf())
+            panelPreview.setModuleConfig(getEmpty())
+            panelPreview.isEnabled = false
+        }
         listTemplate.doLayout()
     }
 

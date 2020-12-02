@@ -33,13 +33,11 @@ object Template {
     }
 
     val EMPTY = FileTreeDsl {
-        file("src")
+
     }
 
     val ANDROID_MVP = FileTreeDsl {
         placeholder("MVP_NAME", "Example")
-
-//        fileTemplate("", "")
 
         file("\${MVP_NAME}Contract.java")
         file("\${MVP_NAME}View.java")

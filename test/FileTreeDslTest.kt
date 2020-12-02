@@ -122,6 +122,6 @@ class FileTreeDslTest {
                 dir("test")
             }
         }
-        println(tree.getAllPlaceholderInTree())
+//        println(tree.getAllPlaceholderInTree())
     }
 }
