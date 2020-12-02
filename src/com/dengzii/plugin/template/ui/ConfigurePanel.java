@@ -23,7 +23,7 @@ public class ConfigurePanel extends JPanel {
     JPanel panelStructure;
     JPanel panelPlaceholder;
     JPanel panelFileTemp;
-    EditToolbar actionbar;
     JCheckBox cbPlaceholder;
     JBTabbedPane tabbedPane;
+    JPanel panelActionBar;
 }

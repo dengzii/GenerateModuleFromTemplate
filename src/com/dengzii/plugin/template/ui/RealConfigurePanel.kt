@@ -11,7 +11,9 @@ import com.dengzii.plugin.template.model.Module.Companion.getAucExport
 import com.dengzii.plugin.template.model.Module.Companion.getAucModule
 import com.dengzii.plugin.template.model.Module.Companion.getAucPkg
 import com.dengzii.plugin.template.model.Module.Companion.getEmpty
+import com.dengzii.plugin.template.tools.ui.ActionToolBarUtils
 import com.dengzii.plugin.template.tools.ui.PopMenuUtils
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.ui.DocumentAdapter
@@ -39,6 +41,20 @@ class RealConfigurePanel : ConfigurePanel() {
     private var modified = false
 
     init {
+        panelActionBar.add(ActionToolBarUtils.create("ActionBar1", true, listOf(
+                ActionToolBarUtils.Action(AllIcons.General.Add) {
+//                    onAddConfig()
+                },
+                ActionToolBarUtils.Action(AllIcons.General.Remove) {
+                    onRemoveConfig()
+                },
+                ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
+                    onCopyConfig()
+                },
+                ActionToolBarUtils.Action(AllIcons.Actions.Download) {
+                    onExportTemplate()
+                }
+        )))
         initComponent()
         loadConfig()
         initData()
@@ -73,11 +89,6 @@ class RealConfigurePanel : ConfigurePanel() {
     }
 
     private fun initData() {
-        actionbar.onAdd { e ->
-            if (e != null) {
-                onAddConfig(e)
-            }
-        }
         tableFileTemp.addChangeListener {
             modified = true
         }
@@ -87,9 +98,6 @@ class RealConfigurePanel : ConfigurePanel() {
         panelPreview.setOnTreeUpdateListener {
             modified = true
         }
-        actionbar.onRemove(this::onRemoveConfig)
-        actionbar.onCopy(this::onCopyConfig)
-        actionbar.onExport(this::onExportTemplate)
         cbPlaceholder.addChangeListener {
             panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
         }
@@ -122,6 +130,12 @@ class RealConfigurePanel : ConfigurePanel() {
     }
 
     private fun addModuleTemplate(module: Module) {
+        configs!!.forEach {
+            if (it.templateName == module.templateName) {
+                module.templateName = module.templateName + "_New"
+            }
+        }
+
         configs!!.add(module)
         templateListModel!!.addElement(module.templateName)
         listTemplate.doLayout()

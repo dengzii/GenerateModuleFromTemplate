@@ -3,16 +3,31 @@ package com.dengzii.plugin.template.ui;
 import com.dengzii.plugin.template.Config;
 import com.dengzii.plugin.template.TemplateConfigurable;
 import com.dengzii.plugin.template.model.Module;
+import com.dengzii.plugin.template.tools.NotificationUtils;
+import com.dengzii.plugin.template.tools.ui.ActionToolBarUtils;
 import com.dengzii.plugin.template.utils.Logger;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.ActionButtonLook;
+import com.intellij.openapi.actionSystem.impl.ActionButton;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Couple;
+import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeScreenComponentFactory;
+import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.ui.JBUI;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class CreateModuleDialog extends JDialog {
@@ -31,23 +46,22 @@ public class CreateModuleDialog extends JDialog {
     private JButton btFinish;
     private JScrollPane scrollPanePlaceHolder;
     private JScrollPane scrollPaneFileTemplate;
-//    private JPanel panelPlaceholder;
 
     private EditableTable tablePlaceholder;
     private EditableTable tableFileTemplate;
 
-    private OnFinishListener onFinishListener;
+    private final OnFinishListener onFinishListener;
 
     private java.util.List<Module> moduleTemplates = Collections.emptyList();
     private Module selectedModule;
 
-    private HashMap<String, JPanel> panels = new HashMap<>();
-    private List<String> titles = new ArrayList<>();
+    private final HashMap<String, JPanel> panels = new HashMap<>();
+    private final List<String> titles = new ArrayList<>();
 
     private PreviewPanel previewPanel;
 
     private int currentPanelIndex;
-    private Project project;
+    private final Project project;
 
     private CreateModuleDialog(Project project, OnFinishListener onFinishListener) {
         setContentPane(rootPanel);
