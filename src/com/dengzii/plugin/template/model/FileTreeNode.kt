@@ -140,6 +140,8 @@ open class FileTreeNode() {
         }
     }
 
+    fun getPlaceholderInNodeName() = name.getPlaceholder()
+
     fun removeAllTemplateInTree() {
         fileTemplates?.clear()
         template = null
@@ -479,9 +481,13 @@ open class FileTreeNode() {
 
     protected fun String.getPlaceholder(): List<String> {
         val result = mutableListOf<String>()
-        val nameMatcher = sPlaceholderPattern.matcher(this)
-        while (nameMatcher.find()) {
-            result.add(nameMatcher.group(1))
+        try {
+            val nameMatcher = sPlaceholderPattern.matcher(this)
+            while (nameMatcher.find()) {
+                result.add(nameMatcher.group(1))
+            }
+        } catch (e: Exception) {
+            Logger.e("FileTreeNode", e)
         }
         return result
     }

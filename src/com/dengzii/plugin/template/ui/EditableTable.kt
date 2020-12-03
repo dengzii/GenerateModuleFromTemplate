@@ -1,5 +1,9 @@
 package com.dengzii.plugin.template.ui
 
+import com.dengzii.plugin.template.tools.ui.ActionToolBarUtils
+import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
@@ -19,13 +23,32 @@ import javax.swing.table.DefaultTableModel
 class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyArray()) : JPanel() {
 
     private val scrollPanel = JBScrollPane()
-    private val editToolbar = EditToolbar()
+    private val editToolbar:ActionToolbarImpl
     private val table = JBTable()
     private var tableModel = TableModel(header, colEditable)
 
     init {
         layout = BorderLayout()
-
+        editToolbar = ActionToolBarUtils.create("Edit1", true, listOf(
+                ActionToolBarUtils.Action(AllIcons.General.Add) {
+                    tableModel.add()
+                    table.updateUI()
+                },
+                ActionToolBarUtils.Action(AllIcons.General.Remove) {
+                    if (table.selectedRow == -1) {
+                        return@Action
+                    }
+                    tableModel.remove(table.selectedRow)
+                    table.updateUI()
+                },
+                ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
+                    if (table.selectedRow == -1) {
+                        return@Action
+                    }
+                    tableModel.copy(table.selectedRow)
+                    table.updateUI()
+                }
+        ))
         add(editToolbar, BorderLayout.NORTH)
         scrollPanel.setViewportView(table)
         add(scrollPanel, BorderLayout.CENTER)
@@ -34,7 +57,6 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
         table.showVerticalLines = true
         table.model = tableModel
         table.putClientProperty("terminateEditOnFocusLost", true)
-        initListener()
     }
 
     fun addChangeListener(listener: (TableModelEvent) -> Unit) {
@@ -74,28 +96,6 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
             result[key] = value
         }
         return result
-    }
-
-    private fun initListener() {
-
-        editToolbar.onAdd {
-            tableModel.add()
-            table.updateUI()
-        }
-        editToolbar.onCopy {
-            if (table.selectedRow == -1) {
-                return@onCopy
-            }
-            tableModel.copy(table.selectedRow)
-            table.updateUI()
-        }
-        editToolbar.onRemove {
-            if (table.selectedRow == -1) {
-                return@onRemove
-            }
-            tableModel.remove(table.selectedRow)
-            table.updateUI()
-        }
     }
 
     internal class TableModel(private val header: Array<String>, private val colEditable: Array<Boolean>) : DefaultTableModel() {

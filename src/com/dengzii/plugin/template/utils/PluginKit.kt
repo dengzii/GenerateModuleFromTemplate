@@ -82,17 +82,27 @@ class PluginKit private constructor(e: AnActionEvent) {
     }
 
     fun createDir(name: String, vf: VirtualFile? = getVirtualFile()): VirtualFile? {
-        if (!checkCreateFile(name, vf)) {
+        if (vf == null || !vf.isDirectory) {
+            Logger.e(TAG, "target is null or is not a directory.")
             return null
         }
-        return vf!!.createChildDirectory(null, name)
+        if (vf.findChild(name)?.exists() == true) {
+            return vf.findChild(name)
+        }
+        return vf.createChildDirectory(null, name)
     }
 
-    fun createFile(name: String, vf: VirtualFile? = getVirtualFile()) {
+    fun createFile(name: String, vf: VirtualFile? = getVirtualFile()): Boolean {
         if (!checkCreateFile(name, vf)) {
-            return
+            return false
         }
-        vf!!.createChildData(null, name)
+        return try {
+            vf!!.createChildData(null, name)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     fun calculateTemplate(templateContent: String): Array<String>? {
@@ -114,10 +124,12 @@ class PluginKit private constructor(e: AnActionEvent) {
         }
         val template = fileTemplateManager.getTemplate(templateName) ?: return null
         val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: return null
+        template.name = fileName
+        template.extension = fileName.split(".").last()
         return try {
             FileTemplateUtil.createFromTemplate(template, fileName, properties, psiDirectory)
         } catch (e: Throwable) {
-            Logger.e(TAG, e)
+            e.printStackTrace()
             null
         }
     }

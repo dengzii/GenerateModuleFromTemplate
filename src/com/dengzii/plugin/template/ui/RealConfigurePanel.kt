@@ -17,6 +17,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.ui.DocumentAdapter
+import com.intellij.ui.table.TableView
 import java.awt.BorderLayout
 import java.awt.event.MouseEvent
 import java.io.*
@@ -43,7 +44,7 @@ class RealConfigurePanel : ConfigurePanel() {
     init {
         panelActionBar.add(ActionToolBarUtils.create("ActionBar1", true, listOf(
                 ActionToolBarUtils.Action(AllIcons.General.Add) {
-//                    onAddConfig()
+                    onAddConfig()
                 },
                 ActionToolBarUtils.Action(AllIcons.General.Remove) {
                     onRemoveConfig()
@@ -203,8 +204,8 @@ class RealConfigurePanel : ConfigurePanel() {
 
     private fun isNoConfigSelected() = getSelectedConfigIndex() == -1
 
-    private fun onAddConfig(e: MouseEvent) {
-        PopMenuUtils.show(e, linkedMapOf(
+    private fun onAddConfig() {
+        PopMenuUtils.create(linkedMapOf(
                 "Empty Template" to { addModuleTemplate(getEmpty()) },
                 "* Import From File" to { onImportTemplate() },
                 "Android Application" to { addModuleTemplate(getAndroidApplication()) },
@@ -213,7 +214,7 @@ class RealConfigurePanel : ConfigurePanel() {
                 "Auc App" to { addModuleTemplate(getAucApp()) },
                 "Auc Pkg" to { addModuleTemplate(getAucPkg()) },
                 "Auc Export" to { addModuleTemplate(getAucExport()) }
-        ))
+        )).show(panelActionBar, panelActionBar.x, panelActionBar.y)
     }
 
     private fun onExportTemplate() {

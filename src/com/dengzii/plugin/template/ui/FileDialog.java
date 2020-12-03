@@ -92,7 +92,9 @@ public class FileDialog extends JDialog {
                 }
                 fileNode.addPlaceholders(p);
             }
-            fileNode.addFileTemplate(fileNode.getName(), template);
+            if (!template.isEmpty()){
+                fileNode.addFileTemplate(fileNode.getName(), template);
+            }
         }
 
         if (!isRefactor() && parent != null && parent.hasChild(tfName.getText(), isDir)) {

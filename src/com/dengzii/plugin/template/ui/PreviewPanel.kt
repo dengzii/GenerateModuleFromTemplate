@@ -7,6 +7,7 @@ import com.dengzii.plugin.template.tools.ui.onRightMouseButtonClicked
 import com.dengzii.plugin.template.utils.Logger
 import com.intellij.icons.AllIcons
 import com.intellij.packageDependencies.ui.TreeModel
+import com.intellij.testFramework.createProjectAndUseInLoadComponentStateMode
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
@@ -176,6 +177,7 @@ class PreviewPanel : JPanel() {
 
     private fun addTreeNode(parent: FileTreeNode, node: FileTreeNode) {
         parent.addChild(node, true)
+        module.template.addPlaceholders(node.getPlaceholderInNodeName().toTypedArray())
         module.template.addPlaceholders(node.placeholders.orEmpty())
         module.template.addFileTemplates(node.fileTemplates.orEmpty())
         node.fileTemplates?.clear()
