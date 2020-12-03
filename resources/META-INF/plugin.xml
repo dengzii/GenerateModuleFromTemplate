@@ -1,50 +1,52 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
-
 <b>Create a directory structure from a highly customizable template</b><br>
 <br>
-Using this plugin, help you create directories and files from customizable template<br>
+Using this plugin, help you create directories and files from the customizable template<br>
 <br>
 <b>Feature</b><br>
-1. custom directory structure<br>
-2. support placeholders, and replace it when you create module.<br>
-3. create file from template<br>
-4. support file template variables<br>
-
+1. Custom directory structure.<br>
+2. Support placeholders, and replace it when you create a module.<br>
+3. Specify file templates from IDE custom/build-in templates.<br>
+4. Passing placeholders to file template as variables.<br>
+5. Output/import template file. share your template with your partner.<br>
+<br>
 <b>Usage</b><br>
-1. Configure template in plugin settings: <b>File > Settings > Tools > Module Template Settings</b><br>
+1. Configure template in plugin settings: <b>File > Settings > Tools > Module Template Settings</b>.<br>
 2. Create directories from the 'Structure' tab, click the right mouse button to operate the file tree.<br>
 3. FileTree can use placeholders, the placeholder should like this -> <b>${YOUR_PLACEHOLDER_HERE}</b>.<br>
 4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders for FileName field.<br>
 5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates<br>
-
+More information: <a href='https://github.com/dengzii/GenerateModuleFromTemplate/blob/master/README.md'>README</a><br>
+<br>
+<b>NOTE</b><br>
+- The existing files will be skipped. <br>
+- The Java class file name may depends on ClassName, you better keep the class name and file name consistent, else the file name in the template will not effective.<br>
+- The placeholders are best not the same as the built-in property of `Apache Velocity`.<br>
+- The dot(.) in the directory name will split and expand as several directories.<br>
 <br>
 <b>Contribute</b><br>
 <a href='https://github.com/dengzii/GenerateModuleFromTemplate'>GitHub</a><br>
 Any question please <a href='https://github.com/dengzii/GenerateModuleFromTemplate/issues/new'>create issue</a><br>
 <br>
-
 <b>Screenshot</b><br>
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/settings.png" height="360">
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/main.png" height="360">
 <img src="https://raw.githubusercontent.com/dengzii/GenerateModuleFromTemplate/master/screenshot/preview.png" height="360">
-
 <br>
     ]]></description>
 
     <change-notes><![CDATA[
-  1.4.0: feature: Support export and import template to file, adjust action button position<br>
-  1.3.1: fix: AucFrame module template bugs<br>
-  1.3:   fix: Placeholder don't work when call FileTreeNode.include<br>
-  1.2:   feature: all IntelliJ platform IDEs support, file template selection support when edit module template.<br>
-  1.1:   feature: support create module template, placeholder, file template<br>
-  1.0:   basically feature, generate module directories from template<br>
-  ]]>
+    <b>Version 1.5.0 (2020/12/3)</b><br>
+    0. Fix bug: specify template doesn't work.<br>
+    1. More feature: fetch template variables as placeholders when add a file, support specify file template when create the module.<br>
+    2. Update UI: looks more comfortable.<br>
+]]>
     </change-notes>
 
     <idea-version since-build="191.8026.42"/>
