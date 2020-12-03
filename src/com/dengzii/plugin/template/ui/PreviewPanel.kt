@@ -6,12 +6,11 @@ import com.dengzii.plugin.template.tools.ui.PopMenuUtils
 import com.dengzii.plugin.template.tools.ui.onRightMouseButtonClicked
 import com.dengzii.plugin.template.utils.Logger
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.packageDependencies.ui.TreeModel
-import com.intellij.testFramework.createProjectAndUseInLoadComponentStateMode
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
-import com.intellij.util.IconUtil
 import java.awt.BorderLayout
 import java.awt.event.*
 import java.util.*
@@ -28,7 +27,6 @@ class PreviewPanel : JPanel() {
     private var fileTree: Tree = Tree()
 
     private lateinit var module: Module
-    private val fileIconMap: MutableMap<String, Icon> = HashMap()
     private var replacePlaceholder = true
     private var onTreeUpdateListener: (() -> Unit)? = null
 
@@ -38,19 +36,13 @@ class PreviewPanel : JPanel() {
             if (value is DefaultMutableTreeNode) {
                 val node = value.userObject
                 if (node is FileTreeNode) {
-                    icon = IconUtil.getAddClassIcon()
+                    icon = getIconByFileName(node.name)
                     this.append(if (replacePlaceholder) node.getRealName() else node.name)
-                    if (node.isDir) {
-                        icon = AllIcons.Nodes.Package
+                    icon = if (node.isDir) {
+                        AllIcons.Nodes.Package
                     } else {
-                        var suffix = ""
-                        if (node.name.contains(".")) {
-                            suffix = node.name.substring(node.name.lastIndexOf("."))
-                        }
-                        icon = fileIconMap.getOrDefault(suffix, AllIcons.FileTypes.Text)
+                        getIconByFileName(node.name)
                     }
-                } else {
-                    icon = AllIcons.FileTypes.Unknown
                 }
             }
         }
@@ -96,16 +88,15 @@ class PreviewPanel : JPanel() {
         onTreeUpdateListener = listener
     }
 
+    private fun getIconByFileName(fileName: String): Icon {
+        return FileTypeManager.getInstance().getFileTypeByExtension(fileName.split(".").last()).icon
+                ?: AllIcons.FileTypes.Text
+    }
+
     /**
      * init Tree icon, node title, mouse listener
      */
     private fun initPanel() {
-        fileIconMap[".java"] = AllIcons.Nodes.Class
-        fileIconMap[".kt"] = AllIcons.Nodes.Class
-        fileIconMap[".xml"] = AllIcons.FileTypes.Xml
-        fileIconMap[".gradle"] = AllIcons.FileTypes.Config
-        fileIconMap[".gitignore"] = AllIcons.FileTypes.Config
-        fileIconMap[".pro"] = AllIcons.FileTypes.Config
         fileTree.onRightMouseButtonClicked { e ->
             val row = fileTree.getRowForLocation(e.x, e.y)
             if (row != -1) {

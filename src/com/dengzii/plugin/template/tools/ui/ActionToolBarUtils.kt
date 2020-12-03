@@ -2,32 +2,38 @@ package com.dengzii.plugin.template.tools.ui
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.Presentation
-import com.intellij.openapi.actionSystem.ex.ActionButtonLook
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
+import com.intellij.openapi.actionSystem.impl.PresentationFactory
 import com.intellij.util.ui.JBUI
 import java.awt.Dimension
+import java.awt.FlowLayout
 import javax.swing.Icon
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 object ActionToolBarUtils {
 
-    fun create(place: String, horizontal: Boolean = true, action: List<Action>): ActionToolbarImpl {
-        val toolbarActionGroup = DefaultActionGroup(action)
-        return object : ActionToolbarImpl(place, toolbarActionGroup, horizontal, false, true) {
-            override fun createToolbarButton(action: AnAction, look: ActionButtonLook?, place: String,
-                                             presentation: Presentation, minimumSize: Dimension): ActionButton {
-                if (action is Action) {
-                    presentation.icon = action.icon
-                    presentation.isEnabled = action.isEnabled
-                    presentation.description = action.desc
-                }
-                val bt = super.createToolbarButton(action, look, place, presentation, minimumSize)
-                bt.setIconInsets(JBUI.insets(0))
-                return bt
-            }
+    fun create(place: String, action: List<Action>): JComponent {
+
+        val panel = JPanel()
+        panel.layout = FlowLayout().also {
+            it.alignment = FlowLayout.LEFT
+            it.hgap = 0
+            it.vgap = 0
         }
+        val factory = PresentationFactory()
+        action.forEach {
+            val presentation = factory.getPresentation(it).also { p ->
+                p.icon = it.icon
+                p.isEnabled = it.isEnabled
+                p.description = it.desc
+            }
+            val bt = ActionButton(it, presentation, place, Dimension(22, 24))
+            bt.setIconInsets(JBUI.insets(0))
+            panel.add(bt)
+        }
+        return panel
     }
 
     class Action(var icon: Icon,

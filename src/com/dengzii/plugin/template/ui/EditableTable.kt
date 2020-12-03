@@ -2,11 +2,10 @@ package com.dengzii.plugin.template.ui
 
 import com.dengzii.plugin.template.tools.ui.ActionToolBarUtils
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.actionSystem.ActionToolbar
-import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
@@ -23,13 +22,13 @@ import javax.swing.table.DefaultTableModel
 class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyArray()) : JPanel() {
 
     private val scrollPanel = JBScrollPane()
-    private val editToolbar:ActionToolbarImpl
+    private val editToolbar: JComponent
     private val table = JBTable()
     private var tableModel = TableModel(header, colEditable)
 
     init {
         layout = BorderLayout()
-        editToolbar = ActionToolBarUtils.create("Edit1", true, listOf(
+        editToolbar = ActionToolBarUtils.create("Edit1", listOf(
                 ActionToolBarUtils.Action(AllIcons.General.Add) {
                     tableModel.add()
                     table.updateUI()

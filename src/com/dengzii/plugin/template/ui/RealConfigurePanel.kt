@@ -17,9 +17,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.ui.DocumentAdapter
-import com.intellij.ui.table.TableView
 import java.awt.BorderLayout
-import java.awt.event.MouseEvent
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
@@ -42,7 +40,7 @@ class RealConfigurePanel : ConfigurePanel() {
     private var modified = false
 
     init {
-        panelActionBar.add(ActionToolBarUtils.create("ActionBar1", true, listOf(
+        panelActionBar.add(ActionToolBarUtils.create("ActionBar1", listOf(
                 ActionToolBarUtils.Action(AllIcons.General.Add) {
                     onAddConfig()
                 },
@@ -170,6 +168,7 @@ class RealConfigurePanel : ConfigurePanel() {
             return
         }
         val newConfig = currentConfig!!.clone()
+        newConfig.templateName = newConfig.templateName + "_Copy"
         configs!!.add(newConfig)
         templateListModel!!.addElement(newConfig.templateName)
         listTemplate.doLayout()

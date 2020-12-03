@@ -44,7 +44,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
             failedList.addAll(createFileTree(it, current))
         }
         if (failedList.isNotEmpty()) {
-            val msg = failedList.joinToString { it.getRealName() + "\n" }
+            val msg = failedList.joinToString("\n") { it.getRealName() }
             NotificationUtils.showError(msg, "The following file creation failed.")
         }
     }
