@@ -5,6 +5,8 @@
 
 [中文 - README](https://github.com/dengzii/GenerateModuleFromTemplate/blob/master/README-ZH.md)
 
+[Video Tutorial - YouTube](https://youtu.be/TyeXnbCcBP4)
+
 ### Create a directory structure from a highly customizable template
 
 Using this plugin, help you create directories and files from the customizable template.

@@ -1,13 +1,17 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
 <b>Create a directory structure from a highly customizable template</b><br>
 <br>
 Using this plugin, help you create directories and files from the customizable template<br>
+<br>
+
+<br>
+<a href="https://youtu.be/TyeXnbCcBP4">Video Tutorial - YouTube</a>
 <br>
 <b>Feature</b><br>
 1. Custom directory structure.<br>
@@ -42,6 +46,10 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     ]]></description>
 
     <change-notes><![CDATA[
+    <b>Version 1.5.1 (2021/06/28)</b><br>
+    0. Fix bug: file template can not use.<br>
+    1. Update: Rename file use original name.<br>
+    <br>
     <b>Version 1.5.0 (2020/12/3)</b><br>
     0. Fix bug: specify template doesn't work.<br>
     1. More feature: fetch template variables as placeholders when add a file, support specify file template when create the module.<br>
