@@ -126,7 +126,7 @@ public class FileDialog extends JDialog {
 
         setTitle((isRefactor() ? "Refactor " : "New ") + (isDir ? "Directory" : "File"));
         if (isRefactor()) {
-            tfName.setText(fileNode.getRealName());
+            tfName.setText(fileNode.getName());
         }
         tfName.addKeyListener(new KeyAdapter() {
             @Override
