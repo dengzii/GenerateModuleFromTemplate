@@ -124,8 +124,6 @@ class PluginKit private constructor(e: AnActionEvent) {
         }
         val template = fileTemplateManager.getTemplate(templateName) ?: return null
         val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: return null
-        template.name = fileName
-        template.extension = fileName.split(".").last()
         return try {
             FileTemplateUtil.createFromTemplate(template, fileName, properties, psiDirectory)
         } catch (e: Throwable) {
