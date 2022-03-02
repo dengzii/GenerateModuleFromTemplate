@@ -19,14 +19,12 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.ui.DocumentAdapter
 import java.awt.BorderLayout
 import java.io.*
-import java.util.*
 import java.util.function.Consumer
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 import javax.swing.event.DocumentEvent
 
 class RealConfigurePanel : ConfigurePanel() {
-
 
     private var configs: MutableList<Module>? = null
     private var templateListModel: DefaultListModel<String>? = null
@@ -41,18 +39,18 @@ class RealConfigurePanel : ConfigurePanel() {
 
     init {
         panelActionBar.add(ActionToolBarUtils.create("ActionBar1", listOf(
-                ActionToolBarUtils.Action(AllIcons.General.Add) {
-                    onAddConfig()
-                },
-                ActionToolBarUtils.Action(AllIcons.General.Remove) {
-                    onRemoveConfig()
-                },
-                ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
-                    onCopyConfig()
-                },
-                ActionToolBarUtils.Action(AllIcons.Actions.Download) {
-                    onExportTemplate()
-                }
+            ActionToolBarUtils.Action(AllIcons.General.Add) {
+                onAddConfig()
+            },
+            ActionToolBarUtils.Action(AllIcons.General.Remove) {
+                onRemoveConfig()
+            },
+            ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
+                onCopyConfig()
+            },
+            ActionToolBarUtils.Action(AllIcons.Actions.Download) {
+                onExportTemplate()
+            }
         )))
         initComponent()
         loadConfig()
@@ -79,7 +77,7 @@ class RealConfigurePanel : ConfigurePanel() {
     private fun initComponent() {
         layout = BorderLayout()
         add(contentPane)
-        panelPreview = PreviewPanel()
+        panelPreview = PreviewPanel(false)
         tablePlaceholder = EditableTable(arrayOf("Placeholder", "Default Value"), arrayOf(true, true))
         tableFileTemp = EditableTable(arrayOf("FileName", "Template"), arrayOf(true, true))
         panelStructure.add(panelPreview)
@@ -94,11 +92,23 @@ class RealConfigurePanel : ConfigurePanel() {
         tableFileTemp.addChangeListener {
             modified = true
         }
+        panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
         panelPreview.setOnTreeUpdateListener {
             modified = true
         }
         cbPlaceholder.addChangeListener {
             panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
+        }
+        cbLowercaseDir.addChangeListener {
+            currentConfig?.lowercaseDir = cbLowercaseDir.isSelected
+            panelPreview.updateTree()
+        }
+        cbCapitalizeFile.addChangeListener {
+            currentConfig?.capitalizeFile = cbCapitalizeFile.isSelected
+            panelPreview.updateTree()
+        }
+        cbExpandPkgName.addChangeListener {
+            currentConfig?.packageNameToDir = cbExpandPkgName.isSelected
         }
         tabbedPane.addChangeListener {
             currentConfig ?: return@addChangeListener
@@ -120,7 +130,7 @@ class RealConfigurePanel : ConfigurePanel() {
         listTemplate.setModel(templateListModel)
         tfName.document.addDocumentListener(object : DocumentAdapter() {
             override fun textChanged(documentEvent: DocumentEvent) {
-                if (currentConfig != null) currentConfig!!.templateName = tfName.text
+                currentConfig?.templateName = tfName.text
             }
         })
         if (templateListModel!!.size() > 1) {
@@ -134,7 +144,6 @@ class RealConfigurePanel : ConfigurePanel() {
                 module.templateName = module.templateName + "_New"
             }
         }
-
         configs!!.add(module)
         templateListModel!!.addElement(module.templateName)
         listTemplate.doLayout()
@@ -191,12 +200,16 @@ class RealConfigurePanel : ConfigurePanel() {
         }
         cacheConfig()
         currentConfig = configs!![index]
-        tfName.text = currentConfig!!.templateName
-
-        // update tree, file template and placeholder table
-        panelPreview.setModuleConfig(currentConfig!!)
-        tableFileTemp.setPairData(currentConfig!!.template.fileTemplates)
-        tablePlaceholder.setPairData(currentConfig!!.template.placeholders)
+        currentConfig?.apply {
+            tfName.text = templateName
+            cbCapitalizeFile.isSelected = capitalizeFile
+            cbLowercaseDir.isSelected = lowercaseDir
+            cbExpandPkgName.isSelected = packageNameToDir
+            // update tree, file template and placeholder table
+            panelPreview.setModuleConfig(this)
+            tableFileTemp.setPairData(template.fileTemplates)
+            tablePlaceholder.setPairData(template.placeholders)
+        }
     }
 
     private fun getSelectedConfigIndex() = listTemplate.selectedIndex
@@ -205,14 +218,14 @@ class RealConfigurePanel : ConfigurePanel() {
 
     private fun onAddConfig() {
         PopMenuUtils.create(linkedMapOf(
-                "Empty Template" to { addModuleTemplate(getEmpty()) },
-                "* Import From File" to { onImportTemplate() },
-                "Android Application" to { addModuleTemplate(getAndroidApplication()) },
-                "Android Mvp" to { addModuleTemplate(getAndroidMvp()) },
-                "Auc Module" to { addModuleTemplate(getAucModule()) },
-                "Auc App" to { addModuleTemplate(getAucApp()) },
-                "Auc Pkg" to { addModuleTemplate(getAucPkg()) },
-                "Auc Export" to { addModuleTemplate(getAucExport()) }
+            "Empty Template" to { addModuleTemplate(getEmpty()) },
+            "* Import From File" to { onImportTemplate() },
+            "Android Application" to { addModuleTemplate(getAndroidApplication()) },
+            "Android Mvp" to { addModuleTemplate(getAndroidMvp()) },
+            "Auc Module" to { addModuleTemplate(getAucModule()) },
+            "Auc App" to { addModuleTemplate(getAucApp()) },
+            "Auc Pkg" to { addModuleTemplate(getAucPkg()) },
+            "Auc Export" to { addModuleTemplate(getAucExport()) }
         )).show(panelActionBar, panelActionBar.x, panelActionBar.y)
     }
 

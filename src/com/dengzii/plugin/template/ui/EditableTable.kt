@@ -29,24 +29,24 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
     init {
         layout = BorderLayout()
         editToolbar = ActionToolBarUtils.create("Edit1", listOf(
-                ActionToolBarUtils.Action(AllIcons.General.Add) {
-                    tableModel.add()
-                    table.updateUI()
-                },
-                ActionToolBarUtils.Action(AllIcons.General.Remove) {
-                    if (table.selectedRow == -1) {
-                        return@Action
-                    }
-                    tableModel.remove(table.selectedRow)
-                    table.updateUI()
-                },
-                ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
-                    if (table.selectedRow == -1) {
-                        return@Action
-                    }
-                    tableModel.copy(table.selectedRow)
-                    table.updateUI()
+            ActionToolBarUtils.Action(AllIcons.General.Add) {
+                tableModel.add()
+                table.updateUI()
+            },
+            ActionToolBarUtils.Action(AllIcons.General.Remove) {
+                if (table.selectedRow == -1) {
+                    return@Action
                 }
+                tableModel.remove(table.selectedRow)
+                table.updateUI()
+            },
+            ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
+                if (table.selectedRow == -1) {
+                    return@Action
+                }
+                tableModel.copy(table.selectedRow)
+                table.updateUI()
+            }
         ))
         add(editToolbar, BorderLayout.NORTH)
         scrollPanel.setViewportView(table)
@@ -84,6 +84,12 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
         table.updateUI()
     }
 
+    fun stopEdit() {
+        if (table.isEditing) {
+            table.cellEditor.stopCellEditing()
+        }
+    }
+
     fun getPairResult(): MutableMap<String, String> {
         val result = mutableMapOf<String, String>()
         for (i in 0 until table.rowCount) {
@@ -97,7 +103,8 @@ class EditableTable(header: Array<String>, colEditable: Array<Boolean> = emptyAr
         return result
     }
 
-    internal class TableModel(private val header: Array<String>, private val colEditable: Array<Boolean>) : DefaultTableModel() {
+    internal class TableModel(private val header: Array<String>, private val colEditable: Array<Boolean>) :
+        DefaultTableModel() {
 
         fun setData(fileTemp: MutableList<MutableList<String>>?) {
             while (rowCount > 0) {

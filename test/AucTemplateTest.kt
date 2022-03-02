@@ -13,19 +13,20 @@ class AucTemplateTest {
         }
         println(app.placeholders)
 //        println(app.getAllPlaceholderInTree())
-
-        app.build()
+//        app.expandPath()
+//        app.expandPkgName(true)
         println(app)
         println(app.getTreeGraph())
     }
 
     @Test
     fun aucModuleTemplateTest() {
-        val module = AucTemplate.MODULE {
-            placeholder("FEATURE_NAME","plugin")
-            placeholder("PACKAGE_NAME","com.dengzi")
+        val module = AucTemplate.MODULE
+        module {
+            placeholder("FEATURE_NAME", "plugin")
+            placeholder("PACKAGE_NAME", "com.dengzi")
         }
-        module.build()
+        module.expandPath()
         println(module.getTreeGraph())
     }
 }

@@ -70,7 +70,7 @@ class FileTreeDslTest {
                 dir("test")
             }
         }
-        tree.build()
+        tree.expandPath()
         println(tree.getTreeGraph())
 
         val tree2 = FileTreeDsl {
@@ -86,7 +86,7 @@ class FileTreeDslTest {
                 dir("test")
             }
         }
-        tree2.build()
+        tree2.expandPath()
         println(tree2.getTreeGraph())
     }
 
@@ -103,7 +103,7 @@ class FileTreeDslTest {
                 dir("test")
             }
         }
-        tree.build()
+        tree.expandPath()
         println(tree.getTreeGraph())
     }
 

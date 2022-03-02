@@ -41,7 +41,9 @@ object Config {
             return result
         }
         Logger.i(TAG, "loadModuleTemplates")
-        arr.filter { !it.isNullOrBlank() }.forEach {
+        arr.filter {
+            !it.isNullOrBlank()
+        }.forEach {
             try {
                 val module = GSON.fromJson(it, Module::class.java)
                 module.initTemplate()

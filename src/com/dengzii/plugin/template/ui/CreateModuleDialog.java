@@ -3,23 +3,11 @@ package com.dengzii.plugin.template.ui;
 import com.dengzii.plugin.template.Config;
 import com.dengzii.plugin.template.TemplateConfigurable;
 import com.dengzii.plugin.template.model.Module;
-import com.dengzii.plugin.template.tools.NotificationUtils;
-import com.dengzii.plugin.template.tools.ui.ActionToolBarUtils;
 import com.dengzii.plugin.template.utils.Logger;
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.actionSystem.ex.ActionButtonLook;
-import com.intellij.openapi.actionSystem.impl.ActionButton;
-import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeScreenComponentFactory;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.JBUI;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.ui.components.JBCheckBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,35 +21,28 @@ import java.util.List;
 public class CreateModuleDialog extends JDialog {
 
     private static final String TAG = CreateModuleDialog.class.getSimpleName();
-
+    private final OnFinishListener onFinishListener;
+    private final HashMap<String, JPanel> panels = new HashMap<>();
+    private final List<String> titles = new ArrayList<>();
+    private final Project project;
     private JPanel rootPanel;
     private JLabel labelTitle;
     private JComboBox cbModuleTemplate;
     private JPanel mainPanel;
     private JPanel contentPanel;
-
     private JButton btConfigure;
     private JButton btCancel;
     private JButton btPrevious;
     private JButton btFinish;
     private JScrollPane scrollPanePlaceHolder;
     private JScrollPane scrollPaneFileTemplate;
-
+    private JPanel panelConfig;
     private EditableTable tablePlaceholder;
     private EditableTable tableFileTemplate;
-
-    private final OnFinishListener onFinishListener;
-
     private java.util.List<Module> moduleTemplates = Collections.emptyList();
     private Module selectedModule;
-
-    private final HashMap<String, JPanel> panels = new HashMap<>();
-    private final List<String> titles = new ArrayList<>();
-
     private PreviewPanel previewPanel;
-
     private int currentPanelIndex;
-    private final Project project;
 
     private CreateModuleDialog(Project project, OnFinishListener onFinishListener) {
         setContentPane(rootPanel);
@@ -87,9 +68,13 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onNextClick(ActionEvent e) {
+        tablePlaceholder.stopEdit();
+        tableFileTemplate.stopEdit();
         selectedModule.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
         selectedModule.getTemplate().setFileTemplates(tableFileTemplate.getPairResult());
-        previewPanel.setModuleConfigPreview(selectedModule);
+
+        previewPanel.setReplacePlaceholder(true);
+        previewPanel.setModuleConfig(selectedModule);
 
         if (currentPanelIndex == panels.size() - 1) {
             onFinishListener.onFinish(selectedModule);
@@ -112,7 +97,6 @@ public class CreateModuleDialog extends JDialog {
 
     private void onConfClick(ActionEvent e) {
         ShowSettingsUtil.getInstance().editConfigurable(project, new TemplateConfigurable(this::initData));
-
     }
 
     private void setButton() {
@@ -136,8 +120,21 @@ public class CreateModuleDialog extends JDialog {
 
     private void onModuleConfigChange() {
         Logger.INSTANCE.i(TAG, "onModuleConfigChange");
-        selectedModule = moduleTemplates.get(cbModuleTemplate.getSelectedIndex());
-        previewPanel.setModuleConfigPreview(selectedModule);
+        selectedModule = moduleTemplates.get(cbModuleTemplate.getSelectedIndex()).clone();
+        selectedModule.getTemplate().expandPath();
+
+        panelConfig.removeAll();
+        panelConfig.add(new JBCheckBox("Capitalize file", selectedModule.getCapitalizeFile()));
+        panelConfig.add(new JBCheckBox("Lowercase dir", selectedModule.getLowercaseDir()));
+        panelConfig.add(new JBCheckBox("Expand package name", selectedModule.getPackageNameToDir()));
+        panelConfig.doLayout();
+        panelConfig.updateUI();
+        for (Component c : panelConfig.getComponents()) {
+            c.setEnabled(false);
+        }
+
+        previewPanel.setReplacePlaceholder(true);
+        previewPanel.setModuleConfig(selectedModule);
         tablePlaceholder.setPairData(selectedModule.getTemplate().getAllPlaceholdersMap());
         tableFileTemplate.setPairData(selectedModule.getTemplate().getAllTemplateMap());
     }
@@ -166,7 +163,7 @@ public class CreateModuleDialog extends JDialog {
         scrollPaneFileTemplate.setViewportView(tableFileTemplate);
 
         btConfigure.setIcon(AllIcons.General.GearPlain);
-        previewPanel = new PreviewPanel();
+        previewPanel = new PreviewPanel(true);
         titles.add("Create Module From Template");
         titles.add("Preview Module");
 
@@ -186,6 +183,8 @@ public class CreateModuleDialog extends JDialog {
     private void initData() {
         Logger.INSTANCE.i(TAG, "initData");
         moduleTemplates = Config.INSTANCE.loadModuleTemplates();
+//        moduleTemplates = new ArrayList<>();
+//        moduleTemplates.add(Module.Companion.getAucModule());
         List<String> temp = new ArrayList<>();
         moduleTemplates.forEach(i -> temp.add(i.getTemplateName()));
         cbModuleTemplate.setModel(new DefaultComboBoxModel<>(temp.toArray()));

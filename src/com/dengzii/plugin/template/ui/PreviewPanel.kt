@@ -3,17 +3,20 @@ package com.dengzii.plugin.template.ui
 import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.tools.ui.PopMenuUtils
+import com.dengzii.plugin.template.tools.ui.onClick
 import com.dengzii.plugin.template.tools.ui.onRightMouseButtonClicked
 import com.dengzii.plugin.template.utils.Logger
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.packageDependencies.ui.TreeModel
 import com.intellij.ui.ColoredTreeCellRenderer
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
 import java.awt.BorderLayout
-import java.awt.event.*
-import java.util.*
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
+import java.awt.event.MouseEvent
 import java.util.function.Consumer
 import javax.swing.Icon
 import javax.swing.JPanel
@@ -22,9 +25,10 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeNode
 import javax.swing.tree.TreePath
 
-class PreviewPanel : JPanel() {
+class PreviewPanel(preview: Boolean) : JPanel() {
 
-    private var fileTree: Tree = Tree()
+    private val fileTree: Tree = Tree()
+    private val showPlaceholder: JBCheckBox = JBCheckBox("Show placeholders")
 
     private lateinit var module: Module
     private var replacePlaceholder = true
@@ -32,16 +36,23 @@ class PreviewPanel : JPanel() {
 
     // render tree node icon, title
     private val treeCellRenderer = object : ColoredTreeCellRenderer() {
-        override fun customizeCellRenderer(jTree: JTree, value: Any, b: Boolean, b1: Boolean, b2: Boolean, i: Int, b3: Boolean) {
+        override fun customizeCellRenderer(
+            jTree: JTree, value: Any,
+            b: Boolean, b1: Boolean, b2: Boolean, i: Int, b3: Boolean
+        ) {
             if (value is DefaultMutableTreeNode) {
                 val node = value.userObject
                 if (node is FileTreeNode) {
-                    icon = getIconByFileName(node.name)
-                    this.append(if (replacePlaceholder) node.getRealName() else node.name)
+                    val name = if (replacePlaceholder) {
+                        node.getRealName()
+                    } else {
+                        node.name
+                    }
+                    this.append(name)
                     icon = if (node.isDir) {
                         AllIcons.Nodes.Package
                     } else {
-                        getIconByFileName(node.name)
+                        getIconByFileName(name)
                     }
                 }
             }
@@ -53,23 +64,27 @@ class PreviewPanel : JPanel() {
         add(JBScrollPane().apply {
             setViewportView(fileTree)
         }, BorderLayout.CENTER)
+        showPlaceholder.isSelected = !replacePlaceholder
+        if (preview) {
+            add(showPlaceholder, BorderLayout.NORTH)
+            showPlaceholder.addChangeListener {
+                replacePlaceholder = !showPlaceholder.isSelected
+                setModuleConfig(module)
+            }
+        }
         initPanel()
     }
 
     fun setReplacePlaceholder(replace: Boolean) {
         if (replace != replacePlaceholder) {
             replacePlaceholder = replace
+            showPlaceholder.isSelected = !replacePlaceholder
             fileTree.updateUI()
         }
     }
 
-    /**
-     * Preview file tree, clone and build tree.
-     */
-    fun setModuleConfigPreview(module: Module) {
-        val clone = module.clone()
-        clone.template.build()
-        setModuleConfig(clone)
+    fun updateTree(){
+        fileTree.updateUI()
     }
 
     fun setModuleConfig(module: Module) {
@@ -90,7 +105,7 @@ class PreviewPanel : JPanel() {
 
     private fun getIconByFileName(fileName: String): Icon {
         return FileTypeManager.getInstance().getFileTypeByExtension(fileName.split(".").last()).icon
-                ?: AllIcons.FileTypes.Text
+            ?: AllIcons.FileTypes.Text
     }
 
     /**
@@ -129,16 +144,16 @@ class PreviewPanel : JPanel() {
     private fun showEditMenu(anchor: MouseEvent, current: FileTreeNode) {
         val item = if (current.isDir) {
             mutableMapOf(
-                    "New Directory" to {
-                        FileDialog.showForCreate(current, true) { fileTreeNode: FileTreeNode ->
-                            addTreeNode(current, fileTreeNode)
-                        }
-                    },
-                    "New File" to {
-                        FileDialog.showForCreate(current, false) { fileTreeNode: FileTreeNode ->
-                            addTreeNode(current, fileTreeNode)
-                        }
+                "New Directory" to {
+                    FileDialog.showForCreate(current, true) { fileTreeNode: FileTreeNode ->
+                        addTreeNode(current, fileTreeNode)
                     }
+                },
+                "New File" to {
+                    FileDialog.showForCreate(current, false) { fileTreeNode: FileTreeNode ->
+                        addTreeNode(current, fileTreeNode)
+                    }
+                }
             )
         } else {
             mutableMapOf()

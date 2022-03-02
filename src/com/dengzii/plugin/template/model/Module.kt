@@ -3,18 +3,31 @@ package com.dengzii.plugin.template.model
 import com.dengzii.plugin.template.template.AucTemplate
 import com.dengzii.plugin.template.template.Template
 import com.dengzii.plugin.template.utils.Logger
+import java.util.*
 
 class Module(
-        var template: FileTreeNode,
-        var language: String,
-        var templateName: String
+    var template: FileTreeNode,
+    var language: String,
+    var templateName: String,
+    var lowercaseDir: Boolean = true,
+    var capitalizeFile: Boolean = true,
+    var packageNameToDir: Boolean = true
 ) {
 
     companion object {
 
         fun create(template: FileTreeNode, templateName: String): Module {
             Logger.i(Module::class.java.simpleName, "create module. templateName=$templateName")
-            return Module(template, "java", templateName)
+            return Module(
+                template,
+                "java",
+                templateName,
+                lowercaseDir = false,
+                capitalizeFile = false,
+                packageNameToDir = false
+            ).apply {
+                template.init(this)
+            }
         }
 
         fun getAndroidApplication(): Module {
@@ -45,7 +58,7 @@ class Module(
             return create(Template.ANDROID_MVP, "Android MVP")
         }
 
-        fun getLangList() = Language.values().map { it.name.toLowerCase() }.toTypedArray()
+        fun getLangList() = Language.values().map { it.name.lowercase(Locale.getDefault()) }.toTypedArray()
     }
 
     enum class Language {
@@ -53,16 +66,11 @@ class Module(
     }
 
     fun initTemplate(node: FileTreeNode = template) {
-        node.children.forEach {
-            it.parent = node
-            if (it.isDir) {
-                initTemplate(it)
-            }
-        }
+        node.init(this)
     }
 
     fun clone(): Module {
-        return create(template.clone(), templateName)
+        return Module(template.clone(), language, templateName, lowercaseDir, capitalizeFile, packageNameToDir)
     }
 
 }

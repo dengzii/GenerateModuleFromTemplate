@@ -26,4 +26,7 @@ public class ConfigurePanel extends JPanel {
     JCheckBox cbPlaceholder;
     JBTabbedPane tabbedPane;
     JPanel panelActionBar;
+    JCheckBox cbLowercaseDir;
+    JCheckBox cbCapitalizeFile;
+    JCheckBox cbExpandPkgName;
 }

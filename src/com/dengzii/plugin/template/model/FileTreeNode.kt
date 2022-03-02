@@ -44,11 +44,14 @@ open class FileTreeNode() {
     @Transient
     var parent: FileTreeNode? = null
 
+    @Transient
+    private var module: Module? = null
+
     companion object {
 
-        var packageNameToDirs = true
         private val TAG = FileTreeNode::class.java.simpleName
-        private val sPathSplitPattern = Pattern.compile("[./]")
+        private val sPathSplitPattern = Pattern.compile("[/]")
+        private val sPkgSplitPattern = Pattern.compile("[\\.]")
         private val sPlaceholderPattern = Pattern.compile("\\$\\{([A-Za-z0-9_\\-]+)}")
 
         fun root(path: String): FileTreeNode {
@@ -67,6 +70,16 @@ open class FileTreeNode() {
         this.name = name
         this.parent = parent
         this.isDir = isDir
+    }
+
+    fun init(module: Module) {
+        this.module = module
+        children.forEach {
+            it.parent = this
+            if (it.isDir) {
+                it.init(module)
+            }
+        }
     }
 
     fun getTreeNodeCount(): Int {
@@ -134,9 +147,11 @@ open class FileTreeNode() {
 
     private fun getRealName(fileName: String = this.name): String {
         return if (isDir) {
-            fileName.replacePlaceholder(getPlaceholderInherit(), false).toLowerCase()
+            val rn = fileName.replacePlaceholder(getPlaceholderInherit(), false)
+            if (getModuleInherit()?.lowercaseDir == true) rn.lowercase() else rn
         } else {
-            fileName.replacePlaceholder(getPlaceholderInherit(), true)
+            val capitalize = getModuleInherit()?.capitalizeFile ?: false
+            fileName.replacePlaceholder(getPlaceholderInherit(), capitalize)
         }
     }
 
@@ -315,30 +330,50 @@ open class FileTreeNode() {
     }
 
     /**
-     * build file tree
-     * replace placeholder in name
-     * if this is directory and name is a path or package name
-     * the name will expand to several dirs
+     * expand path name to dir structure
      */
-    fun build() {
-
+    fun expandPath() {
         if (!isDir) {
             return
         }
-        name = getRealName()
         if (!isRoot()) {
-            val dir = if (packageNameToDirs) {
-                name.split(sPathSplitPattern)
-            } else {
-                name.split("/")
-            }.filter {
-                it.isNotBlank()
-            }.toMutableList()
-
+            val dir = name.split("/")
+                .filter {
+                    it.isNotBlank()
+                }
+                .toMutableList()
             expandDirs(dir)
         }
         realChildren.forEach {
-            it.build()
+            it.expandPath()
+        }
+    }
+
+    /**
+     * expand the package name to dir structure, eg: `com.example.app` to `com/example/app`
+     */
+    fun expandPkgName(replacePlaceholder: Boolean = true) {
+        if (!isDir) {
+            return
+        }
+        val pkgName2Dir = getModuleInherit()?.packageNameToDir ?: false
+        if (!pkgName2Dir) {
+            return
+        }
+        if (replacePlaceholder) {
+            name = getRealName()
+        }
+        if (!isRoot()) {
+            val dir = name
+                .split(sPkgSplitPattern)
+                .filter {
+                    it.isNotBlank()
+                }
+                .toMutableList()
+            expandDirs(dir)
+        }
+        realChildren.forEach {
+            it.expandPkgName(replacePlaceholder)
         }
     }
 
@@ -403,6 +438,7 @@ open class FileTreeNode() {
         val clone = FileTreeNode(null, name, isDir)
         clone.fileTemplates = fileTemplates?.toMutableMap()
         clone.placeholders = placeholders?.toMutableMap()
+        clone.module = module
         realChildren.forEach {
             clone.addChild(it.clone())
         }
@@ -422,16 +458,18 @@ open class FileTreeNode() {
         head.forEach {
             str.append(it)
         }
-        str.append(when (this) {
-            parent?.realChildren?.last() -> "└─"
-            parent?.realChildren?.first() -> "├─"
-            else -> {
-                when {
-                    parent != null -> "├─"
-                    else -> ""
+        str.append(
+            when (this) {
+                parent?.realChildren?.last() -> "└─"
+                parent?.realChildren?.first() -> "├─"
+                else -> {
+                    when {
+                        parent != null -> "├─"
+                        else -> ""
+                    }
                 }
             }
-        })
+        )
         str.append(getRealName())
         if (isDir) {
 //            str.append("\tplaceholder: ").append(placeholders)
@@ -439,11 +477,13 @@ open class FileTreeNode() {
         str.append("\n")
 
         if (!realChildren.isNullOrEmpty()) {
-            head.push(when {
-                parent == null -> ""
-                parent?.realChildren?.last() != this -> "│\t"
-                else -> "\t"
-            })
+            head.push(
+                when {
+                    parent == null -> ""
+                    parent?.realChildren?.last() != this -> "│\t"
+                    else -> "\t"
+                }
+            )
             realChildren.forEach {
                 str.append(it.getNodeGraph(head))
             }
@@ -469,6 +509,10 @@ open class FileTreeNode() {
                 it.createChild()
             }
         }
+    }
+
+    private fun getModuleInherit(): Module? {
+        return module ?: parent?.getModuleInherit()
     }
 
     private fun getLabel(): String {
@@ -498,13 +542,23 @@ open class FileTreeNode() {
             return this
         }
         placeholders.forEach { (k, v) ->
-            val replaced = if (capitalize) {
-                v.toLowerCase().capitalize()
-            } else {
-                v
+            var replacement = v
+            if (capitalize) {
+                replacement = v.lowercase(Locale.getDefault())
+                    .replaceFirstChar {
+                        if (it.isLowerCase()) {
+                            it.titlecase(Locale.getDefault())
+                        } else {
+                            it.toString()
+                        }
+                    }
             }
-            after = after.replace("\${$k}", replaced)
+            after = after.replace("\${$k}", replacement)
         }
-        return after
+        return if (after == this || !after.contains('$')) {
+            after
+        } else {
+            after.replacePlaceholder(placeholders, capitalize)
+        }
     }
 }
