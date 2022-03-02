@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[

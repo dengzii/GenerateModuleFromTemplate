@@ -147,11 +147,11 @@ open class FileTreeNode() {
 
     private fun getRealName(fileName: String = this.name): String {
         return if (isDir) {
-            val rn = fileName.replacePlaceholder(getPlaceholderInherit(), false)
+            val rn = replacePlaceholder(fileName, getPlaceholderInherit(), false)
             if (getModuleInherit()?.lowercaseDir == true) rn.lowercase() else rn
         } else {
             val capitalize = getModuleInherit()?.capitalizeFile ?: false
-            fileName.replacePlaceholder(getPlaceholderInherit(), capitalize)
+            replacePlaceholder(fileName, getPlaceholderInherit(), capitalize)
         }
     }
 
@@ -536,29 +536,29 @@ open class FileTreeNode() {
         return result
     }
 
-    private fun String.replacePlaceholder(placeholders: Map<String, String>?, capitalize: Boolean = false): String {
-        var after = this
+    private fun replacePlaceholder(
+        origin: String,
+        placeholders: Map<String, String>?,
+        capitalize: Boolean = false
+    ): String {
+        var after = origin
         if (placeholders.isNullOrEmpty()) {
-            return this
+            return origin
         }
         placeholders.forEach { (k, v) ->
             var replacement = v
             if (capitalize) {
                 replacement = v.lowercase(Locale.getDefault())
                     .replaceFirstChar {
-                        if (it.isLowerCase()) {
-                            it.titlecase(Locale.getDefault())
-                        } else {
-                            it.toString()
-                        }
+                        it.toString().uppercase()
                     }
             }
             after = after.replace("\${$k}", replacement)
         }
-        return if (after == this || !after.contains('$')) {
+        return if (after == origin || !after.contains('$')) {
             after
         } else {
-            after.replacePlaceholder(placeholders, capitalize)
+            replacePlaceholder(after, placeholders, capitalize)
         }
     }
 }
