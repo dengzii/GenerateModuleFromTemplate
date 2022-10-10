@@ -1,20 +1,17 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
 <b>Create a directory structure from a highly customizable template</b><br>
 <br>
-Using this plugin, help you create directories and files from the customizable template<br>
-<br>
-
-<br>
 <a href="https://youtu.be/TyeXnbCcBP4">Video Tutorial - YouTube</a>
 <br>
 <b>Feature</b><br>
-1. Custom directory structure.<br>
+0. Create module template from exists project irectory.<br>
+1. Custom directory/file tree structure.<br>
 2. Support placeholders, and replace it when you create a module.<br>
 3. Specify file templates from IDE custom/build-in templates.<br>
 4. Passing placeholders to file template as variables.<br>
@@ -46,18 +43,11 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     ]]></description>
 
     <change-notes><![CDATA[
-    <b>Version 1.5.2 (2021/03/02)</b><br>
-    0. Update: Configurable expand package name, expand path.<br>
-    1. Feat: support nested placeholder.<br>
+    <b>Version 1.5.4 (2021/03/02)</b><br>
+    0. Fix: default placeholder and file template cannot save.<br>
+    1. Feat: support create module template from a directory.<br>
+    2. Feat: support remove directory node and merge children to current's parent node.<br>
     <br>
-    <b>Version 1.5.1 (2021/06/28)</b><br>
-    0. Fix bug: file template can not use.<br>
-    1. Update: Rename file use original name.<br>
-    <br>
-    <b>Version 1.5.0 (2020/12/3)</b><br>
-    0. Fix bug: specify template doesn't work.<br>
-    1. More feature: fetch template variables as placeholders when add a file, support specify file template when create the module.<br>
-    2. Update UI: looks more comfortable.<br>
 ]]>
     </change-notes>
 

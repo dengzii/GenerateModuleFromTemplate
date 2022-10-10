@@ -123,7 +123,7 @@ class PluginKit private constructor(e: AnActionEvent) {
         val fileTemplateManager = FileTemplateManager.getInstance(project)
         val properties = Properties(fileTemplateManager.defaultProperties)
         propertiesMap.forEach { (t, u) ->
-            properties.setProperty(t.strip(), u)
+            properties.setProperty(t.trim(), u)
         }
         val template = fileTemplateManager.getTemplate(templateName) ?: return null
         val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: return null
