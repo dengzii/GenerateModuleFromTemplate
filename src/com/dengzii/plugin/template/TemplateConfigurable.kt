@@ -1,5 +1,6 @@
 package com.dengzii.plugin.template
 
+import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.ui.RealConfigurePanel
 import com.intellij.openapi.options.SearchableConfigurable
 import org.jetbrains.annotations.Nls
@@ -19,8 +20,11 @@ class TemplateConfigurable() : SearchableConfigurable {
     private lateinit var panelConfig: RealConfigurePanel
     private var onApplyListener: OnApplyListener? = null
 
-    constructor(onApplyListener: OnApplyListener) : this() {
+    private var add: FileTreeNode? = null
+
+    constructor(onApplyListener: OnApplyListener?, addTemplate: FileTreeNode? = null) : this() {
         this.onApplyListener = onApplyListener
+        this.add = addTemplate
     }
 
     override fun apply() {
@@ -35,6 +39,9 @@ class TemplateConfigurable() : SearchableConfigurable {
 
     override fun createComponent(): JComponent {
         panelConfig = RealConfigurePanel()
+        if (add != null) {
+            panelConfig.createTempFromDir(add!!)
+        }
         return panelConfig
     }
 

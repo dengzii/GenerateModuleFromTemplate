@@ -14,7 +14,7 @@ class FileTreeNodeTest : TestCase() {
         val root = FileTreeNode(null, "\${AAA}_\${BBB}_\${CCC_\${DDD}}", true)
         println(root.name)
         println(root.getPlaceholderInNodeName().joinToString(","))
-        root.addPlaceholders(
+        root.putPlaceholders(
             mapOf(
                 Pair("AAA", "1"),
                 Pair("BBB", "2"),

@@ -32,7 +32,7 @@ object AucTemplate {
 
     val APP = FileTreeDsl {
         addFileTemplates(aucFileTemplates())
-        addPlaceholders(aucPlaceholders())
+        putPlaceholders(aucPlaceholders())
         placeholder("MODULE_NAME", "app")
 
         dir("app") {
@@ -60,7 +60,7 @@ object AucTemplate {
 
     val PKG = FileTreeDsl {
         addFileTemplates(aucFileTemplates())
-        addPlaceholders(aucPlaceholders())
+        putPlaceholders(aucPlaceholders())
         placeholder("MODULE_NAME", "pkg")
         dir("pkg") {
             dir("src") {
@@ -86,7 +86,7 @@ object AucTemplate {
 
     val EXPORT = FileTreeDsl {
         addFileTemplates(aucFileTemplates())
-        addPlaceholders(aucPlaceholders())
+        putPlaceholders(aucPlaceholders())
         placeholder("MODULE_NAME", "export")
         dir("export") {
             dir("src") {
@@ -112,7 +112,7 @@ object AucTemplate {
 
     val MODULE = FileTreeDsl {
         addFileTemplates(aucFileTemplates())
-        addPlaceholders(aucPlaceholders())
+        putPlaceholders(aucPlaceholders())
         dir("\${FEATURE_NAME}") {
 
             include(APP {

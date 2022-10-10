@@ -90,7 +90,7 @@ public class FileDialog extends JDialog {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                fileNode.addPlaceholders(p);
+                fileNode.putPlaceholders(p);
             }
             if (!template.isEmpty()){
                 fileNode.addFileTemplate(fileNode.getName(), template);

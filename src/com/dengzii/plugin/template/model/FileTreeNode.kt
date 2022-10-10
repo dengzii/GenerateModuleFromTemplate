@@ -50,9 +50,9 @@ open class FileTreeNode() {
     companion object {
 
         private val TAG = FileTreeNode::class.java.simpleName
-        private val sPathSplitPattern = Pattern.compile("[/]")
-        private val sPkgSplitPattern = Pattern.compile("[\\.]")
-        private val sPlaceholderPattern = Pattern.compile("\\$\\{([A-Za-z0-9_\\-]+)}")
+        private val sPathSplitPattern = Pattern.compile("/")
+        private val sPkgSplitPattern = Pattern.compile("\\.")
+        private val sPlaceholderPattern = Pattern.compile("\\$\\{([A-Za-z\\d_\\-]+)}")
 
         fun root(path: String): FileTreeNode {
             val root = File(path)
@@ -82,7 +82,7 @@ open class FileTreeNode() {
         }
     }
 
-    fun getTreeNodeCount(): Int {
+    private fun getTreeNodeCount(): Int {
         var count = realChildren.size
         realChildren.forEach {
             count += it.getTreeNodeCount()
@@ -130,11 +130,11 @@ open class FileTreeNode() {
         return false
     }
 
-    fun hasChild(label: String): Boolean {
+    private fun hasChild(label: String): Boolean {
         return labeledChildren.containsKey(label)
     }
 
-    fun getChild(name: String, isDir: Boolean): FileTreeNode? {
+    private fun getChild(name: String, isDir: Boolean): FileTreeNode? {
         return labeledChildren["${name}_$isDir"]
     }
 
@@ -183,7 +183,7 @@ open class FileTreeNode() {
         return templates
     }
 
-    fun getNodeHasTemplateInTree(): List<FileTreeNode> {
+    private fun getNodeHasTemplateInTree(): List<FileTreeNode> {
         val nodes = mutableListOf<FileTreeNode>()
         if (fileTemplates != null) {
             nodes.add(this)
@@ -218,17 +218,15 @@ open class FileTreeNode() {
         template = name
     }
 
-    fun addPlaceholders(placeholders: Map<String, String>) {
+    fun putPlaceholders(placeholders: Map<String, String>) {
         if (this.placeholders == null) {
             this.placeholders = mutableMapOf()
         }
         this.placeholders!!.putAll(placeholders)
     }
 
-    fun addPlaceholders(placeholders: Array<String>) {
-        addPlaceholders(placeholders.associate {
-            it to (this.placeholders?.getOrDefault(it, "") ?: "")
-        })
+    fun putPlaceholders(placeholders: Array<String>) {
+        putPlaceholders(placeholders.associateWith { (this.placeholders?.getOrDefault(it, "") ?: "") })
     }
 
     /**
@@ -278,7 +276,7 @@ open class FileTreeNode() {
     /**
      * traverse and call back each node of the entire file tree.
      */
-    fun traversal(block: (it: FileTreeNode, depth: Int) -> Unit, depth: Int = 0) {
+    private fun traversal(block: (it: FileTreeNode, depth: Int) -> Unit, depth: Int = 0) {
         if (!isDir) return
 
         realChildren.forEach {
@@ -294,7 +292,7 @@ open class FileTreeNode() {
      * @param dirs The dirs list to create tree
      * @param parent The parent of current node
      */
-    fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
+    private fun createDirs(dirs: MutableList<String>, parent: FileTreeNode): FileTreeNode {
         if (dirs.isEmpty()) {
             return parent
         }
@@ -476,7 +474,7 @@ open class FileTreeNode() {
         }
         str.append("\n")
 
-        if (!realChildren.isNullOrEmpty()) {
+        if (!realChildren.isEmpty()) {
             head.push(
                 when {
                     parent == null -> ""

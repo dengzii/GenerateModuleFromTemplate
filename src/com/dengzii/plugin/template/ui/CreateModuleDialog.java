@@ -70,6 +70,8 @@ public class CreateModuleDialog extends JDialog {
     private void onNextClick(ActionEvent e) {
         tablePlaceholder.stopEdit();
         tableFileTemplate.stopEdit();
+        selectedModule.getTemplate().removeAllTemplateInTree();
+        selectedModule.getTemplate().removeAllPlaceHolderInTree();
         selectedModule.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
         selectedModule.getTemplate().setFileTemplates(tableFileTemplate.getPairResult());
 
@@ -96,7 +98,7 @@ public class CreateModuleDialog extends JDialog {
     }
 
     private void onConfClick(ActionEvent e) {
-        ShowSettingsUtil.getInstance().editConfigurable(project, new TemplateConfigurable(this::initData));
+        ShowSettingsUtil.getInstance().editConfigurable(project, new TemplateConfigurable(this::initData, null));
     }
 
     private void setButton() {

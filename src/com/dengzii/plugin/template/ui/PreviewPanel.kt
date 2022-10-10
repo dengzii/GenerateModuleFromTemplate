@@ -3,7 +3,6 @@ package com.dengzii.plugin.template.ui
 import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.tools.ui.PopMenuUtils
-import com.dengzii.plugin.template.tools.ui.onClick
 import com.dengzii.plugin.template.tools.ui.onRightMouseButtonClicked
 import com.dengzii.plugin.template.utils.Logger
 import com.intellij.icons.AllIcons
@@ -33,12 +32,12 @@ class PreviewPanel(preview: Boolean) : JPanel() {
     private lateinit var module: Module
     private var replacePlaceholder = true
     private var onTreeUpdateListener: (() -> Unit)? = null
+    private var onPlaceholderUpdateListener: (() -> Unit)? = null
 
     // render tree node icon, title
     private val treeCellRenderer = object : ColoredTreeCellRenderer() {
         override fun customizeCellRenderer(
-            jTree: JTree, value: Any,
-            b: Boolean, b1: Boolean, b2: Boolean, i: Int, b3: Boolean
+            jTree: JTree, value: Any, b: Boolean, b1: Boolean, b2: Boolean, i: Int, b3: Boolean
         ) {
             if (value is DefaultMutableTreeNode) {
                 val node = value.userObject
@@ -83,7 +82,11 @@ class PreviewPanel(preview: Boolean) : JPanel() {
         }
     }
 
-    fun updateTree(){
+    fun onPlaceholderUpdate(l: (() -> Unit)?) {
+        onPlaceholderUpdateListener = l
+    }
+
+    fun updateTree() {
         fileTree.updateUI()
     }
 
@@ -104,8 +107,7 @@ class PreviewPanel(preview: Boolean) : JPanel() {
     }
 
     private fun getIconByFileName(fileName: String): Icon {
-        return FileTypeManager.getInstance().getFileTypeByExtension(fileName.split(".").last()).icon
-            ?: AllIcons.FileTypes.Text
+        return FileTypeManager.getInstance().getFileTypeByExtension(fileName.split(".").last()).icon ?: AllIcons.FileTypes.Text
     }
 
     /**
@@ -143,26 +145,43 @@ class PreviewPanel(preview: Boolean) : JPanel() {
 
     private fun showEditMenu(anchor: MouseEvent, current: FileTreeNode) {
         val item = if (current.isDir) {
-            mutableMapOf(
-                "New Directory" to {
-                    FileDialog.showForCreate(current, true) { fileTreeNode: FileTreeNode ->
-                        addTreeNode(current, fileTreeNode)
-                    }
-                },
-                "New File" to {
-                    FileDialog.showForCreate(current, false) { fileTreeNode: FileTreeNode ->
-                        addTreeNode(current, fileTreeNode)
-                    }
+            val i = mutableMapOf("New Directory" to {
+                FileDialog.showForCreate(current, true) { fileTreeNode: FileTreeNode ->
+                    addTreeNode(current, fileTreeNode)
                 }
-            )
+            }, "New File" to {
+                FileDialog.showForCreate(current, false) { fileTreeNode: FileTreeNode ->
+                    addTreeNode(current, fileTreeNode)
+                }
+            })
+            val parent = current.parent
+            if (!current.isRoot() && current.children.isNotEmpty() && parent != null) {
+                i["Remove This Node Only"] = {
+                    current.removeFromParent()
+                    for (child in current.children) {
+                        addTreeNode(parent, child)
+                    }
+                    // TODO optimize update
+                    setModuleConfig(module)
+                }
+            }
+            i
         } else {
             mutableMapOf()
         }
         if (!current.isRoot()) {
             item["Rename"] = {
-                FileDialog.showForRefactor(current) { fileTreeNode: FileTreeNode? ->
+                val oldP = current.placeholders.orEmpty()
+                val olds = current.placeholders?.keys?.joinToString()
+                FileDialog.showForRefactor(current) { fileTreeNode: FileTreeNode ->
                     (fileTree.lastSelectedPathComponent as DefaultMutableTreeNode).userObject = fileTreeNode
                     updateFileTreeUI()
+                    val newPlaceholder = fileTreeNode.getPlaceholderInNodeName()
+                    if (olds != newPlaceholder.sorted().joinToString()) {
+                        val appendPlaceholder = newPlaceholder.filter { !oldP.containsKey(it) }.associateWith { "" }
+                        module.template.putPlaceholders(appendPlaceholder)
+                        onPlaceholderUpdateListener?.invoke()
+                    }
                 }
             }
             item["Delete"] = {
@@ -183,8 +202,8 @@ class PreviewPanel(preview: Boolean) : JPanel() {
 
     private fun addTreeNode(parent: FileTreeNode, node: FileTreeNode) {
         parent.addChild(node, true)
-        module.template.addPlaceholders(node.getPlaceholderInNodeName().toTypedArray())
-        module.template.addPlaceholders(node.placeholders.orEmpty())
+        module.template.putPlaceholders(node.getPlaceholderInNodeName().toTypedArray())
+        module.template.putPlaceholders(node.placeholders.orEmpty())
         module.template.addFileTemplates(node.fileTemplates.orEmpty())
         node.fileTemplates?.clear()
         node.placeholders?.clear()

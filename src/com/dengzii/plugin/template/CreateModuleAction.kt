@@ -34,4 +34,9 @@ class CreateModuleAction : AnAction() {
         }
     }
 
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        e.presentation.isEnabled = true
+    }
+
 }

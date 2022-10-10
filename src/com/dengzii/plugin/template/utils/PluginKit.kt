@@ -58,8 +58,9 @@ class PluginKit private constructor(e: AnActionEvent) {
     }
 
     fun getCurrentPsiDirectory(): PsiDirectory? {
-        if (getCurrentPsiFile() is PsiDirectory) {
-            return getCurrentPsiFile() as PsiDirectory
+        val e = event.getData(PlatformDataKeys.PSI_ELEMENT);
+        if (e is PsiDirectory) {
+            return e
         }
         return null
     }
@@ -112,10 +113,12 @@ class PluginKit private constructor(e: AnActionEvent) {
         return FileTemplateUtil.calculateAttributes(templateContent, Properties(), true, project)
     }
 
-    fun createFileFromTemplate(fileName: String,
-                               templateName: String,
-                               propertiesMap: Map<String, String>,
-                               directory: VirtualFile): PsiElement? {
+    fun createFileFromTemplate(
+        fileName: String,
+        templateName: String,
+        propertiesMap: Map<String, String>,
+        directory: VirtualFile
+    ): PsiElement? {
 
         val fileTemplateManager = FileTemplateManager.getInstance(project)
         val properties = Properties(fileTemplateManager.defaultProperties)

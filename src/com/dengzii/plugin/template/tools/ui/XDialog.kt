@@ -8,7 +8,6 @@ import java.awt.Toolkit
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import javax.annotation.OverridingMethodsMustInvokeSuper
 import javax.swing.JComponent
 import javax.swing.JDialog
 import javax.swing.JPanel
@@ -77,21 +76,20 @@ abstract class XDialog() : JDialog() {
         dispose()
     }
 
-    @OverridingMethodsMustInvokeSuper
     open fun onOpened() {
         if (persistDialogState) {
             restoreState()
         }
     }
 
-    @OverridingMethodsMustInvokeSuper
+    
     open fun onClosing() {
         if (persistDialogState) {
             persistState()
         }
     }
 
-    @OverridingMethodsMustInvokeSuper
+    
     open fun onClosed() {
 
     }

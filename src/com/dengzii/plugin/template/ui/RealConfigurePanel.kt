@@ -3,6 +3,7 @@ package com.dengzii.plugin.template.ui
 import com.dengzii.plugin.template.Config
 import com.dengzii.plugin.template.Config.GSON
 import com.dengzii.plugin.template.CreateModuleAction.Companion.project
+import com.dengzii.plugin.template.model.FileTreeNode
 import com.dengzii.plugin.template.model.Module
 import com.dengzii.plugin.template.model.Module.Companion.getAndroidApplication
 import com.dengzii.plugin.template.model.Module.Companion.getAndroidMvp
@@ -74,12 +75,20 @@ class RealConfigurePanel : ConfigurePanel() {
         modified = false
     }
 
+    fun createTempFromDir(node: FileTreeNode) {
+        val module = Module.create(node, node.children.firstOrNull()?.name ?: "-")
+        addModuleTemplate(module)
+    }
+
     private fun initComponent() {
         layout = BorderLayout()
         add(contentPane)
         panelPreview = PreviewPanel(false)
         tablePlaceholder = EditableTable(arrayOf("Placeholder", "Default Value"), arrayOf(true, true))
         tableFileTemp = EditableTable(arrayOf("FileName", "Template"), arrayOf(true, true))
+        panelPreview.onPlaceholderUpdate {
+            tablePlaceholder.setPairData(currentConfig!!.template.getAllPlaceholdersMap().toMutableMap())
+        }
         panelStructure.add(panelPreview)
         panelPlaceholder.add(tablePlaceholder, BorderLayout.CENTER)
         panelFileTemp.add(tableFileTemp, BorderLayout.CENTER)
@@ -88,9 +97,14 @@ class RealConfigurePanel : ConfigurePanel() {
     private fun initData() {
         tableFileTemp.addChangeListener {
             modified = true
+            currentConfig?.template?.removeAllTemplateInTree()
+            currentConfig?.template?.fileTemplates = tableFileTemp.getPairResult()
         }
-        tableFileTemp.addChangeListener {
+        tablePlaceholder.addChangeListener {
             modified = true
+            currentConfig
+            currentConfig?.template?.removeAllPlaceHolderInTree()
+            currentConfig?.template?.placeholders = tablePlaceholder.getPairResult()
         }
         panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
         panelPreview.setOnTreeUpdateListener {
@@ -113,12 +127,8 @@ class RealConfigurePanel : ConfigurePanel() {
         tabbedPane.addChangeListener {
             currentConfig ?: return@addChangeListener
             when (tabbedPane.selectedIndex) {
-                0 -> {
-                    currentConfig!!.template.placeholders = tablePlaceholder.getPairResult()
-                    currentConfig!!.template.fileTemplates = tableFileTemp.getPairResult()
-                }
                 1 -> tableFileTemp.setPairData(currentConfig!!.template.getAllTemplateMap())
-                2 -> tablePlaceholder.setPairData(currentConfig!!.template.getAllPlaceholdersMap().toMutableMap())
+                2 -> tablePlaceholder.setPairData(currentConfig!!.template.getAllPlaceholdersMap())
             }
             panelPreview.setModuleConfig(currentConfig!!)
         }

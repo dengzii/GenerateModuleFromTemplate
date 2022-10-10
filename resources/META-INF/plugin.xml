@@ -30,7 +30,7 @@ More information: <a href='https://github.com/dengzii/GenerateModuleFromTemplate
 <br>
 <b>NOTE</b><br>
 - The existing files will be skipped. <br>
-- The Java class file name may depends on ClassName, you better keep the class name and file name consistent, else the file name in the template will not effective.<br>
+- The Java class file name may depend on ClassName, you better keep the class name and file name consistent, else the file name in the template will not effective.<br>
 - The placeholders are best not the same as the built-in property of `Apache Velocity`.<br>
 - The dot(.) in the directory name will split and expand as several directories.<br>
 <br>
@@ -78,6 +78,12 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
                 text="Create Module From Template"
                 description="Create module from template">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="WeighingNewGroup"/>
+        </action>
+
+        <action id="com.dengzii.plugin.template.create" class="com.dengzii.plugin.template.CreateTemplateFromDirAction"
+                text="Create Template From Dir"
+                description="Create module template from directory">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
         </action>
     </actions>
 
