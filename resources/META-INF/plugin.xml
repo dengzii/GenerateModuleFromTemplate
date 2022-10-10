@@ -43,7 +43,7 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     ]]></description>
 
     <change-notes><![CDATA[
-    <b>Version 1.5.4 (2021/03/02)</b><br>
+    <b>Version 1.5.4 (2022/10/10)</b><br>
     0. Fix: default placeholder and file template cannot save.<br>
     1. Feat: support create module template from a directory.<br>
     2. Feat: support remove directory node and merge children to current's parent node.<br>
