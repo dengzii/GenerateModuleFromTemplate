@@ -121,6 +121,10 @@ class RealConfigurePanel : ConfigurePanel() {
             currentConfig?.capitalizeFile = cbCapitalizeFile.isSelected
             panelPreview.updateTree()
         }
+        cbEnableVelocity.addChangeListener {
+            currentConfig?.enableApacheVelocity = cbEnableVelocity.isSelected
+            panelPreview.updateTree()
+        }
         cbExpandPkgName.addChangeListener {
             currentConfig?.packageNameToDir = cbExpandPkgName.isSelected
         }
@@ -215,6 +219,7 @@ class RealConfigurePanel : ConfigurePanel() {
             cbCapitalizeFile.isSelected = capitalizeFile
             cbLowercaseDir.isSelected = lowercaseDir
             cbExpandPkgName.isSelected = packageNameToDir
+            cbEnableVelocity.isSelected = enableApacheVelocity
             // update tree, file template and placeholder table
             panelPreview.setModuleConfig(this)
             tableFileTemp.setPairData(template.fileTemplates)

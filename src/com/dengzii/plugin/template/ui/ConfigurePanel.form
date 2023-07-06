@@ -200,6 +200,13 @@
                       <text value="Replace placeholder"/>
                     </properties>
                   </component>
+                  <component id="a98e" class="javax.swing.JCheckBox" binding="cbEnableVelocity">
+                    <constraints/>
+                    <properties>
+                      <text value="Enable ApacheVelocity (?)"/>
+                      <toolTipText value="Caclculate the file name use ApacheVelocity"/>
+                    </properties>
+                  </component>
                 </children>
               </grid>
             </children>

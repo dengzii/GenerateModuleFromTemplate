@@ -9,6 +9,8 @@ import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.ThrowableRunnable
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.util.StringUtils
 
 /**
  * Create file tree.
@@ -21,9 +23,9 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         private val TAG = FileWriteCommand::class.java.simpleName
         fun startAction(kit: PluginKit, module: Module) {
             WriteCommandAction.writeCommandAction(kit.project)
-                    .withGlobalUndo()
-                    .withUndoConfirmationPolicy(UndoConfirmationPolicy.REQUEST_CONFIRMATION)
-                    .run(FileWriteCommand(kit, module))
+                .withGlobalUndo()
+                .withUndoConfirmationPolicy(UndoConfirmationPolicy.REQUEST_CONFIRMATION)
+                .run(FileWriteCommand(kit, module))
         }
     }
 
@@ -39,46 +41,64 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         fileTreeNode.expandPath()
         fileTreeNode.expandPkgName(true)
 
+        var context: VelocityContext? = null
+        if (module.enableApacheVelocity) {
+            context = VelocityContext().apply {
+                put("StringUtils", StringUtils::class.java)
+                fileTreeNode.getPlaceholderInherit()?.forEach { (k, v) ->
+                    put(k, v)
+                }
+            }
+        }
+
         val failedList = mutableListOf<FileTreeNode>()
         fileTreeNode.children.forEach {
-            failedList.addAll(createFileTree(it, current))
+            failedList.addAll(createFileTree(context, it, current))
         }
         if (failedList.isNotEmpty()) {
             val msg = failedList.joinToString("\n") { it.getRealName() }
-            NotificationUtils.showError(msg, "The following file creation failed.")
+            NotificationUtils.showError(msg, "The following files creation failed.")
         }
     }
 
-    private fun createFileTree(treeNode: FileTreeNode, currentDirectory: VirtualFile): List<FileTreeNode> {
+    private fun createFileTree(
+        context: VelocityContext?,
+        treeNode: FileTreeNode,
+        currentDirectory: VirtualFile
+    ): List<FileTreeNode> {
         Logger.d(TAG, "create node $treeNode")
         val failedList = mutableListOf<FileTreeNode>()
         if (treeNode.isDir) {
             Logger.d(TAG, "create dir ${treeNode.getPath()}")
-            val dir = kit.createDir(treeNode.getRealName(), currentDirectory)
+            val dir = kit.createDir(treeNode.getRealName(context), currentDirectory)
             if (dir == null) {
                 failedList.add(treeNode)
-                Logger.e(TAG, "create directory failure: ${treeNode.getRealName()}")
+                Logger.e(TAG, "create directory failure: ${treeNode.getRealName(context)}")
             } else {
                 treeNode.children.forEach {
-                    failedList.addAll(createFileTree(it, dir))
+                    failedList.addAll(createFileTree(context, it, dir))
                 }
             }
         } else {
             val template = treeNode.getTemplateFile()
             if (template?.isNotBlank() == true) {
                 val result = kit.createFileFromTemplate(
-                        treeNode.getRealName(),
-                        template,
-                        treeNode.getPlaceholderInherit().orEmpty(),
-                        currentDirectory)
+                    treeNode.getRealName(context),
+                    template,
+                    treeNode.getPlaceholderInherit().orEmpty(),
+                    currentDirectory
+                )
                 if (result == null || !result.isValid) {
                     failedList.add(treeNode)
-                    Logger.e(TAG, "create file from template failed, file: ${treeNode.getRealName()} template:$template")
+                    Logger.e(
+                        TAG,
+                        "create file from template failed, file: ${treeNode.getRealName(context)} template:$template"
+                    )
                 } else {
-                    Logger.d(TAG, "create file from template ${treeNode.getRealName()}")
+                    Logger.d(TAG, "create file from template ${treeNode.getRealName(context)}")
                 }
             } else {
-                if (!kit.createFile(treeNode.getRealName(), currentDirectory)) {
+                if (!kit.createFile(treeNode.getRealName(context), currentDirectory)) {
                     failedList.add(treeNode)
                 }
                 Logger.d(TAG, "create file ${treeNode.getPath()}")

@@ -29,4 +29,5 @@ public class ConfigurePanel extends JPanel {
     JCheckBox cbLowercaseDir;
     JCheckBox cbCapitalizeFile;
     JCheckBox cbExpandPkgName;
+    JCheckBox cbEnableVelocity;
 }

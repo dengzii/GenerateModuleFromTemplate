@@ -12,6 +12,7 @@ import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.treeStructure.Tree
+import org.apache.velocity.VelocityContext
 import java.awt.BorderLayout
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -34,6 +35,10 @@ class PreviewPanel(preview: Boolean) : JPanel() {
     private var onTreeUpdateListener: (() -> Unit)? = null
     private var onPlaceholderUpdateListener: (() -> Unit)? = null
 
+    private var context: VelocityContext = VelocityContext().apply {
+        put("StringUtils", org.apache.velocity.util.StringUtils::class.java)
+    }
+
     // render tree node icon, title
     private val treeCellRenderer = object : ColoredTreeCellRenderer() {
         override fun customizeCellRenderer(
@@ -43,7 +48,7 @@ class PreviewPanel(preview: Boolean) : JPanel() {
                 val node = value.userObject
                 if (node is FileTreeNode) {
                     val name = if (replacePlaceholder) {
-                        node.getRealName()
+                        node.getRealName(context)
                     } else {
                         node.name
                     }
@@ -94,6 +99,12 @@ class PreviewPanel(preview: Boolean) : JPanel() {
         Logger.i("PreviewPanel", "setModuleConfig")
         this.module = module
         fileTree.model = getTreeModel(this.module.template)
+        context.apply {
+            put("StringUtils", org.apache.velocity.util.StringUtils::class.java)
+            module.template.getPlaceholderInherit()?.forEach {
+                put(it.key, it.value)
+            }
+        }
         fileTree.doLayout()
         fileTree.updateUI()
         expandAll(fileTree, TreePath(fileTree.model.root), true)
@@ -107,7 +118,8 @@ class PreviewPanel(preview: Boolean) : JPanel() {
     }
 
     private fun getIconByFileName(fileName: String): Icon {
-        return FileTypeManager.getInstance().getFileTypeByExtension(fileName.split(".").last()).icon ?: AllIcons.FileTypes.Text
+        return FileTypeManager.getInstance().getFileTypeByExtension(fileName.split(".").last()).icon
+            ?: AllIcons.FileTypes.Text
     }
 
     /**

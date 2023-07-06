@@ -31,11 +31,8 @@ object Config {
         val arr = STORE.getValues(KEY_TEMPLATES)
 
         if (STORE.getBoolean(KEY_INIT)) {
-            Logger.i(TAG, "INIT... load AucFrame template")
-            result.add(Module.getAucModule())
-            result.add(Module.getAucApp())
-            result.add(Module.getAucExport())
-            result.add(Module.getAucPkg())
+            Logger.i(TAG, "INIT... load sample template")
+            result.add(Module.getAndroidApplication())
         }
         if (arr.isNullOrEmpty()) {
             return result

@@ -11,7 +11,8 @@ class Module(
     var templateName: String,
     var lowercaseDir: Boolean = true,
     var capitalizeFile: Boolean = true,
-    var packageNameToDir: Boolean = true
+    var packageNameToDir: Boolean = true,
+    var enableApacheVelocity: Boolean = false,
 ) {
 
     companion object {

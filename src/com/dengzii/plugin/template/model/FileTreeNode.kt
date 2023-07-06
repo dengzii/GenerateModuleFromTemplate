@@ -3,7 +3,10 @@
 package com.dengzii.plugin.template.model
 
 import com.dengzii.plugin.template.utils.Logger
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.Velocity
 import java.io.File
+import java.io.StringWriter
 import java.util.*
 import java.util.regex.Pattern
 
@@ -141,17 +144,17 @@ open class FileTreeNode() {
     /**
      * get the real name replace with placeholder
      */
-    fun getRealName(): String {
-        return getRealName(this.name)
+    fun getRealName(velocityContext: VelocityContext? = null): String {
+        return getRealNameInternal(velocityContext, this.name)
     }
 
-    private fun getRealName(fileName: String = this.name): String {
+    private fun getRealNameInternal(velocityContext: VelocityContext? = null, fileName: String = this.name): String {
         return if (isDir) {
-            val rn = replacePlaceholder(fileName, getPlaceholderInherit(), false)
+            val rn = replacePlaceholder(velocityContext, fileName, getPlaceholderInherit(), false)
             if (getModuleInherit()?.lowercaseDir == true) rn.lowercase() else rn
         } else {
             val capitalize = getModuleInherit()?.capitalizeFile ?: false
-            replacePlaceholder(fileName, getPlaceholderInherit(), capitalize)
+            replacePlaceholder(velocityContext, fileName, getPlaceholderInherit(), capitalize)
         }
     }
 
@@ -422,8 +425,8 @@ open class FileTreeNode() {
      *
      * @return The tree graph of node
      */
-    fun getTreeGraph(): String {
-        return getNodeGraph().toString()
+    fun getTreeGraph(context: VelocityContext? = null): String {
+        return getNodeGraph(context).toString()
     }
 
     /**
@@ -451,7 +454,11 @@ open class FileTreeNode() {
         return null
     }
 
-    private fun getNodeGraph(head: Stack<String> = Stack(), str: StringBuilder = StringBuilder()): StringBuilder {
+    private fun getNodeGraph(
+        context: VelocityContext?,
+        head: Stack<String> = Stack(),
+        str: StringBuilder = StringBuilder()
+    ): StringBuilder {
 
         head.forEach {
             str.append(it)
@@ -468,13 +475,13 @@ open class FileTreeNode() {
                 }
             }
         )
-        str.append(getRealName())
+        str.append(getRealName(context))
         if (isDir) {
 //            str.append("\tplaceholder: ").append(placeholders)
         }
         str.append("\n")
 
-        if (!realChildren.isEmpty()) {
+        if (realChildren.isNotEmpty()) {
             head.push(
                 when {
                     parent == null -> ""
@@ -483,7 +490,7 @@ open class FileTreeNode() {
                 }
             )
             realChildren.forEach {
-                str.append(it.getNodeGraph(head))
+                str.append(it.getNodeGraph(context, head))
             }
             head.pop()
         }
@@ -535,10 +542,17 @@ open class FileTreeNode() {
     }
 
     private fun replacePlaceholder(
+        velocityContext: VelocityContext? = null,
         origin: String,
         placeholders: Map<String, String>?,
         capitalize: Boolean = false
     ): String {
+        if (velocityContext != null) {
+            val writer = StringWriter()
+            Velocity.evaluate(velocityContext, writer, "FileTreeNode", origin)
+            return writer.toString()
+        }
+
         var after = origin
         if (placeholders.isNullOrEmpty()) {
             return origin
@@ -556,7 +570,7 @@ open class FileTreeNode() {
         return if (after == origin || !after.contains('$')) {
             after
         } else {
-            replacePlaceholder(after, placeholders, capitalize)
+            replacePlaceholder(velocityContext, after, placeholders, capitalize)
         }
     }
 }

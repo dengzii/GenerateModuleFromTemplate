@@ -1,6 +1,8 @@
 package test
 
 import com.dengzii.plugin.template.model.FileTreeDsl
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.util.StringUtils
 import org.junit.Test
 
 class FileTreeDslTest {
@@ -12,6 +14,7 @@ class FileTreeDslTest {
             dir("dir1") {
                 file("file2")
                 dir("dir2") {
+                    file("_${this.name}_file")
                     dir("dir3") {
                         dir("dir4")
                     }
@@ -123,5 +126,19 @@ class FileTreeDslTest {
             }
         }
 //        println(tree.getAllPlaceholderInTree())
+    }
+
+
+    @Test
+    fun aucPkgTemplateTest() {
+        val s = VelocityContext().apply {
+            put("StringUtils", StringUtils::class.java)
+            put("A","a_b_c")
+        }
+        val d = FileTreeDsl {
+            file("\${StringUtils.removeAndHump(\${A})}")
+        }
+
+        println(d.getTreeGraph(s))
     }
 }

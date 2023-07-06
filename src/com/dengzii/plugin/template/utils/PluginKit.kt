@@ -7,8 +7,6 @@ import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.ide.fileTemplates.impl.FileTemplateManagerImpl
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -47,10 +45,6 @@ class PluginKit private constructor(e: AnActionEvent) {
 
     fun isProjectValid(): Boolean {
         return project.isOpen && project.isInitialized
-    }
-
-    fun getModules(): Array<Module> {
-        return ModuleManager.getInstance(project).modules
     }
 
     fun getCurrentPsiFile(): PsiFile? {
@@ -172,6 +166,7 @@ class PluginKit private constructor(e: AnActionEvent) {
 
         fun getAllFileTemplate(): Array<FileTemplate> = FileTemplateManagerImpl.getDefaultInstance().allTemplates
 
-        fun getFileTemplate(name: String): FileTemplate? = FileTemplateManagerImpl.getDefaultInstance().getTemplate(name)
+        fun getFileTemplate(name: String): FileTemplate? =
+            FileTemplateManagerImpl.getDefaultInstance().getTemplate(name)
     }
 }

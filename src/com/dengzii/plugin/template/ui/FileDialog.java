@@ -66,6 +66,16 @@ public class FileDialog extends JDialog {
                 && PluginKit.Companion.getFileTemplate(fileNode.getTemplateFile()) != null) {
             cbTemplate.setSelectedItem(fileNode.getTemplateFile());
         }
+        cbTemplate.addItemListener(e -> {
+            if (cbTemplate.getSelectedIndex() == 0 || fileTemplates.length == 0) {
+                tfName.setText("");
+                return;
+            }
+            FileTemplate selected = fileTemplates[cbTemplate.getSelectedIndex() - 1];
+            if (selected != null && !selected.getFileName().isBlank()) {
+                tfName.setText(selected.getFileName() + "." + selected.getExtension());
+            }
+        });
     }
 
     private void onConfirm() {
