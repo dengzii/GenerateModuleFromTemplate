@@ -14,7 +14,7 @@ Using this plugin, help you create directories and files from the customizable t
 ### Feature
 
 1. Custom directory structure.
-2. Support placeholders, and replace it when you create a module.
+2. Support placeholders / ApacheVelocity template language, and replace it when you create a module.
 3. Specify file templates from IDE custom/build-in templates.
 4. Passing placeholders to file template as variables.
 5. Output/import template file. share your template with your partner.
@@ -23,10 +23,10 @@ Using this plugin, help you create directories and files from the customizable t
 
 1. Configure template in plugin settings: <b>File > Settings > Tools > Module Template Settings</b>.
 2. Create directories from the 'Structure' tab, click the right mouse button to operate the file tree.
-3. FileTree can use placeholders, the placeholder should like this -> <b>${YOUR_PLACEHOLDER_HERE}</b>.
-4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders for FileName
+3. FileTree can use placeholders / ApacheVelocity template language , the placeholder should like this -> <b>${YOUR_PLACEHOLDER_HERE}</b>.
+4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders / attributes for FileName
    field.
-5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates
+5. The 'Placeholder' tab's table defines placeholders / attributes for replacing filenames and file templates
 
 *NOTE*
 
