@@ -40,6 +40,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         Logger.d(TAG, "FileTemplates : " + fileTreeNode.getFileTemplateInherit().toString())
         fileTreeNode.expandPath()
         fileTreeNode.expandPkgName(true)
+        fileTreeNode.resolveFileTemplate()
 
         var context: VelocityContext? = null
         if (module.enableApacheVelocity) {

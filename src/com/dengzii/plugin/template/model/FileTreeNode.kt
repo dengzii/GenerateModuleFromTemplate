@@ -213,8 +213,40 @@ open class FileTreeNode() {
         }
     }
 
+    /**
+     *  Resolve all file template file name in tree node.
+     */
+    fun resolveFileTemplate(context: VelocityContext? = null) {
+        val templates = getAllTemplateMap()
+        val placeholders = getPlaceholderInherit() ?: return
+        if (fileTemplates != null && templates.isNotEmpty()) {
+            templates.forEach { (key, value) ->
+                val realName = getRealNameInternal(context, key)
+                val realValue = replacePlaceholder(context, value, placeholders, false)
+                fileTemplates!![realName] = realValue
+            }
+        }
+        traversal({ it, _ ->
+            it.resolveFileTemplate()
+        })
+    }
+
+    /**
+     *  Return the most matching file template.
+     *  If the node has template, return it, otherwise return the template in parent node.
+     */
     fun getTemplateFile(): String? {
-        return template ?: getFileTemplateInherit()?.get(name)
+        if (template != null) {
+            return template
+        }
+        val tpl = getFileTemplateInherit() ?: return null
+        val path = getPath()
+        for (entry in tpl) {
+            if (entry.key != name && path.endsWith(entry.key)) {
+                return entry.value
+            }
+        }
+        return tpl[name]
     }
 
     fun setTemplate(name: String) {
@@ -425,8 +457,12 @@ open class FileTreeNode() {
      *
      * @return The tree graph of node
      */
-    fun getTreeGraph(context: VelocityContext? = null): String {
-        return getNodeGraph(context).toString()
+    fun getTreeGraph(
+        context: VelocityContext? = null,
+        templateFile: Boolean = false,
+        resolveName: Boolean = true,
+    ): String {
+        return getNodeGraph(context, templateFile = templateFile, resolveName = resolveName).toString()
     }
 
     /**
@@ -457,7 +493,9 @@ open class FileTreeNode() {
     private fun getNodeGraph(
         context: VelocityContext?,
         head: Stack<String> = Stack(),
-        str: StringBuilder = StringBuilder()
+        str: StringBuilder = StringBuilder(),
+        templateFile: Boolean = false,
+        resolveName: Boolean = true,
     ): StringBuilder {
 
         head.forEach {
@@ -475,9 +513,12 @@ open class FileTreeNode() {
                 }
             }
         )
-        str.append(getRealName(context))
-        if (isDir) {
-//            str.append("\tplaceholder: ").append(placeholders)
+        val n = if (resolveName) getRealName(context) else name
+
+        if (isDir || !templateFile) {
+            str.append(n)
+        } else {
+            str.append("$n  ${getTemplateFile()}")
         }
         str.append("\n")
 
@@ -490,7 +531,7 @@ open class FileTreeNode() {
                 }
             )
             realChildren.forEach {
-                str.append(it.getNodeGraph(context, head))
+                str.append(it.getNodeGraph(context, head, StringBuilder(), templateFile))
             }
             head.pop()
         }

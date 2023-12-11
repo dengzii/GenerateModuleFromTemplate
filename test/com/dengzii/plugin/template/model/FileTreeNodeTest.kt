@@ -31,6 +31,39 @@ class FileTreeNodeTest : TestCase() {
     }
 
     @Test
+    fun testFileTemplate() {
+        FileTreeDsl {
+            placeholder("PKG", "com.example")
+            placeholder("F3", "f3")
+
+            fileTemplate("f1.java", "file1.java")
+            fileTemplate("f2.java", "ff2.java")
+            fileTemplate("\${PKG}/f2.java", "file2.java")
+            fileTemplate("f3.java", "file3.java")
+
+            dir("root") {
+                dir("a/b") {
+                    dir("\${PKG}") {
+                        file("f1.java")
+                        file("f2.java")
+                        file("\${F3}.java")
+
+                    }
+                    dir("c") {
+                        file("f2.java")
+                    }
+                }
+            }
+
+            // parse file template file name use placeholder, and support mat
+
+            resolveFileTemplate()
+            println(getAllTemplateMap())
+            println(getTreeGraph(templateFile = true))
+        }
+    }
+
+    @Test
     fun testExpandPath() {
         val dsl = FileTreeDsl {
             dir("root") {

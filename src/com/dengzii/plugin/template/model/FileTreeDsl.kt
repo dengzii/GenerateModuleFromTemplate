@@ -33,14 +33,17 @@ class FileTreeDsl() : FileTreeNode() {
         }
     }
 
-    fun FileTreeNode.file(name: String) {
-        if (!isDir) return
+    fun FileTreeNode.file(name: String): FileTreeNode {
+        if (!isDir) throw IllegalStateException("Can not create file in a file.")
+
         name.getPlaceholder().forEach {
             if (getPlaceholderInherit()?.containsKey(it) == false) {
                 placeholder(it, "")
             }
         }
-        addChild(FileTreeNode(this, name, false))
+        val r = FileTreeNode(this, name, false)
+        addChild(r)
+        return r
     }
 
     fun FileTreeNode.placeholder(name: String, value: String) {

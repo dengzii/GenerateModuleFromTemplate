@@ -125,7 +125,7 @@ class FileTreeDslTest {
                 dir("test")
             }
         }
-//        println(tree.getAllPlaceholderInTree())
+        println(tree.getTreeGraph())
     }
 
 
@@ -137,6 +137,7 @@ class FileTreeDslTest {
         }
         val d = FileTreeDsl {
             file("\${StringUtils.removeAndHump(\${A})}")
+            dir("\${StringUtils.sub(\${A}, \"_\", '')}")
         }
 
         println(d.getTreeGraph(s))
