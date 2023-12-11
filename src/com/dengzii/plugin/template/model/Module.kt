@@ -12,7 +12,7 @@ class Module(
     var lowercaseDir: Boolean = true,
     var capitalizeFile: Boolean = true,
     var packageNameToDir: Boolean = true,
-    var enableApacheVelocity: Boolean = false,
+    var enableApacheVelocity: Boolean = true,
 ) {
 
     companion object {

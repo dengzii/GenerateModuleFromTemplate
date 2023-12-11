@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
@@ -14,13 +14,14 @@
 2. Support placeholders / ApacheVelocity template lang in file name.<br>
 3. Specify file templates from IDE custom/build-in templates.<br>
 4. Passing placeholders to file template as variables.<br>
-5. Output/import template file. share your template with your partner.<br>
+5. Export / Import template, share template by file.<br>
 <br>
 <b>Usage</b><br>
 1. Configure template in plugin settings: <b>File > Settings > Tools > Module Template Settings</b>.<br>
 2. Create directories from the 'Structure' tab, click the right mouse button to operate the file tree.<br>
 3. FileTree can use placeholders or ApacheVelocity template lang, the placeholder should like this -> <b>${YOUR_PLACEHOLDER_HERE}</b>.<br>
-4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders for FileName field.<br>
+4. The 'File Template' tab lists which template the specified file uses, you can also use placeholders for FileName field,
+    for same name file, you can use path to distinguish them, for example: c/x.js is match a/b/c/x.js<br>
 5. The 'Placeholder' tab's table defines placeholders for replacing filenames and file templates<br>
 More information: <a href='https://github.com/dengzii/GenerateModuleFromTemplate/blob/master/README.md'>README</a><br>
 <br>
@@ -42,6 +43,9 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     ]]></description>
 
     <change-notes><![CDATA[
+    <b>Version 1.6.5 (2023/12/11)</b><br>
+    1. Update: File template support match by file path.<br>
+    2. Fix: ApacheVelocity template lang not work.<br>
     <b>Version 1.6.4 (2023/07/06)</b><br>
     1. Feature: Support ApacheVelocity in file name.<br>
     <br>
@@ -54,7 +58,7 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>
+<!--        <fileTemplateGroup implementation="com.dengzii.plugin.template.template.FileTemplateFactory" order="first"/>-->
         <applicationConfigurable groupId="tools" displayName="Module Template Settings"
                                  id="preferences.ModuleTemplateConfig"
                                  instance="com.dengzii.plugin.template.TemplateConfigurable"/>

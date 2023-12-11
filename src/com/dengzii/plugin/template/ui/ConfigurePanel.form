@@ -197,7 +197,7 @@
                     <constraints/>
                     <properties>
                       <selected value="false"/>
-                      <text value="Replace placeholder"/>
+                      <text value="Preview Mode"/>
                     </properties>
                   </component>
                   <component id="a98e" class="javax.swing.JCheckBox" binding="cbEnableVelocity">

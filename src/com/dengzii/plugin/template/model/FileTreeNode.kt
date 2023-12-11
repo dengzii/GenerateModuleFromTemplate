@@ -50,6 +50,9 @@ open class FileTreeNode() {
     @Transient
     private var module: Module? = null
 
+    @Transient
+    var context: VelocityContext? = null
+
     companion object {
 
         private val TAG = FileTreeNode::class.java.simpleName
@@ -148,7 +151,10 @@ open class FileTreeNode() {
         return getRealNameInternal(velocityContext, this.name)
     }
 
-    private fun getRealNameInternal(velocityContext: VelocityContext? = null, fileName: String = this.name): String {
+    private fun getRealNameInternal(
+        velocityContext: VelocityContext? = getContextInherit(),
+        fileName: String = this.name,
+    ): String {
         return if (isDir) {
             val rn = replacePlaceholder(velocityContext, fileName, getPlaceholderInherit(), false)
             if (getModuleInherit()?.lowercaseDir == true) rn.lowercase() else rn
@@ -197,6 +203,14 @@ open class FileTreeNode() {
         return nodes
     }
 
+    private fun getContextInherit(): VelocityContext? {
+        return if (context == null) {
+            parent?.getContextInherit()
+        } else {
+            context
+        }
+    }
+
     fun getFileTemplateInherit(): MutableMap<String, String>? {
         return if (fileTemplates.isNullOrEmpty()) {
             return parent?.getFileTemplateInherit()
@@ -216,7 +230,7 @@ open class FileTreeNode() {
     /**
      *  Resolve all file template file name in tree node.
      */
-    fun resolveFileTemplate(context: VelocityContext? = null) {
+    fun resolveFileTemplate(context: VelocityContext? = getContextInherit()) {
         val templates = getAllTemplateMap()
         val placeholders = getPlaceholderInherit() ?: return
         if (fileTemplates != null && templates.isNotEmpty()) {
@@ -227,7 +241,7 @@ open class FileTreeNode() {
             }
         }
         traversal({ it, _ ->
-            it.resolveFileTemplate()
+            it.resolveFileTemplate(context)
         })
     }
 

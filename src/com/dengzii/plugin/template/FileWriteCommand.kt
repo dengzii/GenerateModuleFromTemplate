@@ -51,6 +51,7 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
                 }
             }
         }
+        fileTreeNode.context = context
 
         val failedList = mutableListOf<FileTreeNode>()
         fileTreeNode.children.forEach {

@@ -40,16 +40,19 @@ class RealConfigurePanel : ConfigurePanel() {
 
     init {
         panelActionBar.add(ActionToolBarUtils.create("ActionBar1", listOf(
-            ActionToolBarUtils.Action(AllIcons.General.Add) {
+            ActionToolBarUtils.Action(AllIcons.General.Add, desc = "Create template") {
                 onAddConfig()
             },
-            ActionToolBarUtils.Action(AllIcons.General.Remove) {
+            ActionToolBarUtils.Action(AllIcons.General.Remove, desc = "Remove selected template") {
                 onRemoveConfig()
             },
-            ActionToolBarUtils.Action(AllIcons.General.CopyHovered) {
+            ActionToolBarUtils.Action(AllIcons.General.CopyHovered, desc = "Copy selected template") {
                 onCopyConfig()
             },
-            ActionToolBarUtils.Action(AllIcons.Actions.Download) {
+            ActionToolBarUtils.Action(AllIcons.ToolbarDecorator.Import, desc = "Import template from file") {
+                onImportTemplate()
+            },
+            ActionToolBarUtils.Action(AllIcons.Actions.MenuSaveall, desc = "Export selected template") {
                 onExportTemplate()
             }
         )))
@@ -234,7 +237,6 @@ class RealConfigurePanel : ConfigurePanel() {
     private fun onAddConfig() {
         PopMenuUtils.create(linkedMapOf(
             "Empty Template" to { addModuleTemplate(getEmpty()) },
-            "* Import From File" to { onImportTemplate() },
             "Android Application" to { addModuleTemplate(getAndroidApplication()) },
             "Android Mvp" to { addModuleTemplate(getAndroidMvp()) },
             "Auc Module" to { addModuleTemplate(getAucModule()) },
@@ -246,7 +248,7 @@ class RealConfigurePanel : ConfigurePanel() {
 
     private fun onExportTemplate() {
         val descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        descriptor.title = "Save Template to File"
+        descriptor.title = "Save template ${currentConfig!!.templateName} to File"
         val vf = FileChooser.chooseFile(descriptor, project, null)
         if (vf != null && vf.isWritable) {
             val config = GSON.toJson(currentConfig)
