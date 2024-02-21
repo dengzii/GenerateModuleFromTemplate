@@ -1,6 +1,8 @@
 package com.dengzii.plugin.template.model
 
 import junit.framework.TestCase
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.util.StringUtils
 import org.junit.Test
 
 /**
@@ -79,6 +81,38 @@ class FileTreeNodeTest : TestCase() {
         println(m.template.getTreeGraph())
         m.template.expandPath()
         println(m.template.getTreeGraph())
+        m.template.expandPkgName(true)
+        println(m.template.getTreeGraph())
+    }
+
+    fun testExpandPkg() {
+
+        val dsl = FileTreeDsl {
+            placeholder("FT", "com_demo")
+            dir("root") {
+                dir("\${FT.replaceAll(\"[^\\w]\", \".\")}") {
+                    file("a.txt")
+                }
+                dir("\${FT.replaceAll(\"[_]\", \".\")}") {
+                    file("a.txt")
+                }
+                file("\${FT}.txt")
+            }
+        }
+        val m = Module.create(dsl, "test")
+        m.packageNameToDir = true
+        m.packageNameToDir = true
+        m.enableApacheVelocity = true
+
+        m.template.context = VelocityContext().apply {
+            put("StringUtils", StringUtils::class.java).apply {
+                put("FT", "com_demo")
+            }
+        }
+
+        m.template.resolveTreeFileName()
+        println(m.template.getTreeGraph())
+
         m.template.expandPkgName(true)
         println(m.template.getTreeGraph())
     }

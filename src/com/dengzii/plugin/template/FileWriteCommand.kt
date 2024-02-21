@@ -38,9 +38,6 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         val fileTreeNode = module.template
         Logger.d(TAG, "Placeholders : " + fileTreeNode.getPlaceholderInherit().toString())
         Logger.d(TAG, "FileTemplates : " + fileTreeNode.getFileTemplateInherit().toString())
-        fileTreeNode.expandPath()
-        fileTreeNode.expandPkgName(true)
-        fileTreeNode.resolveFileTemplate()
 
         var context: VelocityContext? = null
         if (module.enableApacheVelocity) {
@@ -52,6 +49,12 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
             }
         }
         fileTreeNode.context = context
+
+        fileTreeNode.resolveTreeFileName()
+        fileTreeNode.resolveFileTemplate()
+
+        fileTreeNode.expandPath()
+        fileTreeNode.expandPkgName(true)
 
         val failedList = mutableListOf<FileTreeNode>()
         fileTreeNode.children.forEach {

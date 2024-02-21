@@ -228,6 +228,18 @@ open class FileTreeNode() {
     }
 
     /**
+     * Resolve all file name in tree node with apache velocity, and set the resolved name to the node.
+     *
+     * @param context The velocity context
+     */
+    fun resolveTreeFileName(context: VelocityContext? = getContextInherit()) {
+        name = getRealNameInternal(context)
+        traversal({ it, _ ->
+            it.resolveTreeFileName(context)
+        })
+    }
+
+    /**
      *  Resolve all file template file name in tree node.
      */
     fun resolveFileTemplate(context: VelocityContext? = getContextInherit()) {
