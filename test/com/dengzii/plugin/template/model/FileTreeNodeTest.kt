@@ -1,5 +1,6 @@
 package com.dengzii.plugin.template.model
 
+import com.dengzii.plugin.template.Config
 import junit.framework.TestCase
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.util.StringUtils
@@ -85,35 +86,68 @@ class FileTreeNodeTest : TestCase() {
         println(m.template.getTreeGraph())
     }
 
+
+    fun testAppcacheVelocity() {
+        val r = """
+            !{StringUtils.removeAndHump(!{FEATURE_NAME.replaceAll("[^\w]", "_")})}Module.kt
+        """.replace("!", "\$")
+
+        val dsl = FileTreeDsl {
+            placeholder("FT", "com-example")
+            file("\${StringUtils.removeAndHump(\${FT.replaceAll(\"[_-]\", \"_\")})}")
+            file(r)
+            file("\${FT.replaceAll(\"[-]\", \"_\")}")
+        }
+        val module = Config.GSON.fromJson("", Module::class.java)
+
+        val m = Module.create(dsl, "test")
+        m.enableApacheVelocity = true
+        m.template.context = VelocityContext().apply {
+            put("StringUtils", StringUtils::class.java)
+            put("FT", "com-example")
+        }
+        m.template.resolve()
+        println(m.template.getTreeGraph())
+    }
+
     fun testExpandPkg() {
 
         val dsl = FileTreeDsl {
             placeholder("FT", "com_demo")
+            fileTemplate("\${FT.replaceAll(\"[_]\", \".\")}.java", "Example")
+            fileTemplate("\${StringUtils.removeAndHump(\${FT.replaceAll(\"[_]\", \"-\")})}Module.kt", "ExampleModule")
             dir("root") {
-                dir("\${FT.replaceAll(\"[^\\w]\", \".\")}") {
-                    file("a.txt")
-                }
                 dir("\${FT.replaceAll(\"[_]\", \".\")}") {
                     file("a.txt")
                 }
-                file("\${FT}.txt")
+                file("\${FT.replaceAll(\"[_]\", \".\")}.java")
+                file("\${StringUtils.removeAndHump(\${FT.replaceAll(\"[_]\", \"-\")})}Module.kt")
             }
         }
+
         val m = Module.create(dsl, "test")
         m.packageNameToDir = true
         m.packageNameToDir = true
         m.enableApacheVelocity = true
 
         m.template.context = VelocityContext().apply {
-            put("StringUtils", StringUtils::class.java).apply {
-                put("FT", "com_demo")
+            put("StringUtils", StringUtils::class.java)
+            m.template.getPlaceholderInherit()?.forEach { (k, v) ->
+                put(k, v)
             }
         }
 
         m.template.resolveTreeFileName()
-        println(m.template.getTreeGraph())
+        m.template.resolveFileTemplate()
+        m.template.resolve()
+
+        m.template.children.last().children.last().let {
+            println(it.name)
+            println(it.fileTemplates)
+            println(it.getTemplateFile())
+        }
 
         m.template.expandPkgName(true)
-        println(m.template.getTreeGraph())
+        println(m.template.getTreeGraph(templateFile = true))
     }
 }

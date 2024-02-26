@@ -56,12 +56,9 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         fileTreeNode.expandPath()
         fileTreeNode.expandPkgName(true)
 
-        val failedList = mutableListOf<FileTreeNode>()
-        fileTreeNode.children.forEach {
-            failedList.addAll(createFileTree(context, it, current))
-        }
+        val failedList = createFileTree(context, fileTreeNode, current)
         if (failedList.isNotEmpty()) {
-            val msg = failedList.joinToString("\n") { it.getRealName() }
+            val msg = failedList.joinToString("\n") { it.name }
             NotificationUtils.showError(msg, "The following files creation failed.")
         }
     }
@@ -71,14 +68,19 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         treeNode: FileTreeNode,
         currentDirectory: VirtualFile
     ): List<FileTreeNode> {
+        if (treeNode.isRoot()) {
+            return treeNode.children.map {
+                createFileTree(context, it, currentDirectory)
+            }.flatten()
+        }
         Logger.d(TAG, "create node $treeNode")
         val failedList = mutableListOf<FileTreeNode>()
         if (treeNode.isDir) {
             Logger.d(TAG, "create dir ${treeNode.getPath()}")
-            val dir = kit.createDir(treeNode.getRealName(context), currentDirectory)
+            val dir = kit.createDir(treeNode.name, currentDirectory)
             if (dir == null) {
                 failedList.add(treeNode)
-                Logger.e(TAG, "create directory failure: ${treeNode.getRealName(context)}")
+                Logger.e(TAG, "create directory failure: ${treeNode.name}")
             } else {
                 treeNode.children.forEach {
                     failedList.addAll(createFileTree(context, it, dir))
@@ -87,23 +89,27 @@ class FileWriteCommand(private var kit: PluginKit, private var module: Module) :
         } else {
             val template = treeNode.getTemplateFile()
             if (template?.isNotBlank() == true) {
-                val result = kit.createFileFromTemplate(
-                    treeNode.getRealName(context),
-                    template,
-                    treeNode.getPlaceholderInherit().orEmpty(),
-                    currentDirectory
-                )
-                if (result == null || !result.isValid) {
-                    failedList.add(treeNode)
-                    Logger.e(
-                        TAG,
-                        "create file from template failed, file: ${treeNode.getRealName(context)} template:$template"
+                val result = try {
+                    kit.createFileFromTemplate(
+                        treeNode.name,
+                        template,
+                        treeNode.getPlaceholderInherit().orEmpty(),
+                        currentDirectory
                     )
+                } catch (e: Throwable) {
+                    e
+                }
+                if (result is Throwable) {
+                    NotificationUtils.showError(
+                        "file: ${treeNode.name} template:$template, error: ${result.message}",
+                        "Create file failed."
+                    )
+                    failedList.add(treeNode)
                 } else {
-                    Logger.d(TAG, "create file from template ${treeNode.getRealName(context)}")
+                    Logger.d(TAG, "create file from template ${treeNode.name}")
                 }
             } else {
-                if (!kit.createFile(treeNode.getRealName(context), currentDirectory)) {
+                if (!kit.createFile(treeNode.name, currentDirectory)) {
                     failedList.add(treeNode)
                 }
                 Logger.d(TAG, "create file ${treeNode.getPath()}")

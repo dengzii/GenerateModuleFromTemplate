@@ -75,7 +75,7 @@ public class CreateModuleDialog extends JDialog {
         selectedModule.getTemplate().setPlaceholders(tablePlaceholder.getPairResult());
         selectedModule.getTemplate().setFileTemplates(tableFileTemplate.getPairResult());
 
-        previewPanel.setReplacePlaceholder(true);
+        previewPanel.setPreviewMode(true);
         previewPanel.setModuleConfig(selectedModule);
 
         if (currentPanelIndex == panels.size() - 1) {
@@ -135,7 +135,7 @@ public class CreateModuleDialog extends JDialog {
             c.setEnabled(false);
         }
 
-        previewPanel.setReplacePlaceholder(true);
+        previewPanel.setPreviewMode(true);
         previewPanel.setModuleConfig(selectedModule);
         tablePlaceholder.setPairData(selectedModule.getTemplate().getAllPlaceholdersMap());
         tableFileTemplate.setPairData(selectedModule.getTemplate().getAllTemplateMap());

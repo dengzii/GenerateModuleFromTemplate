@@ -53,6 +53,10 @@ open class FileTreeNode() {
     @Transient
     var context: VelocityContext? = null
 
+    // flag whether the node is resolved, if true, represents the node info has been resolved via the velocity engine or placeholders.
+    @Transient
+    var resolved: Boolean = false
+
     companion object {
 
         private val TAG = FileTreeNode::class.java.simpleName
@@ -156,11 +160,11 @@ open class FileTreeNode() {
         fileName: String = this.name,
     ): String {
         return if (isDir) {
-            val rn = replacePlaceholder(velocityContext, fileName, getPlaceholderInherit(), false)
+            val rn = getResolveTemplate(velocityContext, fileName, getPlaceholderInherit(), false)
             if (getModuleInherit()?.lowercaseDir == true) rn.lowercase() else rn
         } else {
             val capitalize = getModuleInherit()?.capitalizeFile ?: false
-            replacePlaceholder(velocityContext, fileName, getPlaceholderInherit(), capitalize)
+            getResolveTemplate(velocityContext, fileName, getPlaceholderInherit(), capitalize)
         }
     }
 
@@ -183,6 +187,8 @@ open class FileTreeNode() {
 
     /**
      * Return all file template in tree node
+     *
+     * TODO: optimize
      */
     fun getAllTemplateMap(): Map<String, String> {
         val templates = fileTemplates.orEmpty().toMutableMap()
@@ -212,19 +218,15 @@ open class FileTreeNode() {
     }
 
     fun getFileTemplateInherit(): MutableMap<String, String>? {
-        return if (fileTemplates.isNullOrEmpty()) {
-            return parent?.getFileTemplateInherit()
-        } else {
-            fileTemplates
-        }
+        return parent?.getFileTemplateInherit()?.apply {
+            putAll(fileTemplates.orEmpty())
+        } ?: fileTemplates ?: mutableMapOf()
     }
 
     fun getPlaceholderInherit(): MutableMap<String, String>? {
-        return if (placeholders.isNullOrEmpty()) {
-            return parent?.getPlaceholderInherit()
-        } else {
-            placeholders
-        }
+        return parent?.getPlaceholderInherit()?.apply {
+            putAll(placeholders.orEmpty())
+        } ?: placeholders ?: mutableMapOf()
     }
 
     /**
@@ -243,17 +245,28 @@ open class FileTreeNode() {
      *  Resolve all file template file name in tree node.
      */
     fun resolveFileTemplate(context: VelocityContext? = getContextInherit()) {
-        val templates = getAllTemplateMap()
-        val placeholders = getPlaceholderInherit() ?: return
-        if (fileTemplates != null && templates.isNotEmpty()) {
-            templates.forEach { (key, value) ->
-                val realName = getRealNameInternal(context, key)
-                val realValue = replacePlaceholder(context, value, placeholders, false)
-                fileTemplates!![realName] = realValue
+        val templates = getFileTemplateInherit()
+        if (templates != null) {
+            val resolved = mutableMapOf<String, String>()
+            val capitalize = getModuleInherit()?.capitalizeFile ?: false
+            templates.forEach {
+                val resolvedFileName =
+                    getResolveTemplate(context, it.key, getPlaceholderInherit(), capitalize = capitalize)
+                resolved[resolvedFileName] = it.value
             }
+            fileTemplates = resolved
         }
         traversal({ it, _ ->
             it.resolveFileTemplate(context)
+        })
+    }
+
+    fun resolve() {
+        resolved = true
+        resolveTreeFileName()
+        resolveFileTemplate()
+        traversal({ it, _ ->
+            it.resolved = true
         })
     }
 
@@ -608,23 +621,23 @@ open class FileTreeNode() {
         return result
     }
 
-    private fun replacePlaceholder(
+    private fun getResolveTemplate(
         velocityContext: VelocityContext? = null,
-        origin: String,
-        placeholders: Map<String, String>?,
+        template: String,
+        variables: Map<String, String>?,
         capitalize: Boolean = false
     ): String {
         if (velocityContext != null) {
             val writer = StringWriter()
-            Velocity.evaluate(velocityContext, writer, "FileTreeNode", origin)
+            Velocity.evaluate(velocityContext, writer, "FileTreeNode", template)
             return writer.toString()
         }
 
-        var after = origin
-        if (placeholders.isNullOrEmpty()) {
-            return origin
+        var after = template
+        if (variables.isNullOrEmpty()) {
+            return template
         }
-        placeholders.forEach { (k, v) ->
+        variables.forEach { (k, v) ->
             var replacement = v
             if (capitalize) {
                 replacement = v.lowercase(Locale.getDefault())
@@ -634,10 +647,10 @@ open class FileTreeNode() {
             }
             after = after.replace("\${$k}", replacement)
         }
-        return if (after == origin || !after.contains('$')) {
+        return if (after == template || !after.contains('$')) {
             after
         } else {
-            replacePlaceholder(velocityContext, after, placeholders, capitalize)
+            getResolveTemplate(velocityContext, after, variables, capitalize)
         }
     }
 }

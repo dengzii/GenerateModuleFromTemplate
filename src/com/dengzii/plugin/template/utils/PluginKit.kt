@@ -15,6 +15,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import java.util.*
+import kotlin.jvm.Throws
 
 /**
  * <pre>
@@ -107,25 +108,25 @@ class PluginKit private constructor(e: AnActionEvent) {
         return FileTemplateUtil.calculateAttributes(templateContent, Properties(), true, project)
     }
 
+    @Throws(Throwable::class)
     fun createFileFromTemplate(
         fileName: String,
         templateName: String,
         propertiesMap: Map<String, String>,
         directory: VirtualFile
-    ): PsiElement? {
+    ): PsiElement {
 
         val fileTemplateManager = FileTemplateManager.getInstance(project)
         val properties = Properties(fileTemplateManager.defaultProperties)
         propertiesMap.forEach { (t, u) ->
             properties.setProperty(t.trim(), u)
         }
-        val template = fileTemplateManager.getTemplate(templateName) ?: return null
-        val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: return null
+        val template = fileTemplateManager.getTemplate(templateName) ?: throw IllegalArgumentException("template not found.")
+        val psiDirectory = getPsiDirectoryByVirtualFile(directory) ?: throw IllegalArgumentException("directory not found.")
         return try {
             FileTemplateUtil.createFromTemplate(template, fileName, properties, psiDirectory)
         } catch (e: Throwable) {
-            e.printStackTrace()
-            null
+            throw e
         }
     }
 

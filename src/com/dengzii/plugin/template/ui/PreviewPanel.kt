@@ -79,9 +79,9 @@ class PreviewPanel(preview: Boolean) : JPanel() {
         initPanel()
     }
 
-    fun setReplacePlaceholder(replace: Boolean) {
-        if (replace != replacePlaceholder) {
-            replacePlaceholder = replace
+    fun setPreviewMode(preview: Boolean) {
+        if (preview != replacePlaceholder) {
+            replacePlaceholder = preview
             showPlaceholder.isSelected = !replacePlaceholder
             fileTree.updateUI()
         }

@@ -109,12 +109,12 @@ class RealConfigurePanel : ConfigurePanel() {
             currentConfig?.template?.removeAllPlaceHolderInTree()
             currentConfig?.template?.placeholders = tablePlaceholder.getPairResult()
         }
-        panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
+        panelPreview.setPreviewMode(cbPlaceholder.isSelected)
         panelPreview.setOnTreeUpdateListener {
             modified = true
         }
         cbPlaceholder.addChangeListener {
-            panelPreview.setReplacePlaceholder(cbPlaceholder.isSelected)
+            panelPreview.setPreviewMode(cbPlaceholder.isSelected)
         }
         cbLowercaseDir.addChangeListener {
             currentConfig?.lowercaseDir = cbLowercaseDir.isSelected
