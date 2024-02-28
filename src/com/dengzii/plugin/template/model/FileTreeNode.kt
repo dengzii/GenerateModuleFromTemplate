@@ -53,6 +53,8 @@ open class FileTreeNode() {
     @Transient
     var context: VelocityContext? = null
 
+    var resolvedFileTemplates: MutableMap<String, String>? = null
+
     // flag whether the node is resolved, if true, represents the node info has been resolved via the velocity engine or placeholders.
     @Transient
     var resolved: Boolean = false
@@ -224,9 +226,9 @@ open class FileTreeNode() {
     }
 
     fun getPlaceholderInherit(): MutableMap<String, String>? {
-        return parent?.getPlaceholderInherit()?.apply {
-            putAll(placeholders.orEmpty())
-        } ?: placeholders ?: mutableMapOf()
+        val r = parent?.getPlaceholderInherit() ?: mutableMapOf()
+        r.putAll(placeholders ?: mapOf())
+        return r
     }
 
     /**
@@ -266,7 +268,7 @@ open class FileTreeNode() {
         resolveTreeFileName()
         resolveFileTemplate()
         traversal({ it, _ ->
-            it.resolved = true
+            it.resolve()
         })
     }
 

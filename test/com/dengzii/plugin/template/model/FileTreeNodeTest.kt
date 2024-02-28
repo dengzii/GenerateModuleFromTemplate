@@ -89,7 +89,7 @@ class FileTreeNodeTest : TestCase() {
 
     fun testAppcacheVelocity() {
         val r = """
-            !{StringUtils.removeAndHump(!{FEATURE_NAME.replaceAll("[^\w]", "_")})}Module.kt
+            !{StringUtils.removeAndHump(FEATURE_NAME.replaceAll("[^\w]", "_"))}Module.kt
         """.replace("!", "\$")
 
         val dsl = FileTreeDsl {

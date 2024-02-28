@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.dengzii.plugin.template</id>
     <name>Generate Module From Template</name>
-    <version>1.6.6</version>
+    <version>1.6.8</version>
     <vendor email="dengzii@foxmail.com" url="https://github.com/dengzii">dengzi</vendor>
 
     <description><![CDATA[
@@ -43,8 +43,8 @@ Any question please <a href='https://github.com/dengzii/GenerateModuleFromTempla
     ]]></description>
 
     <change-notes><![CDATA[
-    <b>Version 1.6.6 (2024/02/21)</b><br>
-    1. Fix: file tree node resolve order incorrect.<br>
+    <b>Version 1.6.8 (2024/02/21)</b><br>
+    1. Fix: file tree node creation problem.<br>
     <b>Version 1.6.5 (2023/12/11)</b><br>
     1. Update: File template support match by file path.<br>
     2. Fix: ApacheVelocity template lang not work.<br>
