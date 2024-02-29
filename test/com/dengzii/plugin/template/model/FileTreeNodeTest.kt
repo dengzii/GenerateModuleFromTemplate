@@ -111,7 +111,6 @@ class FileTreeNodeTest : TestCase() {
     }
 
     fun testExpandPkg() {
-
         val dsl = FileTreeDsl {
             placeholder("FT", "com_demo")
             fileTemplate("\${FT.replaceAll(\"[_]\", \".\")}.java", "Example")
@@ -136,15 +135,26 @@ class FileTreeNodeTest : TestCase() {
                 put(k, v)
             }
         }
+        println("\ntemplates")
+        m.template.placeholders?.forEach { (k, v) ->
+            println("$k, $v")
+        }
+        println("\nplaceholders")
+        m.template.fileTemplates?.forEach { (k, v) ->
+            println("$k, $v")
+        }
+        println(m.template.getTreeGraph(templateFile = true))
 
         m.template.resolveTreeFileName()
         m.template.resolveFileTemplate()
-        m.template.resolve()
 
-        m.template.children.last().children.last().let {
-            println(it.name)
-            println(it.fileTemplates)
-            println(it.getTemplateFile())
+        println("\ntemplates")
+        m.template.placeholders?.forEach { (k, v) ->
+            println("$k, $v")
+        }
+        println("\nplaceholders")
+        m.template.fileTemplates?.forEach { (k, v) ->
+            println("$k, $v")
         }
 
         m.template.expandPkgName(true)
