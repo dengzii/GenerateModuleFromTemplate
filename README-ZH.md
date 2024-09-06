@@ -29,26 +29,6 @@
 - 如果目录名包含 `/` 将被分割展开.
 - 占位符可以无限嵌套, 例如 `${${A}_${B}}`, A=a, B=b 则会变成一个新的占位符 ${a_b}.
 
-### 构建
-
-IDEA 无法正常导入这个项目, 不是 gradle , pom, java 项目, 而是 IDEA Platform Plugin 项目, 需要手动处理一些问题.
-
-#### 导入
-
-必须使用 IDEA Community版本, `File -> New -> Project from Exsiting Sources -> Create project  from exsiting sources` 然后一直点
-next 直到 Finish.
-
-快捷键 `Ctrl + Alt + Shift + S` 打开 **Project Structure** 窗口, 选择 **Project** tab, 将 **Project SDK**
-改为 `IntelliJ IDEA Community Edition IC-xxxx`, 然后应用改变关闭窗口.
-
-最后, 编辑根目录下的 `GenerateModuleFromTemplate.iml`, 把 `module` 节点的 `type` 改为 `PLUGIN_MODULE`, 最小化IDEA然后恢复, IDE 会检测到插件项目.
-
-最最后, `Run -> Edit Configuretions -> Alt + Insert -> Plugin -> Apply`, 项目就导入成功了.
-
-### 输出 Jar 文件
-
-`Run -> Prepare Plugin Module xxx For Deployment`
-
 ### 更新日志
 
 - 1.4.0: feature: Support export and import template to file, adjust action button position.

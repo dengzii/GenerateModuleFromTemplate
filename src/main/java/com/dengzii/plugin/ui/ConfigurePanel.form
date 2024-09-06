@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.dengzii.plugin.ui.ConfigurePanel">
+  <grid id="cbd77" binding="contentPane" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="48" y="54" width="888" height="631"/>
+    </constraints>
+    <properties/>
+    <border type="none">
+      <size top="10" left="10" bottom="10" right="10"/>
+    </border>
+    <children>
+      <grid id="e3588" layout-manager="BorderLayout" hgap="4" vgap="0">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <background color="-12828863"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <grid id="6e9e7" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="West"/>
+            <properties/>
+            <border type="none">
+              <color color="-13487566"/>
+            </border>
+            <children>
+              <grid id="56dc8" binding="panelActionBar" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="North"/>
+                <properties/>
+                <border type="none"/>
+                <children/>
+              </grid>
+              <scrollpane id="edd3e" class="com.intellij.ui.components.JBScrollPane">
+                <constraints border-constraint="Center"/>
+                <properties>
+                  <foreground color="-10197916"/>
+                </properties>
+                <border type="none">
+                  <title-color color="-10197916"/>
+                  <color color="-10197916"/>
+                </border>
+                <children>
+                  <component id="7d9fd" class="com.intellij.ui.components.JBList" binding="listTemplate">
+                    <constraints/>
+                    <properties>
+                      <fixedCellWidth value="180"/>
+                      <model>
+                        <item value="Template A"/>
+                      </model>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
+            </children>
+          </grid>
+          <grid id="6f1c1" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="Center"/>
+            <properties/>
+            <border type="none">
+              <size top="6" left="6" bottom="6" right="6"/>
+              <color color="-13487566"/>
+            </border>
+            <children>
+              <grid id="6d154" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints border-constraint="Center"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <tabbedpane id="e9ea8" class="com.intellij.ui.components.JBTabbedPane" binding="tabbedPane">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="4" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <tabComponentInsets top="0" left="0" bottom="0" right="0"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <grid id="42887" binding="panelStructure" layout-manager="CardLayout" hgap="0" vgap="0">
+                        <constraints>
+                          <tabbedpane title="Structure"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children/>
+                      </grid>
+                      <grid id="9bfd" binding="panelFileTemp" layout-manager="BorderLayout" hgap="0" vgap="0">
+                        <constraints>
+                          <tabbedpane title="File Template"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children/>
+                      </grid>
+                      <grid id="14430" binding="panelPlaceholder" layout-manager="BorderLayout" hgap="0" vgap="0">
+                        <constraints>
+                          <tabbedpane title="Placeholder"/>
+                        </constraints>
+                        <properties>
+                          <background color="-12828863"/>
+                        </properties>
+                        <border type="none"/>
+                        <children/>
+                      </grid>
+                    </children>
+                  </tabbedpane>
+                  <grid id="1453" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="7acfa" class="javax.swing.JCheckBox" binding="cbCapitalizeFile">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="true"/>
+                          <selected value="false"/>
+                          <text value="Capitalize file name"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="de821" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="d7d7b" class="javax.swing.JCheckBox" binding="cbLowercaseDir">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <selected value="false"/>
+                          <text value="Lowercase dir name"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="4a87d" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="93a98" class="javax.swing.JCheckBox" binding="cbExpandPkgName">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Expand package name to dir"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
+              </grid>
+              <grid id="3ee62" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+                <constraints border-constraint="North"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <grid id="699a3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="10" bottom="0" right="0"/>
+                    <constraints/>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="8b36d" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Name: "/>
+                        </properties>
+                      </component>
+                      <component id="bd16c" class="javax.swing.JTextField" binding="tfName">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <minimumSize width="180" height="30"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <component id="d7b5e" class="javax.swing.JCheckBox" binding="cbPlaceholder">
+                    <constraints/>
+                    <properties>
+                      <selected value="false"/>
+                      <text value="Preview Mode"/>
+                    </properties>
+                  </component>
+                  <component id="a98e" class="javax.swing.JCheckBox" binding="cbEnableVelocity">
+                    <constraints/>
+                    <properties>
+                      <text value="Enable ApacheVelocity (?)"/>
+                      <toolTipText value="Caclculate the file name use ApacheVelocity"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

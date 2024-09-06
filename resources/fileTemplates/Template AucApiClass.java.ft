@@ -1,8 +1,0 @@
-package ${PACKAGE_NAME};
-
-import com.blankj.utilcode.util.ApiUtils;
-
-#parse("File Header.java")
-public abstract class ${FEATURE_NAME}Api extends ApiUtils.BaseApi {
-
-}
